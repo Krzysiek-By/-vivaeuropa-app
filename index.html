@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b5cff" />
+  <title>VivaEuropa v0.1</title>
+  <style>
+:root{--blue:#0b5cff;--blue2:#0750df;--ink:#102447;--muted:#68758a;--line:#dfe6f1;--bg:#f6f9fe;--card:#fff;--shadow:0 12px 32px rgba(28,59,111,.10)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}button,input{font:inherit}.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(18px,calc((100vw - 1100px)/2));background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.brand{border:0;background:none;display:flex;align-items:center;gap:10px;padding:0;cursor:pointer;color:var(--ink)}.logo-pin{width:38px;height:38px;border-radius:50% 50% 50% 12px;background:var(--blue);transform:rotate(-45deg);display:grid;place-items:center}.logo-pin span{width:14px;height:14px;border-radius:50%;background:#ffd54a;display:block}.brand-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1}.brand-text strong{font-size:20px}.brand-text small{color:var(--muted);margin-top:5px}.top-actions{display:flex;gap:8px}.ghost,.primary,.back,.link-btn,.icon-btn{border:0;border-radius:12px;cursor:pointer}.ghost{background:#eef4ff;color:var(--blue);padding:10px 14px}.primary{background:var(--blue);color:#fff;padding:10px 16px;font-weight:700;box-shadow:0 6px 14px rgba(11,92,255,.18)}.primary:hover{background:var(--blue2)}.primary.big{padding:14px 20px}.hero{padding:70px max(18px,calc((100vw - 1100px)/2)) 36px;background:radial-gradient(circle at 80% 10%,#dbe9ff,transparent 34%),linear-gradient(180deg,#fff 0%,#f7faff 100%)}.eyebrow{margin:0 0 10px;font-size:12px;letter-spacing:.08em;font-weight:800;color:#5e77a6}.hero h1{font-size:clamp(38px,7vw,72px);line-height:.98;letter-spacing:-.04em;max-width:850px;margin:0}.hero h1 span{color:var(--blue)}.lead{font-size:18px;color:var(--muted);max-width:680px;line-height:1.55;margin:22px 0 28px}.search-card{display:grid;grid-template-columns:1.3fr 1fr auto;gap:10px;background:#fff;border:1px solid var(--line);padding:12px;border-radius:18px;box-shadow:var(--shadow);max-width:900px}.search-card label,.panel label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#5c6c86}.search-card input,.panel input{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 13px;outline:none;background:#fff;color:var(--ink)}.search-card input:focus,.panel input:focus{border-color:#8eb4ff;box-shadow:0 0 0 3px #edf4ff}.location-row{display:flex;gap:8px}.icon-btn{width:44px;background:#eef4ff;color:var(--blue);font-size:20px}.quick-cats{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.cat-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;cursor:pointer;color:var(--ink)}.cat-btn:hover{border-color:#adc7ff}.results-wrap{padding:36px max(18px,calc((100vw - 1100px)/2)) 110px}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}.section-head h2{margin:0;font-size:28px}.pill{background:#eaf1ff;color:var(--blue);padding:7px 10px;border-radius:999px;font-weight:800}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.result-card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:.18s}.result-card:hover{transform:translateY(-2px)}.result-cover{height:130px;background:linear-gradient(135deg,#dbe9ff,#eef5ff);display:flex;align-items:center;justify-content:center;font-size:48px}.result-body{padding:16px}.result-body h3{margin:0 0 7px}.meta{font-size:13px;color:var(--muted);line-height:1.5}.rating{font-weight:800;color:#d89000}.view{display:none}.view.active{display:block}.back{margin:28px max(18px,calc((100vw - 900px)/2)) 14px;background:#eaf1ff;color:var(--blue);padding:10px 14px}.company-card{max-width:900px;margin:0 auto 110px;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}.company-hero{padding:38px;background:linear-gradient(135deg,#0b5cff,#67a0ff);color:#fff}.company-hero .emoji{font-size:62px}.company-hero h1{margin:14px 0 6px;font-size:36px}.company-content{padding:26px}.company-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.info-box{border:1px solid var(--line);border-radius:14px;padding:16px}.info-box h4{margin:0 0 8px}.info-box p{margin:0;color:var(--muted);line-height:1.55}.company-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.company-actions a{text-decoration:none}.panel{max-width:760px;margin:70px auto 120px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow)}.panel.narrow{max-width:480px}.panel h2{font-size:34px;margin:0 0 8px}.muted{color:var(--muted);line-height:1.5}.panel form{display:grid;gap:14px;margin-top:24px}.link-btn{background:none;color:var(--blue);padding:12px 0}.hidden{display:none!important}.status{margin-top:12px;border-radius:12px;padding:12px;background:#eef8f0;color:#20652f}.bottom-nav{display:none}
+@media (max-width:800px){.topbar{padding:12px 14px}.brand-text small{display:none}.top-actions .ghost{display:none}.hero{padding:46px 16px 26px}.hero h1{font-size:46px}.search-card{grid-template-columns:1fr}.results-wrap{padding:28px 16px 100px}.results{grid-template-columns:1fr}.company-grid{grid-template-columns:1fr}.company-card{margin:0 14px 100px}.back{margin-left:14px}.panel{margin:40px 14px 100px}.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));justify-content:space-around}.nav-item{background:none;border:0;color:#7b8799;display:flex;flex-direction:column;gap:3px;align-items:center;font-size:20px}.nav-item span{font-size:11px}.nav-item.active{color:var(--blue)}}
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" data-view="home" aria-label="VivaEuropa - strona główna">
+      <span class="logo-pin"><span></span></span>
+      <span class="brand-text"><strong>VivaEuropa</strong><small>Blisko Ciebie.</small></span>
+    </button>
+    <div class="top-actions">
+      <button class="ghost" id="loginBtn">Zaloguj się</button>
+      <button class="primary" id="registerBtn">Załóż konto</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="view active" id="homeView">
+      <div class="hero">
+        <p class="eyebrow">LOKALNE FIRMY • USŁUGI • MIEJSCA</p>
+        <h1>Znajdź to, czego potrzebujesz <span>blisko Ciebie.</span></h1>
+        <p class="lead">Na początek testujemy prosty fundament VivaEuropa: lokalizacja, wyszukiwanie i karta firmy.</p>
+
+        <div class="search-card">
+          <label>
+            <span>Czego szukasz?</span>
+            <input id="queryInput" placeholder="np. piekarnia, fryzjer, apteka" autocomplete="off" />
+          </label>
+          <label>
+            <span>Gdzie?</span>
+            <div class="location-row">
+              <input id="locationInput" placeholder="np. Kraków" autocomplete="off" />
+              <button class="icon-btn" id="gpsBtn" title="Użyj GPS">◎</button>
+            </div>
+          </label>
+          <button class="primary big" id="searchBtn">Szukaj</button>
+        </div>
+
+        <div class="quick-cats" id="quickCats"></div>
+      </div>
+
+      <section class="results-wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Firmy testowe</h2></div>
+          <span class="pill" id="resultCount">0</span>
+        </div>
+        <div class="results" id="results"></div>
+      </section>
+    </section>
+
+    <section class="view" id="companyView">
+      <button class="back" id="backBtn">← Wróć do wyników</button>
+      <article class="company-card" id="companyCard"></article>
+    </section>
+
+    <section class="view" id="accountView">
+      <div class="panel narrow">
+        <p class="eyebrow" id="accountEyebrow">KONTO</p>
+        <h2 id="accountTitle">Zaloguj się</h2>
+        <p class="muted" id="accountIntro">To wersja testowa. Konto zapisujemy lokalnie na tym urządzeniu.</p>
+        <form id="accountForm">
+          <label id="nameLabel" class="hidden">Imię<input id="nameInput" /></label>
+          <label>E-mail<input id="emailInput" type="email" required /></label>
+          <label>Hasło<input id="passwordInput" type="password" minlength="4" required /></label>
+          <button class="primary big" type="submit" id="accountSubmit">Zaloguj się</button>
+        </form>
+        <button class="link-btn" id="switchModeBtn">Nie masz konta? Załóż konto</button>
+        <div class="status hidden" id="accountStatus"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Nawigacja">
+    <button class="nav-item active" data-view="home">⌂<span>Start</span></button>
+    <button class="nav-item" id="navSearch">⌕<span>Szukaj</span></button>
+    <button class="nav-item" id="navAccount">◉<span>Konto</span></button>
+  </nav>
+
+  <script>
+const companies = [
+  {id:1,name:'Piekarnia Pod Rynkiem',cat:'Piekarnia',emoji:'🥐',city:'Kraków',address:'Rynek Główny 8, Kraków',rating:4.9,reviews:318,distance:0.4,phone:'+48 12 000 00 01',www:'https://example.com',hours:'06:00–19:00',desc:'Lokalna piekarnia z pieczywem wypiekanym na miejscu.'},
+  {id:2,name:'Studio Fryzur Nova',cat:'Fryzjer',emoji:'✂️',city:'Kraków',address:'ul. Długa 21, Kraków',rating:4.8,reviews:194,distance:0.8,phone:'+48 12 000 00 02',www:'https://example.com',hours:'09:00–20:00',desc:'Fryzjer damski i męski. Rezerwacje telefoniczne.'},
+  {id:3,name:'Apteka Centrum',cat:'Apteka',emoji:'💊',city:'Kraków',address:'ul. Szewska 4, Kraków',rating:4.6,reviews:122,distance:1.1,phone:'+48 12 000 00 03',www:'https://example.com',hours:'08:00–22:00',desc:'Apteka w centrum miasta, czynna codziennie.'},
+  {id:4,name:'Lody na Plantach',cat:'Lodziarnia',emoji:'🍦',city:'Kraków',address:'Planty 12, Kraków',rating:4.9,reviews:521,distance:1.3,phone:'+48 12 000 00 04',www:'https://example.com',hours:'10:00–21:00',desc:'Rzemieślnicze lody i sezonowe smaki.'},
+  {id:5,name:'Szewc Tradycja',cat:'Szewc',emoji:'👞',city:'Kraków',address:'ul. Karmelicka 17, Kraków',rating:4.7,reviews:88,distance:1.8,phone:'+48 12 000 00 05',www:'https://example.com',hours:'08:30–17:00',desc:'Naprawa obuwia, pasków i drobnej galanterii skórzanej.'},
+  {id:6,name:'BikeRent Kraków',cat:'Rowery',emoji:'🚲',city:'Kraków',address:'ul. Zwierzyniecka 10, Kraków',rating:4.8,reviews:267,distance:2.0,phone:'+48 12 000 00 06',www:'https://example.com',hours:'08:00–20:00',desc:'Wypożyczalnia rowerów miejskich i trekkingowych.'}
+];
+const categories=['Piekarnia','Fryzjer','Apteka','Lodziarnia','Szewc','Rowery'];
+const els={results:document.querySelector('#results'),count:document.querySelector('#resultCount'),title:document.querySelector('#resultsTitle'),query:document.querySelector('#queryInput'),loc:document.querySelector('#locationInput')};
+let accountMode='login';
+function setView(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector(`#${name}View`).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===name));window.scrollTo({top:0,behavior:'smooth'});}
+function render(list=companies){els.results.innerHTML=list.map(c=>`<article class="result-card" data-id="${c.id}"><div class="result-cover">${c.emoji}</div><div class="result-body"><h3>${c.name}</h3><div class="meta">${c.cat} • ${c.city}<br><span class="rating">★ ${c.rating}</span> (${c.reviews}) • ${c.distance.toFixed(1)} km</div></div></article>`).join('');els.count.textContent=list.length;document.querySelectorAll('.result-card').forEach(card=>card.onclick=()=>openCompany(Number(card.dataset.id)));}
+function openCompany(id){const c=companies.find(x=>x.id===id);document.querySelector('#companyCard').innerHTML=`<div class="company-hero"><div class="emoji">${c.emoji}</div><h1>${c.name}</h1><div>${c.cat} • <strong>★ ${c.rating}</strong> (${c.reviews})</div></div><div class="company-content"><div class="company-grid"><div class="info-box"><h4>Adres</h4><p>${c.address}<br>około ${c.distance.toFixed(1)} km</p></div><div class="info-box"><h4>Godziny</h4><p>${c.hours}</p></div><div class="info-box"><h4>Kontakt</h4><p>${c.phone}<br>${c.www.replace('https://','')}</p></div><div class="info-box"><h4>O firmie</h4><p>${c.desc}</p></div></div><div class="company-actions"><a class="primary" href="tel:${c.phone.replace(/\s/g,'')}">Zadzwoń</a><a class="ghost" href="${c.www}" target="_blank" rel="noopener">Strona WWW</a><a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">Wyznacz trasę</a></div></div>`;setView('company');}
+function search(){const q=els.query.value.trim().toLowerCase();const l=els.loc.value.trim().toLowerCase();const list=companies.filter(c=>(!q||`${c.name} ${c.cat} ${c.desc}`.toLowerCase().includes(q))&&(!l||`${c.city} ${c.address}`.toLowerCase().includes(l)));els.title.textContent=q||l?'Wyniki wyszukiwania':'Firmy testowe';render(list);}
+document.querySelector('#quickCats').innerHTML=categories.map(c=>`<button class="cat-btn">${c}</button>`).join('');document.querySelectorAll('.cat-btn').forEach(b=>b.onclick=()=>{els.query.value=b.textContent;search();});
+document.querySelector('#searchBtn').onclick=search;els.query.addEventListener('keydown',e=>{if(e.key==='Enter')search()});els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+document.querySelector('#gpsBtn').onclick=()=>{if(!navigator.geolocation){alert('GPS nie jest dostępny na tym urządzeniu.');return;}navigator.geolocation.getCurrentPosition(p=>{els.loc.value=`GPS: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`;els.title.textContent='Lokalizacja pobrana z GPS';render(companies);},()=>alert('Nie udało się pobrać lokalizacji. Sprawdź uprawnienia GPS.'));};
+document.querySelector('#backBtn').onclick=()=>setView('home');document.querySelectorAll('[data-view="home"]').forEach(b=>b.onclick=()=>setView('home'));document.querySelector('#navSearch').onclick=()=>{setView('home');setTimeout(()=>els.query.focus(),100)};
+function showAccount(mode){accountMode=mode;setView('account');const reg=mode==='register';document.querySelector('#accountTitle').textContent=reg?'Załóż konto':'Zaloguj się';document.querySelector('#accountSubmit').textContent=reg?'Załóż konto':'Zaloguj się';document.querySelector('#nameLabel').classList.toggle('hidden',!reg);document.querySelector('#switchModeBtn').textContent=reg?'Masz już konto? Zaloguj się':'Nie masz konta? Załóż konto';document.querySelector('#accountStatus').classList.add('hidden');}
+document.querySelector('#loginBtn').onclick=()=>showAccount('login');document.querySelector('#registerBtn').onclick=()=>showAccount('register');document.querySelector('#navAccount').onclick=()=>showAccount('login');document.querySelector('#switchModeBtn').onclick=()=>showAccount(accountMode==='login'?'register':'login');
+document.querySelector('#accountForm').onsubmit=e=>{e.preventDefault();const email=document.querySelector('#emailInput').value.trim();const pass=document.querySelector('#passwordInput').value;const status=document.querySelector('#accountStatus');if(accountMode==='register'){const user={name:document.querySelector('#nameInput').value.trim()||'Użytkownik',email,pass};localStorage.setItem('vivaUser',JSON.stringify(user));localStorage.setItem('vivaLoggedIn','1');status.textContent='Konto testowe utworzone. Jesteś zalogowany.';}else{const user=JSON.parse(localStorage.getItem('vivaUser')||'null');if(!user||user.email!==email||user.pass!==pass){status.textContent='Nieprawidłowy e-mail lub hasło testowe.';status.style.background='#fff1f1';status.style.color='#9b2525';status.classList.remove('hidden');return;}localStorage.setItem('vivaLoggedIn','1');status.textContent=`Zalogowano jako ${user.name}.`;}status.style.background='#eef8f0';status.style.color='#20652f';status.classList.remove('hidden');};
+render();
+
+  </script>
+</body>
+</html>
