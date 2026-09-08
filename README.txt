@@ -1,21 +1,24 @@
-VivaEuropa v0.4
-Aktualizacja logo: wybrane logo nr 2 (niebieski kompas/pinezka z mapą Europy).
+VivaEuropa v0.5
+NOWOŚĆ: ekran startowy VE-001.
 
-Zachowane funkcje v0.3:
-- strona startowa
+VE-001:
+- logo VivaEuropa
+- krótkie hasło
+- przycisk Dalej
+- automatyczne wykrycie języka telefonu/przeglądarki: PL / DE / EN / ES
+- brak ręcznego wyboru języka na starcie
+
+Zachowane funkcje poprzedniej wersji:
 - wyszukiwanie firm
 - GPS
 - karta firmy
-- testowe logowanie
+- logowanie testowe
 - panel administratora
-- edycja firm testowych
+- edycja firm
 
-Konto testowe administratora:
-E-mail: admin@vivaeuropa.pl
+Konto administratora:
+admin@vivaeuropa.pl
 Hasło: Viva2026!
 
-Wgraj wszystkie pliki z tego folderu do repozytorium GitHub -vivaeuropa-app.
-Vercel powinien wdrożyć aktualizację automatycznie.
-
-Jeśli ikona na pulpicie iPhone'a nie zmieni się od razu:
-usuń skrót VivaEuropa z pulpitu i dodaj go ponownie z Safari.
+Wgraj wszystkie pliki do repozytorium GitHub -vivaeuropa-app.
+Vercel wdroży aktualizację automatycznie.
