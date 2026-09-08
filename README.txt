@@ -1,15 +1,23 @@
-VivaEuropa v0.14 COMPLETE
+VivaEuropa v0.15
 
-TEN ZIP JEST KOMPLETNY.
+NOWOŚĆ: pełniejsza rejestracja zwykłego użytkownika (VE-005).
 
-W środku ma być dokładnie 7 plików:
-1. index.html
-2. manifest.webmanifest
-3. apple-touch-icon.png
-4. icon-192.png
-5. icon-512.png
-6. vivaeuropa-logo-full.png
-7. README.txt
+Rejestracja użytkownika:
+- imię
+- nazwisko
+- e-mail
+- hasło min. 8 znaków
+- powtórzenie hasła
+- podgląd/ukrywanie hasła
+- akceptacja Regulaminu i Polityki prywatności
+- walidacja zgodności haseł
 
-Wgraj cały komplet 7 plików do repozytorium.
-Nie dodawaj drugiego kompletu tych samych plików.
+Logowanie:
+- e-mail
+- hasło
+- przycisk „Nie pamiętasz hasła?” przygotowany pod kolejny etap
+
+Rejestracja firmy nie jest jeszcze rozwinięta — będzie osobnym formularzem.
+
+W ZIP-ie jest kompletny zestaw 7 plików.
+Wgraj wszystkie 7 plików.
