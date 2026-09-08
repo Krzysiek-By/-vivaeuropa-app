@@ -2,6 +2,7 @@
   "name": "VivaEuropa",
   "short_name": "VivaEuropa",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0b5cff",
