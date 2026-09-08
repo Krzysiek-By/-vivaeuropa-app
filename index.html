@@ -990,6 +990,14 @@ function setView(name, options={}){
   const view=document.querySelector(`#${name}View`);
   if(view)view.classList.add('active');
   currentView=name;
+
+  if(localStorage.getItem('vivaLoggedIn')==='1'){
+    const restorableViews=['home','account'];
+    if(restorableViews.includes(name)){
+      localStorage.setItem('vivaLastView',name);
+    }
+  }
+
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===name));
   const bottomNav=document.querySelector('.bottom-nav');
   const showNav=(name==='home'||name==='company');
@@ -1227,6 +1235,7 @@ document.querySelector('#accountForm').onsubmit=e=>{
     status.classList.remove('hidden');
 
     refreshAuthUI();
+    localStorage.setItem('vivaLastView','home');
     viewHistory.length=0;
     setTimeout(()=>{
       setView('home',{skipHistory:true});
@@ -1249,6 +1258,7 @@ document.querySelector('#accountForm').onsubmit=e=>{
   status.textContent=`Zalogowano jako ${user.name} ${user.surname||''}.`;
   status.classList.remove('hidden');
   refreshAuthUI();
+  localStorage.setItem('vivaLastView','home');
   viewHistory.length=0;
   setTimeout(()=>{
     setView('home',{skipHistory:true});
@@ -1281,6 +1291,7 @@ document.querySelector('#forgotPasswordBtn').onclick=()=>{
 
 document.querySelector('#logoutBtn').onclick=()=>{
   localStorage.removeItem('vivaLoggedIn');
+  localStorage.removeItem('vivaLastView');
   localStorage.removeItem('vivaAdmin');
   setGuestMode(false);
   refreshAuthUI();
@@ -1329,6 +1340,35 @@ function detectVivaLanguage(){
   return splashTranslations[code]?code:'en';
 }
 
+
+function showLoggedAccountView(){
+  const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
+  setView('account',{skipHistory:true});
+  document.querySelector('#accountTitle').textContent='Twoje konto';
+  document.querySelector('#accountIntro').textContent=user
+    ? `Zalogowany jako ${user.name} ${user.surname||''}.`
+    : 'Jesteś zalogowany.';
+  document.querySelector('#accountForm').classList.add('hidden');
+  document.querySelector('#switchModeBtn').classList.add('hidden');
+  const status=document.querySelector('#accountStatus');
+  status.textContent='Sesja jest aktywna.';
+  status.style.background='#eef8f0';
+  status.style.color='#20652f';
+  status.classList.remove('hidden');
+}
+
+function restoreLoggedView(){
+  const last=localStorage.getItem('vivaLastView')||'home';
+  viewHistory.length=0;
+
+  if(last==='account'){
+    showLoggedAccountView();
+    return;
+  }
+
+  setView('home',{skipHistory:true});
+}
+
 function initSplash(){
   const splash=document.querySelector('#splashScreen');
   const text=document.querySelector('#splashText');
@@ -1349,8 +1389,7 @@ function initSplash(){
   if(logged && user){
     splash.classList.add('hidden');
     setGuestMode(false);
-    viewHistory.length=0;
-    setView('home',{skipHistory:true});
+    restoreLoggedView();
     return;
   }
 
