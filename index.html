@@ -431,6 +431,38 @@ input:-webkit-autofill:focus{
 }
 @keyframes viva-spin{to{transform:rotate(360deg)}}
 
+.refresh-confirm{
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:2500;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 15px;
+  border-radius:999px;
+  background:#0f5fff;
+  color:#fff;
+  box-shadow:0 10px 28px rgba(15,95,255,.28);
+  font-weight:800;
+  font-size:14px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.refresh-confirm.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(4px);
+}
+.refresh-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(255,255,255,.22);
+}
+
   </style>
 </head>
 <body>
@@ -439,6 +471,10 @@ input:-webkit-autofill:focus{
       <div class="reload-spinner" aria-hidden="true"></div>
       <span>Odświeżam VivaEuropa…</span>
     </div>
+  </div>
+  <div id="refreshConfirm" class="refresh-confirm" aria-live="polite">
+    <span class="refresh-dot"></span>
+    <span id="refreshConfirmText">Odświeżono</span>
   </div>
 
   <section class="splash" id="splashScreen" aria-label="VivaEuropa">
@@ -761,6 +797,36 @@ let accountMode='login', editingId=null;
 const viewHistory=[];
 let currentView='home';
 
+
+function updateBackButtons(){
+  const logged=localStorage.getItem('vivaLoggedIn')==='1';
+  document.querySelectorAll('[data-back]').forEach(btn=>{
+    const parentView=btn.closest('.view');
+    if(!parentView) return;
+    const name=parentView.id.replace('View','');
+    if(name==='home'){
+      const previous=viewHistory.length ? viewHistory[viewHistory.length-1] : null;
+      const validPrevious=previous && previous!=='welcome' && previous!=='splash';
+      btn.style.display=validPrevious ? '' : 'none';
+    }else{
+      btn.style.display='';
+    }
+  });
+}
+
+function showRefreshConfirmation(){
+  const box=document.querySelector('#refreshConfirm');
+  const text=document.querySelector('#refreshConfirmText');
+  if(!box || !text) return;
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mm=String(now.getMinutes()).padStart(2,'0');
+  const ss=String(now.getSeconds()).padStart(2,'0');
+  text.textContent=`Odświeżono ${hh}:${mm}:${ss}`;
+  box.classList.add('show');
+  window.setTimeout(()=>box.classList.remove('show'),1800);
+}
+
 function setView(name, options={}){
   const {replace=false, skipHistory=false}=options;
   if(!skipHistory && currentView && currentView!==name){
@@ -779,15 +845,30 @@ function setView(name, options={}){
   const showNav=(name==='home'||name==='company');
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
   document.body.classList.toggle('onboarding', ['welcome','account','admin','editor'].includes(name));
+  updateBackButtons();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function goBack(){
-  let target=viewHistory.pop();
-  if(!target){
-    const fallback={home:'welcome',company:'home',account:'welcome',admin:'welcome',editor:'admin'};
-    target=fallback[currentView]||'welcome';
+  const logged=localStorage.getItem('vivaLoggedIn')==='1';
+
+  while(viewHistory.length){
+    const candidate=viewHistory.pop();
+    if(logged && (candidate==='welcome' || candidate==='splash')) continue;
+    setView(candidate,{skipHistory:true});
+    return;
   }
+
+  // VE-003 jest ekranem bazowym po zalogowaniu.
+  // Jeżeli nie ma wcześniejszego ekranu aplikacji, Wstecz nic nie robi
+  // i nie może przenieść zalogowanego użytkownika do VE-002.
+  if(logged && currentView==='home'){
+    updateBackButtons();
+    return;
+  }
+
+  const fallback={company:'home',account:logged?'home':'welcome',admin:'welcome',editor:'admin'};
+  const target=fallback[currentView] || (logged?'home':'welcome');
   setView(target,{skipHistory:true});
 }
 function renderQuickCats(){
@@ -994,8 +1075,9 @@ document.querySelector('#accountForm').onsubmit=e=>{
     status.classList.remove('hidden');
 
     refreshAuthUI();
+    viewHistory.length=0;
     setTimeout(()=>{
-      setView('home');
+      setView('home',{skipHistory:true});
       showToast(`Konto utworzone. Jesteś zalogowany jako ${name}.`);
     },350);
     return;
@@ -1015,8 +1097,9 @@ document.querySelector('#accountForm').onsubmit=e=>{
   status.textContent=`Zalogowano jako ${user.name} ${user.surname||''}.`;
   status.classList.remove('hidden');
   refreshAuthUI();
+  viewHistory.length=0;
   setTimeout(()=>{
-    setView('home');
+    setView('home',{skipHistory:true});
     showToast(`Zalogowano jako ${user.name}.`);
   },300);
 };
@@ -1112,6 +1195,7 @@ function initSplash(){
   if(logged && user){
     splash.classList.add('hidden');
     setGuestMode(false);
+    viewHistory.length=0;
     setView('home',{skipHistory:true});
     return;
   }
@@ -1158,7 +1242,17 @@ render(companies);
 window.setTimeout(()=>{
   const indicator=document.querySelector('#reloadIndicator');
   if(indicator) indicator.classList.add('hidden');
-},650);
+  showRefreshConfirmation();
+},850);
+
+window.addEventListener('pageshow',()=>{
+  const indicator=document.querySelector('#reloadIndicator');
+  if(indicator){
+    indicator.classList.remove('hidden');
+    window.setTimeout(()=>indicator.classList.add('hidden'),850);
+  }
+  window.setTimeout(showRefreshConfirmation,900);
+});
 
   </script>
 </body>
