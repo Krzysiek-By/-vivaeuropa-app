@@ -1,17 +1,14 @@
-VivaEuropa v0.16
+VivaEuropa v0.17
 
-POPRAWKA REJESTRACJI UŻYTKOWNIKA.
-Ta wersja zawiera już faktycznie:
-- Imię
-- Nazwisko
-- E-mail
-- Hasło
-- Powtórz hasło
-- Pokaż/Ukryj hasło
-- Minimum 8 znaków
-- Checkbox Regulamin + Polityka prywatności
-- Walidację zgodności haseł
-- Przycisk „Nie pamiętasz hasła?”
+POPRAWKI:
+- pole „Powtórz hasło” ma własny przycisk Pokaż/Ukryj
+- po poprawnej rejestracji użytkownik jest automatycznie zalogowany
+- po rejestracji aplikacja przechodzi na stronę główną
+- pojawia się krótki komunikat potwierdzający zalogowanie
+- po zwykłym logowaniu również przechodzimy na stronę główną
+- zneutralizowane żółte podświetlenie pól powodowane przez Safari/iOS Autofill
+- po zalogowaniu górny przycisk pokazuje konto użytkownika
 
-Pakiet ma dokładnie 7 plików.
-Wgraj wszystkie 7.
+AKTUALIZACJA:
+Wgraj tylko index.html.
+README.txt jest tylko informacyjny.
