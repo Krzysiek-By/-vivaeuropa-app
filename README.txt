@@ -1,20 +1,8 @@
-VivaEuropa v0.6
-NOWOŚĆ: poprawiony ekran startowy VE-001.
-
-Zmiany:
-- ciemniejszy, bardziej premium ekran startowy
-- mocniejszy niebieski gradient
-- biała karta dolna z hasłem i przyciskiem
-- lepszy kontrast i wyraźniejszy charakter wizualny
-- zachowane automatyczne wykrywanie języka telefonu/przeglądarki
-
-Zachowane funkcje poprzednich wersji:
-- wyszukiwanie firm
-- GPS
-- karta firmy
-- testowe logowanie
-- panel administratora
-- edycja firm
+VivaEuropa v0.7
+POPRAWKA:
+- naprawiony przycisk „Dalej” na ekranie VE-001
+- poprawiona inicjalizacja ekranu startowego
+- zachowany wygląd v0.6 i wszystkie dotychczasowe funkcje
 
 Konto administratora:
 admin@vivaeuropa.pl
