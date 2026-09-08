@@ -511,6 +511,18 @@ input:-webkit-autofill:focus{
   animation:viva-spin .75s linear infinite;
 }
 
+.lang-diagnostic{
+  margin:14px 0 0;
+  padding:12px 14px;
+  border-radius:14px;
+  background:#f5f8fd;
+  border:1px solid #dbe5f3;
+  color:#29466f;
+  font-size:13px;
+  line-height:1.45;
+}
+.lang-diagnostic strong{color:#17345f}
+
   </style>
 </head>
 <body>
@@ -653,6 +665,10 @@ input:-webkit-autofill:focus{
         <p class="eyebrow" id="accountEyebrow">KONTO</p>
         <h2 id="accountTitle">Zaloguj się</h2>
         <p class="muted" id="accountIntro">To wersja testowa. Konto zapisujemy lokalnie na tym urządzeniu.</p>
+        <div id="langDiagnostic" class="lang-diagnostic">
+          <strong>Test języka urządzenia</strong><br>
+          <span id="langDiagnosticText">Odczytuję…</span>
+        </div>
         <form id="accountForm">
           <div class="account-grid">
             <label id="nameLabel" class="hidden">Imię<input id="nameInput" autocomplete="given-name" /></label>
@@ -1058,6 +1074,7 @@ let selectedRole='user';
 function showAccount(mode){
   accountMode=mode;
   setView('account');
+  renderLanguageDiagnostic();
   document.querySelector('#accountForm').classList.remove('hidden');
   document.querySelector('#switchModeBtn').classList.remove('hidden');
 
@@ -1306,6 +1323,29 @@ const splashTranslations = {
   es:{text:'Encuentra lo que necesitas cerca de ti.',button:'Continuar',code:'ES'}
 };
 
+
+function getLanguageDiagnostic(){
+  const primary = (navigator.languages && navigator.languages.length)
+    ? navigator.languages[0]
+    : (navigator.language || '');
+  const list = (navigator.languages && navigator.languages.length)
+    ? navigator.languages.join(', ')
+    : (navigator.language || 'brak danych');
+
+  return {
+    primary,
+    list,
+    appDetected: detectVivaLanguage()
+  };
+}
+
+function renderLanguageDiagnostic(){
+  const el=document.querySelector('#langDiagnosticText');
+  if(!el) return;
+  const d=getLanguageDiagnostic();
+  el.textContent=`Pierwszy język zgłaszany: ${d.primary || 'brak'} | Lista: ${d.list} | VivaEuropa rozpoznaje: ${d.appDetected.toUpperCase()}`;
+}
+
 function detectVivaLanguage(){
   const raw=(navigator.languages&&navigator.languages[0])||navigator.language||'en';
   const code=raw.toLowerCase().split('-')[0];
@@ -1372,6 +1412,7 @@ window.addEventListener('resize',()=>{
 
 refreshAuthUI();
 updateAccountSubmitState();
+renderLanguageDiagnostic();
 initSplash();
 renderQuickCats();
 render(companies);
