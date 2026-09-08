@@ -393,9 +393,53 @@ input:-webkit-autofill:focus{
   opacity:1;
 }
 
+.reload-indicator{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(248,251,255,.88);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  transition:opacity .22s ease;
+}
+.reload-indicator.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+.reload-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 18px;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid #d7e4f6;
+  box-shadow:0 12px 32px rgba(24,58,110,.14);
+  color:#17345f;
+  font-weight:700;
+}
+.reload-spinner{
+  width:22px;
+  height:22px;
+  border:3px solid #dce8fb;
+  border-top-color:#1260ff;
+  border-radius:50%;
+  animation:viva-spin .75s linear infinite;
+}
+@keyframes viva-spin{to{transform:rotate(360deg)}}
+
   </style>
 </head>
 <body>
+  <div id="reloadIndicator" class="reload-indicator">
+    <div class="reload-box">
+      <div class="reload-spinner" aria-hidden="true"></div>
+      <span>Odświeżam VivaEuropa…</span>
+    </div>
+  </div>
 
   <section class="splash" id="splashScreen" aria-label="VivaEuropa">
     <div class="test-page-no">VE-001</div>
@@ -1061,6 +1105,17 @@ function initSplash(){
   button.textContent=splashTranslations[vivaLang].button;
   if(lang) lang.textContent=splashTranslations[vivaLang].code;
 
+  // Trwała sesja: jeżeli użytkownik był zalogowany przed zamknięciem,
+  // wracamy bezpośrednio do VE-003.
+  const logged=localStorage.getItem('vivaLoggedIn')==='1';
+  const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
+  if(logged && user){
+    splash.classList.add('hidden');
+    setGuestMode(false);
+    setView('home',{skipHistory:true});
+    return;
+  }
+
   button.addEventListener('click',()=>{
     splash.classList.add('hidden');
     sessionStorage.setItem('vivaSplashSeen','1');
@@ -1099,6 +1154,11 @@ updateAccountSubmitState();
 initSplash();
 renderQuickCats();
 render(companies);
+
+window.setTimeout(()=>{
+  const indicator=document.querySelector('#reloadIndicator');
+  if(indicator) indicator.classList.add('hidden');
+},650);
 
   </script>
 </body>
