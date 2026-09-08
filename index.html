@@ -384,6 +384,15 @@ input:-webkit-autofill:focus{
 .account-menu{display:flex;align-items:center;gap:8px}
 .logout-btn{border:1px solid var(--line);background:#fff;color:#8a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:700}
 
+.checkbox-row.hidden{display:none!important}
+.primary:disabled{
+  background:#d7e5ff;
+  color:#ffffff;
+  box-shadow:none;
+  cursor:not-allowed;
+  opacity:1;
+}
+
   </style>
 </head>
 <body>
@@ -636,6 +645,42 @@ function showToast(message){
   setTimeout(()=>toast.remove(),2600);
 }
 
+
+function updateAccountSubmitState(){
+  const submit=document.querySelector('#accountSubmit');
+  const email=document.querySelector('#emailInput');
+  const pass=document.querySelector('#passwordInput');
+  if(!submit || !email || !pass) return;
+
+  if(accountMode==='login'){
+    const emailOk=email.validity.valid && email.value.trim().length>0;
+    const passOk=pass.value.length>=8;
+    submit.disabled=!(emailOk && passOk);
+    return;
+  }
+
+  const company=selectedRole==='company';
+  if(company){
+    submit.disabled=false;
+    return;
+  }
+
+  const name=document.querySelector('#nameInput');
+  const surname=document.querySelector('#surnameInput');
+  const confirm=document.querySelector('#confirmPasswordInput');
+  const terms=document.querySelector('#termsInput');
+
+  const ok =
+    name.value.trim().length>0 &&
+    surname.value.trim().length>0 &&
+    email.validity.valid &&
+    pass.value.length>=8 &&
+    confirm.value.length>=8 &&
+    terms.checked;
+
+  submit.disabled=!ok;
+}
+
 function refreshAuthUI(){
   const logged=localStorage.getItem('vivaLoggedIn')==='1';
   const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
@@ -786,6 +831,7 @@ function showAccount(mode){
     reg?'Masz już konto? Zaloguj się':'Nie masz konta? Załóż konto';
 
   document.querySelector('#accountStatus').classList.add('hidden');
+  updateAccountSubmitState();
 }
 function renderAdmin(){
   if(!isAdmin()){showAccount('login');return;}
@@ -832,6 +878,14 @@ document.querySelector('#navAccount').onclick=()=>{
   else{showAccount('login');}
 };
 document.querySelector('#switchModeBtn').onclick=()=>showAccount(accountMode==='login'?'register':'login');
+
+
+['emailInput','passwordInput','nameInput','surnameInput','confirmPasswordInput','termsInput'].forEach(id=>{
+  const el=document.querySelector('#'+id);
+  if(!el) return;
+  el.addEventListener('input',updateAccountSubmitState);
+  el.addEventListener('change',updateAccountSubmitState);
+});
 
 document.querySelector('#accountForm').onsubmit=e=>{
   e.preventDefault();
@@ -1041,6 +1095,7 @@ window.addEventListener('resize',()=>{
 });
 
 refreshAuthUI();
+updateAccountSubmitState();
 initSplash();
 renderQuickCats();
 render(companies);
