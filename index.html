@@ -345,6 +345,17 @@ body.onboarding .topbar{box-shadow:0 1px 0 rgba(34,69,125,.03)}
   .test-page-no{right:6px;bottom:6px;font-size:9px;padding:4px 6px}
 }
 
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.account-grid .full{grid-column:1/-1}
+.password-wrap{display:grid;grid-template-columns:1fr auto;gap:8px}
+.password-toggle{border:1px solid var(--line);background:#f7faff;color:var(--blue);border-radius:11px;padding:12px 13px;cursor:pointer;font-weight:700}
+.checkbox-row{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:10px!important;font-size:13px!important;font-weight:500!important;line-height:1.45;color:#4c5d75!important}
+.checkbox-row input{width:18px!important;height:18px;margin-top:2px;flex:0 0 auto}
+.checkbox-row a{color:var(--blue);text-decoration:none}
+.form-note{font-size:12px;color:var(--muted);line-height:1.45}
+.forgot-btn{border:0;background:none;color:var(--blue);padding:0;text-align:left;cursor:pointer;font-size:13px;font-weight:700}
+@media(max-width:640px){.account-grid{grid-template-columns:1fr}.account-grid .full{grid-column:auto}}
+
   </style>
 </head>
 <body>
@@ -471,9 +482,35 @@ body.onboarding .topbar{box-shadow:0 1px 0 rgba(34,69,125,.03)}
         <h2 id="accountTitle">Zaloguj się</h2>
         <p class="muted" id="accountIntro">To wersja testowa. Konto zapisujemy lokalnie na tym urządzeniu.</p>
         <form id="accountForm">
-          <label id="nameLabel" class="hidden">Imię<input id="nameInput" /></label>
-          <label>E-mail<input id="emailInput" type="email" required /></label>
-          <label>Hasło<input id="passwordInput" type="password" minlength="4" required /></label>
+          <div class="account-grid">
+            <label id="nameLabel" class="hidden">Imię<input id="nameInput" autocomplete="given-name" /></label>
+            <label id="surnameLabel" class="hidden">Nazwisko<input id="surnameInput" autocomplete="family-name" /></label>
+
+            <label class="full">E-mail<input id="emailInput" type="email" autocomplete="email" required /></label>
+
+            <label class="full">
+              Hasło
+              <div class="password-wrap">
+                <input id="passwordInput" type="password" minlength="8" autocomplete="current-password" required />
+                <button type="button" class="password-toggle" id="passwordToggle">Pokaż</button>
+              </div>
+            </label>
+
+            <label id="confirmPasswordLabel" class="full hidden">
+              Powtórz hasło
+              <input id="confirmPasswordInput" type="password" minlength="8" autocomplete="new-password" />
+            </label>
+
+            <div id="passwordNote" class="form-note full hidden">Hasło musi mieć minimum 8 znaków.</div>
+
+            <label id="termsLabel" class="checkbox-row full hidden">
+              <input id="termsInput" type="checkbox" />
+              <span>Akceptuję <a href="#" onclick="return false;">Regulamin</a> i <a href="#" onclick="return false;">Politykę prywatności</a>.</span>
+            </label>
+
+            <button id="forgotPasswordBtn" class="forgot-btn full" type="button">Nie pamiętasz hasła?</button>
+          </div>
+
           <button class="primary big" type="submit" id="accountSubmit">Zaloguj się</button>
         </form>
         <button class="link-btn" id="switchModeBtn">Nie masz konta? Załóż konto</button>
@@ -652,13 +689,40 @@ function search(){
 }
 let selectedRole='user';
 function showAccount(mode){
-  accountMode=mode; setView('account');
+  accountMode=mode;
+  setView('account');
+
   const reg=mode==='register';
-  const roleText=selectedRole==='company'?'firmy':'użytkownika';
-  document.querySelector('#accountTitle').textContent=reg?`Załóż konto ${roleText}`:`Logowanie ${roleText}`;
+  const company=selectedRole==='company';
+
+  document.querySelector('#accountTitle').textContent =
+    reg ? (company?'Załóż konto firmy':'Załóż konto użytkownika')
+        : (company?'Logowanie firmy':'Logowanie użytkownika');
+
+  document.querySelector('#accountIntro').textContent =
+    reg && !company
+      ? 'Utwórz bezpłatne konto użytkownika.'
+      : 'Zaloguj się do swojego konta.';
+
   document.querySelector('#accountSubmit').textContent=reg?'Załóż konto':'Zaloguj się';
-  document.querySelector('#nameLabel').classList.toggle('hidden',!reg);
-  document.querySelector('#switchModeBtn').textContent=reg?'Masz już konto? Zaloguj się':'Nie masz konta? Załóż konto';
+
+  document.querySelector('#nameLabel').classList.toggle('hidden', !reg || company);
+  document.querySelector('#surnameLabel').classList.toggle('hidden', !reg || company);
+  document.querySelector('#confirmPasswordLabel').classList.toggle('hidden', !reg || company);
+  document.querySelector('#passwordNote').classList.toggle('hidden', !reg || company);
+  document.querySelector('#termsLabel').classList.toggle('hidden', !reg || company);
+  document.querySelector('#forgotPasswordBtn').classList.toggle('hidden', reg);
+
+  document.querySelector('#nameInput').required = reg && !company;
+  document.querySelector('#surnameInput').required = reg && !company;
+  document.querySelector('#confirmPasswordInput').required = reg && !company;
+  document.querySelector('#termsInput').required = reg && !company;
+
+  document.querySelector('#passwordInput').autocomplete = reg ? 'new-password' : 'current-password';
+
+  document.querySelector('#switchModeBtn').textContent =
+    reg?'Masz już konto? Zaloguj się':'Nie masz konta? Załóż konto';
+
   document.querySelector('#accountStatus').classList.add('hidden');
 }
 function renderAdmin(){
@@ -688,26 +752,96 @@ document.querySelector('#switchModeBtn').onclick=()=>showAccount(accountMode==='
 
 document.querySelector('#accountForm').onsubmit=e=>{
   e.preventDefault();
+
   const email=document.querySelector('#emailInput').value.trim();
   const pass=document.querySelector('#passwordInput').value;
   const status=document.querySelector('#accountStatus');
-  status.style.background='#eef8f0'; status.style.color='#20652f';
+
+  status.style.background='#eef8f0';
+  status.style.color='#20652f';
+
   if(accountMode==='login' && email===ADMIN_EMAIL && pass===ADMIN_PASS){
     localStorage.setItem('vivaAdmin','1');
-    status.textContent='Zalogowano do panelu testowego.'; status.classList.remove('hidden');
-    setTimeout(renderAdmin,250); return;
+    status.textContent='Zalogowano do panelu testowego.';
+    status.classList.remove('hidden');
+    setTimeout(renderAdmin,250);
+    return;
   }
+
   if(accountMode==='register'){
-    const user={name:document.querySelector('#nameInput').value.trim()||'Użytkownik',email,pass};
-    localStorage.setItem('vivaUser',JSON.stringify(user)); localStorage.setItem('vivaLoggedIn','1');
-    status.textContent='Konto testowe utworzone. Jesteś zalogowany.';
-  }else{
-    const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
-    if(!user||user.email!==email||user.pass!==pass){
-      status.textContent='Nieprawidłowy e-mail lub hasło.'; status.style.background='#fff1f1'; status.style.color='#9b2525'; status.classList.remove('hidden'); return;
+    if(selectedRole==='company'){
+      status.textContent='Rejestrację firmy zrobimy w kolejnym kroku.';
+      status.style.background='#fff8df';
+      status.style.color='#6f5a00';
+      status.classList.remove('hidden');
+      return;
     }
-    localStorage.setItem('vivaLoggedIn','1'); status.textContent=`Zalogowano jako ${user.name}.`;
+
+    const name=document.querySelector('#nameInput').value.trim();
+    const surname=document.querySelector('#surnameInput').value.trim();
+    const confirm=document.querySelector('#confirmPasswordInput').value;
+    const terms=document.querySelector('#termsInput').checked;
+
+    if(pass.length<8){
+      status.textContent='Hasło musi mieć minimum 8 znaków.';
+      status.style.background='#fff1f1';
+      status.style.color='#9b2525';
+      status.classList.remove('hidden');
+      return;
+    }
+    if(pass!==confirm){
+      status.textContent='Hasła nie są takie same.';
+      status.style.background='#fff1f1';
+      status.style.color='#9b2525';
+      status.classList.remove('hidden');
+      return;
+    }
+    if(!terms){
+      status.textContent='Zaakceptuj Regulamin i Politykę prywatności.';
+      status.style.background='#fff1f1';
+      status.style.color='#9b2525';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    const user={name,surname,email,pass,role:'user'};
+    localStorage.setItem('vivaUser',JSON.stringify(user));
+    localStorage.setItem('vivaLoggedIn','1');
+    setGuestMode(false);
+
+    status.textContent=`Konto testowe utworzone. Witaj, ${name}!`;
+    status.classList.remove('hidden');
+    return;
   }
+
+  const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
+  if(!user||user.email!==email||user.pass!==pass){
+    status.textContent='Nieprawidłowy e-mail lub hasło.';
+    status.style.background='#fff1f1';
+    status.style.color='#9b2525';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  localStorage.setItem('vivaLoggedIn','1');
+  setGuestMode(false);
+  status.textContent=`Zalogowano jako ${user.name} ${user.surname||''}.`;
+  status.classList.remove('hidden');
+};
+
+
+document.querySelector('#passwordToggle').onclick=()=>{
+  const input=document.querySelector('#passwordInput');
+  const visible=input.type==='text';
+  input.type=visible?'password':'text';
+  document.querySelector('#passwordToggle').textContent=visible?'Pokaż':'Ukryj';
+};
+
+document.querySelector('#forgotPasswordBtn').onclick=()=>{
+  const status=document.querySelector('#accountStatus');
+  status.style.background='#eef4ff';
+  status.style.color='#27578f';
+  status.textContent='Reset hasła dodamy w następnym kroku.';
   status.classList.remove('hidden');
 };
 
