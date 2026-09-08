@@ -511,17 +511,6 @@ input:-webkit-autofill:focus{
   animation:viva-spin .75s linear infinite;
 }
 
-.lang-diagnostic{
-  margin:14px 0 0;
-  padding:12px 14px;
-  border-radius:14px;
-  background:#f5f8fd;
-  border:1px solid #dbe5f3;
-  color:#29466f;
-  font-size:13px;
-  line-height:1.45;
-}
-.lang-diagnostic strong{color:#17345f}
 
   </style>
 </head>
@@ -665,10 +654,6 @@ input:-webkit-autofill:focus{
         <p class="eyebrow" id="accountEyebrow">KONTO</p>
         <h2 id="accountTitle">Zaloguj się</h2>
         <p class="muted" id="accountIntro">To wersja testowa. Konto zapisujemy lokalnie na tym urządzeniu.</p>
-        <div id="langDiagnostic" class="lang-diagnostic">
-          <strong>Test języka urządzenia</strong><br>
-          <span id="langDiagnosticText">Odczytuję…</span>
-        </div>
         <form id="accountForm">
           <div class="account-grid">
             <label id="nameLabel" class="hidden">Imię<input id="nameInput" autocomplete="given-name" /></label>
@@ -829,6 +814,18 @@ function updateAccountSubmitState(){
     terms.checked;
 
   submit.disabled=!ok;
+}
+
+
+function ensureAccountLanguage(){
+  const raw=localStorage.getItem('vivaUser');
+  if(!raw) return;
+  try{
+    const user=JSON.parse(raw);
+    if(!user || user.accountLanguage) return;
+    user.accountLanguage=detectVivaLanguage();
+    localStorage.setItem('vivaUser',JSON.stringify(user));
+  }catch(e){}
 }
 
 function refreshAuthUI(){
@@ -1072,9 +1069,9 @@ function search(){
 }
 let selectedRole='user';
 function showAccount(mode){
+  ensureAccountLanguage();
   accountMode=mode;
   setView('account');
-  renderLanguageDiagnostic();
   document.querySelector('#accountForm').classList.remove('hidden');
   document.querySelector('#switchModeBtn').classList.remove('hidden');
 
@@ -1220,7 +1217,8 @@ document.querySelector('#accountForm').onsubmit=e=>{
       return;
     }
 
-    const user={name,surname,email,pass,role:'user'};
+    const accountLanguage=detectVivaLanguage();
+    const user={name,surname,email,pass,role:'user',accountLanguage};
     localStorage.setItem('vivaUser',JSON.stringify(user));
     localStorage.setItem('vivaLoggedIn','1');
     setGuestMode(false);
@@ -1324,27 +1322,6 @@ const splashTranslations = {
 };
 
 
-function getLanguageDiagnostic(){
-  const primary = (navigator.languages && navigator.languages.length)
-    ? navigator.languages[0]
-    : (navigator.language || '');
-  const list = (navigator.languages && navigator.languages.length)
-    ? navigator.languages.join(', ')
-    : (navigator.language || 'brak danych');
-
-  return {
-    primary,
-    list,
-    appDetected: detectVivaLanguage()
-  };
-}
-
-function renderLanguageDiagnostic(){
-  const el=document.querySelector('#langDiagnosticText');
-  if(!el) return;
-  const d=getLanguageDiagnostic();
-  el.textContent=`Pierwszy język zgłaszany: ${d.primary || 'brak'} | Lista: ${d.list} | VivaEuropa rozpoznaje: ${d.appDetected.toUpperCase()}`;
-}
 
 function detectVivaLanguage(){
   const raw=(navigator.languages&&navigator.languages[0])||navigator.language||'en';
@@ -1410,9 +1387,9 @@ window.addEventListener('resize',()=>{
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
 });
 
+ensureAccountLanguage();
 refreshAuthUI();
 updateAccountSubmitState();
-renderLanguageDiagnostic();
 initSplash();
 renderQuickCats();
 render(companies);
