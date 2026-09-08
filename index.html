@@ -381,6 +381,9 @@ input:-webkit-autofill:focus{
   text-align:center;
 }
 
+.account-menu{display:flex;align-items:center;gap:8px}
+.logout-btn{border:1px solid var(--line);background:#fff;color:#8a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:700}
+
   </style>
 </head>
 <body>
@@ -409,6 +412,7 @@ input:-webkit-autofill:focus{
     <div class="top-actions">
       <button class="ghost" id="loginBtn">Zaloguj się</button>
       <button class="primary" id="registerBtn">Załóż konto</button>
+      <button class="logout-btn hidden" id="logoutBtn">Wyloguj</button>
     </div>
   </header>
 
@@ -637,13 +641,16 @@ function refreshAuthUI(){
   const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
   const loginBtn=document.querySelector('#loginBtn');
   const registerBtn=document.querySelector('#registerBtn');
+  const logoutBtn=document.querySelector('#logoutBtn');
 
   if(logged && user){
     loginBtn.textContent=user.name ? `Konto: ${user.name}` : 'Konto';
     registerBtn.classList.add('hidden');
+    logoutBtn.classList.remove('hidden');
   }else{
     loginBtn.textContent='Zaloguj się';
     registerBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
   }
 }
 
@@ -744,6 +751,8 @@ let selectedRole='user';
 function showAccount(mode){
   accountMode=mode;
   setView('account');
+  document.querySelector('#accountForm').classList.remove('hidden');
+  document.querySelector('#switchModeBtn').classList.remove('hidden');
 
   const reg=mode==='register';
   const company=selectedRole==='company';
@@ -798,9 +807,30 @@ els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 document.querySelector('#gpsBtn').onclick=()=>{if(!navigator.geolocation){alert('GPS nie jest dostępny na tym urządzeniu.');return;}navigator.geolocation.getCurrentPosition(p=>{els.loc.value=`GPS: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`;els.title.textContent='Lokalizacja pobrana z GPS';render(companies);},()=>alert('Nie udało się pobrać lokalizacji. Sprawdź uprawnienia GPS.'));};
 document.querySelectorAll('[data-view="home"]').forEach(b=>b.onclick=()=>setView('home'));
 document.querySelector('#navSearch').onclick=()=>{setView('home');setTimeout(()=>els.query.focus(),100)};
-document.querySelector('#loginBtn').onclick=()=>isAdmin()?renderAdmin():showAccount('login');
+document.querySelector('#loginBtn').onclick=()=>{
+  if(isAdmin()){renderAdmin();return;}
+  if(localStorage.getItem('vivaLoggedIn')==='1'){
+    const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
+    showAccount('login');
+    document.querySelector('#accountTitle').textContent='Twoje konto';
+    document.querySelector('#accountIntro').textContent=user?`Zalogowany jako ${user.name} ${user.surname||''}.`:'Jesteś zalogowany.';
+    document.querySelector('#accountForm').classList.add('hidden');
+    document.querySelector('#switchModeBtn').classList.add('hidden');
+    const status=document.querySelector('#accountStatus');
+    status.textContent='Sesja jest aktywna.';
+    status.style.background='#eef8f0';
+    status.style.color='#20652f';
+    status.classList.remove('hidden');
+    return;
+  }
+  showAccount('login');
+};
 document.querySelector('#registerBtn').onclick=()=>showAccount('register');
-document.querySelector('#navAccount').onclick=()=>isAdmin()?renderAdmin():showAccount('login');
+document.querySelector('#navAccount').onclick=()=>{
+  if(isAdmin()){renderAdmin();return;}
+  if(localStorage.getItem('vivaLoggedIn')==='1'){document.querySelector('#loginBtn').click();}
+  else{showAccount('login');}
+};
 document.querySelector('#switchModeBtn').onclick=()=>showAccount(accountMode==='login'?'register':'login');
 
 document.querySelector('#accountForm').onsubmit=e=>{
@@ -914,6 +944,15 @@ document.querySelector('#forgotPasswordBtn').onclick=()=>{
   status.style.color='#27578f';
   status.textContent='Reset hasła dodamy w następnym kroku.';
   status.classList.remove('hidden');
+};
+
+document.querySelector('#logoutBtn').onclick=()=>{
+  localStorage.removeItem('vivaLoggedIn');
+  localStorage.removeItem('vivaAdmin');
+  setGuestMode(false);
+  refreshAuthUI();
+  setView('welcome');
+  showToast('Wylogowano z konta.');
 };
 
 document.querySelector('#adminHomeBtn').onclick=()=>setView('home');
