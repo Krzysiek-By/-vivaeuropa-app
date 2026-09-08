@@ -463,6 +463,54 @@ input:-webkit-autofill:focus{
   box-shadow:0 0 0 4px rgba(255,255,255,.22);
 }
 
+.pull-refresh{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:2600;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  transform:translateY(-70px);
+  transition:transform .18s ease;
+}
+.pull-refresh.visible{
+  transform:translateY(10px);
+}
+.pull-refresh-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:#ffffff;
+  color:#17345f;
+  border:1px solid #d7e4f6;
+  box-shadow:0 10px 28px rgba(24,58,110,.18);
+  font-weight:800;
+  font-size:14px;
+}
+.pull-refresh-icon{
+  width:20px;
+  height:20px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  transition:transform .18s ease;
+}
+.pull-refresh.ready .pull-refresh-icon{
+  transform:rotate(180deg);
+}
+.pull-refresh.loading .pull-refresh-icon{
+  border:3px solid #dce8fb;
+  border-top-color:#1260ff;
+  border-radius:50%;
+  font-size:0;
+  animation:viva-spin .75s linear infinite;
+}
+
   </style>
 </head>
 <body>
@@ -475,6 +523,12 @@ input:-webkit-autofill:focus{
   <div id="refreshConfirm" class="refresh-confirm" aria-live="polite">
     <span class="refresh-dot"></span>
     <span id="refreshConfirmText">Odświeżono</span>
+  </div>
+  <div id="pullRefresh" class="pull-refresh" aria-live="polite">
+    <div class="pull-refresh-box">
+      <span id="pullRefreshIcon" class="pull-refresh-icon">↓</span>
+      <span id="pullRefreshText">Pociągnij, aby odświeżyć</span>
+    </div>
   </div>
 
   <section class="splash" id="splashScreen" aria-label="VivaEuropa">
@@ -813,6 +867,89 @@ function updateBackButtons(){
     }
   });
 }
+
+
+let pullStartY=0;
+let pullDistance=0;
+let pullTracking=false;
+let pullRefreshing=false;
+const PULL_TRIGGER=84;
+
+function resetPullRefresh(){
+  const wrap=document.querySelector('#pullRefresh');
+  const text=document.querySelector('#pullRefreshText');
+  const icon=document.querySelector('#pullRefreshIcon');
+  if(!wrap || !text || !icon) return;
+  wrap.classList.remove('visible','ready','loading');
+  text.textContent='Pociągnij, aby odświeżyć';
+  icon.textContent='↓';
+  pullDistance=0;
+  pullTracking=false;
+}
+
+function startPullRefresh(){
+  if(pullRefreshing) return;
+  const wrap=document.querySelector('#pullRefresh');
+  const text=document.querySelector('#pullRefreshText');
+  if(!wrap || !text) return;
+
+  pullRefreshing=true;
+  wrap.classList.add('visible','loading');
+  wrap.classList.remove('ready');
+  text.textContent='Odświeżam…';
+
+  // Krótka pauza, żeby użytkownik widział reakcję interfejsu,
+  // następnie prawdziwe przeładowanie strony.
+  window.setTimeout(()=>{
+    window.location.reload();
+  },450);
+}
+
+document.addEventListener('touchstart',e=>{
+  if(pullRefreshing) return;
+  if(window.scrollY>0) return;
+  if(!e.touches || e.touches.length!==1) return;
+  pullStartY=e.touches[0].clientY;
+  pullTracking=true;
+  pullDistance=0;
+},{passive:true});
+
+document.addEventListener('touchmove',e=>{
+  if(!pullTracking || pullRefreshing) return;
+  if(window.scrollY>0){
+    resetPullRefresh();
+    return;
+  }
+  const currentY=e.touches[0].clientY;
+  pullDistance=Math.max(0,currentY-pullStartY);
+
+  const wrap=document.querySelector('#pullRefresh');
+  const text=document.querySelector('#pullRefreshText');
+  if(!wrap || !text) return;
+
+  if(pullDistance>8) wrap.classList.add('visible');
+
+  if(pullDistance>=PULL_TRIGGER){
+    wrap.classList.add('ready');
+    text.textContent='Puść, aby odświeżyć';
+  }else{
+    wrap.classList.remove('ready');
+    text.textContent='Pociągnij, aby odświeżyć';
+  }
+},{passive:true});
+
+document.addEventListener('touchend',()=>{
+  if(!pullTracking || pullRefreshing) return;
+  if(pullDistance>=PULL_TRIGGER){
+    startPullRefresh();
+  }else{
+    resetPullRefresh();
+  }
+},{passive:true});
+
+document.addEventListener('touchcancel',()=>{
+  if(!pullRefreshing) resetPullRefresh();
+},{passive:true});
 
 function showRefreshConfirmation(){
   const box=document.querySelector('#refreshConfirm');
