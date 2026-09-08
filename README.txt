@@ -1,10 +1,13 @@
-VivaEuropa v0.11
+VivaEuropa v0.12
 
-POPRAWKA UKŁADU VE-002:
-- uporządkowany ekran wyboru wejścia
-- osobna kolumna dla logowania/rejestracji i dla trybu gościa
-- brak nakładania elementów na mobile
-- dolne menu ukrywa się na ekranach onboarding / konto / panel / edycja
-- przyciski i sekcje są czytelniejsze na iPhonie
+DOPRACOWANIE VE-002:
+- większe i logiczne odstępy między Użytkownik/Firma, Zaloguj się i Załóż konto
+- większa separacja sekcji Gość
+- poprawiony rytm pionowy na telefonie
+- przyciski przygotowane pod dotyk na iPhone i Android
+- responsywny układ dla tabletów
+- osobny układ dla większych ekranów
+- obsługa bezpiecznych marginesów i orientacji ekranu
+- dolne menu pozostaje ukryte na ekranie wejścia
 
 Wgraj wszystkie pliki z ZIP-a do repozytorium / projektu.
