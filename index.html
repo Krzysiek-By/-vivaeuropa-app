@@ -1598,7 +1598,7 @@ document.querySelector('#resetForm').onsubmit=async e=>{
 
   try{
     const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{
-      redirectTo:'https://vivaeuropa-app.vercel.app/'
+      redirectTo:'https://vivaeuropa-app.vercel.app/?recovery=1'
     });
 
     if(error){
@@ -1715,8 +1715,10 @@ async function handleRecoveryOnStartup(){
     const type=hashParams.get('type') || searchParams.get('type') || '';
     const hasAccessToken=!!hashParams.get('access_token');
     const hasCode=!!searchParams.get('code');
+    const hasRecoveryMarker=searchParams.get('recovery')==='1';
 
     const looksLikeRecovery =
+      hasRecoveryMarker ||
       type==='recovery' ||
       hasAccessToken ||
       hasCode;
@@ -1823,10 +1825,20 @@ updateResetSubmitState();
 updateNewPasswordSubmitState();
 
 (async()=>{
+  const urlNow=new URL(window.location.href);
+  const recoveryMarked=urlNow.searchParams.get('recovery')==='1';
+
+  if(recoveryMarked){
+    const splash=document.querySelector('#splash');
+    if(splash) splash.classList.add('hidden');
+  }
+
   const recoveryHandled=await handleRecoveryOnStartup();
+
   if(!recoveryHandled){
     initSplash();
   }
+
   renderQuickCats();
   render(companies);
 })();
