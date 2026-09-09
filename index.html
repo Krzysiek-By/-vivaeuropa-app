@@ -887,6 +887,7 @@ const SUPABASE_URL='https://iuixnepkemuspvfihitt.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_cWYpo-30Ryq7aLelk9HEkA_tZjiS-xi';
 
 let recoverySessionReady=false;
+const RECOVERY_MODE_KEY='vivaRecoveryMode';
 let supabaseClient=null;
 try{
   if(window.supabase && window.supabase.createClient){
@@ -1598,6 +1599,7 @@ document.querySelector('#newPasswordForm').onsubmit=async e=>{
     status.classList.remove('hidden');
 
     recoverySessionReady=false;
+    sessionStorage.removeItem(RECOVERY_MODE_KEY);
     await supabaseClient.auth.signOut();
     localStorage.removeItem('vivaLoggedIn');
     localStorage.removeItem('vivaLastView');
@@ -1669,6 +1671,8 @@ document.querySelector('#resetForm').onsubmit=async e=>{
 };
 
 document.querySelector('#logoutBtn').onclick=async()=>{
+  sessionStorage.removeItem(RECOVERY_MODE_KEY);
+  recoverySessionReady=false;
   try{
     if(supabaseClient) await supabaseClient.auth.signOut();
   }catch(e){}
@@ -1791,6 +1795,7 @@ async function handleRecoveryOnStartup(){
 
         if(!userError && userData?.user){
           recoverySessionReady=true;
+          sessionStorage.setItem(RECOVERY_MODE_KEY,'1');
           setRecoveryStatus(
             'Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',
             true
@@ -1821,6 +1826,37 @@ async function handleRecoveryOnStartup(){
     );
     updateNewPasswordSubmitState();
     return true;
+  }
+}
+
+async function restoreRecoveryAfterRefresh(){
+  if(!supabaseClient) return false;
+  if(sessionStorage.getItem(RECOVERY_MODE_KEY)!=='1') return false;
+
+  try{
+    const {data:sessionData}=await supabaseClient.auth.getSession();
+    if(!sessionData?.session){
+      sessionStorage.removeItem(RECOVERY_MODE_KEY);
+      return false;
+    }
+
+    const {data:userData,error:userError}=await supabaseClient.auth.getUser();
+    if(userError || !userData?.user){
+      sessionStorage.removeItem(RECOVERY_MODE_KEY);
+      return false;
+    }
+
+    recoverySessionReady=true;
+    openNewPasswordView();
+    setRecoveryStatus(
+      'Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',
+      true
+    );
+    updateNewPasswordSubmitState();
+    return true;
+  }catch(e){
+    console.error('Recovery refresh restore error',e);
+    return false;
   }
 }
 
@@ -1885,6 +1921,9 @@ if(supabaseClient){
   supabaseClient.auth.onAuthStateChange((event,session)=>{
     if(event==='PASSWORD_RECOVERY' || (INITIAL_RECOVERY_INTENT && event==='SIGNED_IN')){
       recoverySessionReady=!!session;
+      if(recoverySessionReady){
+        sessionStorage.setItem(RECOVERY_MODE_KEY,'1');
+      }
       openNewPasswordView();
       if(recoverySessionReady){
         setRecoveryStatus(
@@ -1913,8 +1952,9 @@ updateNewPasswordSubmitState();
   }
 
   const recoveryHandled=await handleRecoveryOnStartup();
+  const recoveryRestored=recoveryHandled ? false : await restoreRecoveryAfterRefresh();
 
-  if(!recoveryHandled){
+  if(!recoveryHandled && !recoveryRestored){
     initSplash();
   }
 
