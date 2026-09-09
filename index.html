@@ -872,6 +872,17 @@ const defaultCompanies = [
   {id:5,name:'Szewc Tradycja',cat:'Szewc',emoji:'👞',city:'Kraków',address:'ul. Karmelicka 17, Kraków',rating:4.7,reviews:88,distance:1.8,phone:'+48 12 000 00 05',www:'https://example.com',hours:'08:30–17:00',desc:'Naprawa obuwia, pasków i drobnej galanterii skórzanej.'},
   {id:6,name:'BikeRent Kraków',cat:'Rowery',emoji:'🚲',city:'Kraków',address:'ul. Zwierzyniecka 10, Kraków',rating:4.8,reviews:267,distance:2.0,phone:'+48 12 000 00 06',www:'https://example.com',hours:'08:00–20:00',desc:'Wypożyczalnia rowerów miejskich i trekkingowych.'}
 ];
+const INITIAL_APP_URL=window.location.href;
+const INITIAL_URL_OBJ=new URL(INITIAL_APP_URL);
+const INITIAL_HASH_PARAMS=new URLSearchParams((INITIAL_URL_OBJ.hash||'').replace(/^#/,''));
+const INITIAL_SEARCH_PARAMS=INITIAL_URL_OBJ.searchParams;
+const INITIAL_RECOVERY_INTENT=
+  INITIAL_SEARCH_PARAMS.get('recovery')==='1' ||
+  INITIAL_SEARCH_PARAMS.get('type')==='recovery' ||
+  INITIAL_HASH_PARAMS.get('type')==='recovery' ||
+  INITIAL_SEARCH_PARAMS.has('code') ||
+  INITIAL_HASH_PARAMS.has('access_token');
+
 const SUPABASE_URL='https://iuixnepkemuspvfihitt.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_cWYpo-30Ryq7aLelk9HEkA_tZjiS-xi';
 
@@ -1708,46 +1719,41 @@ async function handleRecoveryOnStartup(){
   if(!supabaseClient) return false;
 
   try{
-    const url=new URL(window.location.href);
-    const hashParams=new URLSearchParams((url.hash||'').replace(/^#/,''));
-    const searchParams=url.searchParams;
+    if(!INITIAL_RECOVERY_INTENT) return false;
 
-    const type=hashParams.get('type') || searchParams.get('type') || '';
-    const hasAccessToken=!!hashParams.get('access_token');
-    const hasCode=!!searchParams.get('code');
-    const hasRecoveryMarker=searchParams.get('recovery')==='1';
+    // Najważniejsze: skoro aplikacja została otwarta z linku resetującego,
+    // pokazujemy VE-009 od razu i NIE pozwalamy wystartować VE-001.
+    openNewPasswordView();
 
-    const looksLikeRecovery =
-      hasRecoveryMarker ||
-      type==='recovery' ||
-      hasAccessToken ||
-      hasCode;
+    const originalSearch=INITIAL_SEARCH_PARAMS;
+    const originalCode=originalSearch.get('code');
 
-    if(!looksLikeRecovery) return false;
-
-    if(hasCode){
-      const code=searchParams.get('code');
-      const {error}=await supabaseClient.auth.exchangeCodeForSession(code);
+    // Jeśli link używa PKCE (?code=...), spróbuj wymienić kod na sesję.
+    if(originalCode){
+      const {error}=await supabaseClient.auth.exchangeCodeForSession(originalCode);
       if(error){
         console.error('Recovery code exchange error',error);
       }
     }
 
-    for(let i=0;i<8;i++){
+    // Dajemy Supabase czas na przejęcie sesji z linku.
+    for(let i=0;i<40;i++){
       const {data}=await supabaseClient.auth.getSession();
       if(data?.session){
-        openNewPasswordView();
-        const cleanUrl=url.origin + url.pathname;
+        const cleanUrl=window.location.origin + window.location.pathname;
         window.history.replaceState(null,'',cleanUrl);
         return true;
       }
-      await new Promise(resolve=>setTimeout(resolve,150));
+      await new Promise(resolve=>setTimeout(resolve,250));
     }
 
-    return false;
+    // Nawet jeśli sesja potrzebuje dłużej, pozostajemy na VE-009.
+    // Przy próbie zapisu hasła Supabase zweryfikuje, czy sesja recovery już istnieje.
+    return true;
   }catch(e){
     console.error('Recovery startup error',e);
-    return false;
+    openNewPasswordView();
+    return true;
   }
 }
 
@@ -1810,7 +1816,7 @@ window.addEventListener('resize',()=>{
 
 if(supabaseClient){
   supabaseClient.auth.onAuthStateChange((event,session)=>{
-    if(event==='PASSWORD_RECOVERY'){
+    if(event==='PASSWORD_RECOVERY' || (INITIAL_RECOVERY_INTENT && event==='SIGNED_IN')){
       openNewPasswordView();
     }
   });
@@ -1825,12 +1831,10 @@ updateResetSubmitState();
 updateNewPasswordSubmitState();
 
 (async()=>{
-  const urlNow=new URL(window.location.href);
-  const recoveryMarked=urlNow.searchParams.get('recovery')==='1';
-
-  if(recoveryMarked){
-    const splash=document.querySelector('#splash');
+  if(INITIAL_RECOVERY_INTENT){
+    const splash=document.querySelector('#splashScreen');
     if(splash) splash.classList.add('hidden');
+    openNewPasswordView();
   }
 
   const recoveryHandled=await handleRecoveryOnStartup();
