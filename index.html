@@ -886,6 +886,7 @@ const INITIAL_RECOVERY_INTENT=
 const SUPABASE_URL='https://iuixnepkemuspvfihitt.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_cWYpo-30Ryq7aLelk9HEkA_tZjiS-xi';
 
+let recoverySessionReady=false;
 let supabaseClient=null;
 try{
   if(window.supabase && window.supabase.createClient){
@@ -896,7 +897,8 @@ try{
         auth:{
           persistSession:true,
           autoRefreshToken:true,
-          detectSessionInUrl:true
+          detectSessionInUrl:false,
+          flowType:'implicit'
         }
       }
     );
@@ -933,16 +935,34 @@ function updateNewPasswordSubmitState(){
   const confirm=document.querySelector('#newPasswordConfirmInput');
   const btn=document.querySelector('#newPasswordSubmitBtn');
   if(!pass || !confirm || !btn) return;
-  const ok=pass.value.length>=8 && confirm.value.length>=8 && pass.value===confirm.value;
-  btn.disabled=!ok;
+  const passwordsOk=
+    pass.value.length>=8 &&
+    confirm.value.length>=8 &&
+    pass.value===confirm.value;
+  btn.disabled=!(recoverySessionReady && passwordsOk);
+}
+
+function setRecoveryStatus(message,ok=false){
+  const status=document.querySelector('#newPasswordStatus');
+  if(!status) return;
+  status.textContent=message;
+  status.style.background=ok?'#eef8f0':'#eef4ff';
+  status.style.color=ok?'#20652f':'#27578f';
+  status.classList.remove('hidden');
 }
 
 function openNewPasswordView(){
-  document.querySelector('#newPasswordStatus').classList.add('hidden');
   document.querySelector('#newPasswordInput').value='';
   document.querySelector('#newPasswordConfirmInput').value='';
-  updateNewPasswordSubmitState();
   setView('newPassword',{skipHistory:true});
+
+  if(recoverySessionReady){
+    setRecoveryStatus('Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',true);
+  }else{
+    setRecoveryStatus('Sprawdzam link resetujący…');
+  }
+
+  updateNewPasswordSubmitState();
 }
 
 function updateResetSubmitState(){
@@ -1538,6 +1558,22 @@ document.querySelector('#newPasswordForm').onsubmit=async e=>{
     return;
   }
 
+  if(!recoverySessionReady){
+    status.textContent='Link resetujący nie jest aktywny. Wyślij nowy reset i otwórz najnowszy e-mail.';
+    status.classList.remove('hidden');
+    updateNewPasswordSubmitState();
+    return;
+  }
+
+  const {data:verifiedUser,error:verifiedUserError}=await supabaseClient.auth.getUser();
+  if(verifiedUserError || !verifiedUser?.user){
+    recoverySessionReady=false;
+    status.textContent='Sesja resetu wygasła lub nie została potwierdzona. Wyślij nowy reset hasła.';
+    status.classList.remove('hidden');
+    updateNewPasswordSubmitState();
+    return;
+  }
+
   const oldText=btn.textContent;
   btn.disabled=true;
   btn.textContent='Zapisuję…';
@@ -1561,6 +1597,7 @@ document.querySelector('#newPasswordForm').onsubmit=async e=>{
     status.textContent='Hasło zostało zmienione. Za chwilę przejdziemy do logowania.';
     status.classList.remove('hidden');
 
+    recoverySessionReady=false;
     await supabaseClient.auth.signOut();
     localStorage.removeItem('vivaLoggedIn');
     localStorage.removeItem('vivaLastView');
@@ -1717,42 +1754,72 @@ function restoreLoggedView(){
 
 async function handleRecoveryOnStartup(){
   if(!supabaseClient) return false;
+  if(!INITIAL_RECOVERY_INTENT) return false;
+
+  openNewPasswordView();
 
   try{
-    if(!INITIAL_RECOVERY_INTENT) return false;
+    const accessToken=INITIAL_HASH_PARAMS.get('access_token');
+    const refreshToken=INITIAL_HASH_PARAMS.get('refresh_token');
+    const originalCode=INITIAL_SEARCH_PARAMS.get('code');
 
-    // Najważniejsze: skoro aplikacja została otwarta z linku resetującego,
-    // pokazujemy VE-009 od razu i NIE pozwalamy wystartować VE-001.
-    openNewPasswordView();
+    // Najpewniejsza ścieżka dla naszej aplikacji przeglądarkowej:
+    // link recovery przynosi access_token + refresh_token w #.
+    if(accessToken && refreshToken){
+      const {error}=await supabaseClient.auth.setSession({
+        access_token:accessToken,
+        refresh_token:refreshToken
+      });
 
-    const originalSearch=INITIAL_SEARCH_PARAMS;
-    const originalCode=originalSearch.get('code');
-
-    // Jeśli link używa PKCE (?code=...), spróbuj wymienić kod na sesję.
-    if(originalCode){
+      if(error){
+        console.error('Recovery setSession error',error);
+      }
+    }else if(originalCode){
+      // Awaryjna obsługa linku PKCE, jeśli taki kiedyś się pojawi.
       const {error}=await supabaseClient.auth.exchangeCodeForSession(originalCode);
       if(error){
         console.error('Recovery code exchange error',error);
       }
     }
 
-    // Dajemy Supabase czas na przejęcie sesji z linku.
-    for(let i=0;i<40;i++){
-      const {data}=await supabaseClient.auth.getSession();
-      if(data?.session){
-        const cleanUrl=window.location.origin + window.location.pathname;
-        window.history.replaceState(null,'',cleanUrl);
-        return true;
+    // Potwierdzamy sesję także po stronie Supabase Auth.
+    for(let i=0;i<20;i++){
+      const {data:sessionData}=await supabaseClient.auth.getSession();
+
+      if(sessionData?.session){
+        const {data:userData,error:userError}=await supabaseClient.auth.getUser();
+
+        if(!userError && userData?.user){
+          recoverySessionReady=true;
+          setRecoveryStatus(
+            'Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',
+            true
+          );
+          updateNewPasswordSubmitState();
+
+          const cleanUrl=window.location.origin + window.location.pathname;
+          window.history.replaceState(null,'',cleanUrl);
+          return true;
+        }
       }
-      await new Promise(resolve=>setTimeout(resolve,250));
+
+      await new Promise(resolve=>setTimeout(resolve,200));
     }
 
-    // Nawet jeśli sesja potrzebuje dłużej, pozostajemy na VE-009.
-    // Przy próbie zapisu hasła Supabase zweryfikuje, czy sesja recovery już istnieje.
+    recoverySessionReady=false;
+    setRecoveryStatus(
+      'Link resetujący nie został potwierdzony. Wyślij nowy reset hasła i otwórz najnowszą wiadomość.'
+    );
+    updateNewPasswordSubmitState();
     return true;
+
   }catch(e){
     console.error('Recovery startup error',e);
-    openNewPasswordView();
+    recoverySessionReady=false;
+    setRecoveryStatus(
+      'Link resetujący nie został potwierdzony. Wyślij nowy reset hasła i spróbuj ponownie.'
+    );
+    updateNewPasswordSubmitState();
     return true;
   }
 }
@@ -1817,7 +1884,15 @@ window.addEventListener('resize',()=>{
 if(supabaseClient){
   supabaseClient.auth.onAuthStateChange((event,session)=>{
     if(event==='PASSWORD_RECOVERY' || (INITIAL_RECOVERY_INTENT && event==='SIGNED_IN')){
+      recoverySessionReady=!!session;
       openNewPasswordView();
+      if(recoverySessionReady){
+        setRecoveryStatus(
+          'Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',
+          true
+        );
+      }
+      updateNewPasswordSubmitState();
     }
   });
 }else{
