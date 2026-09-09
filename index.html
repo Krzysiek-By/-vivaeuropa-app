@@ -739,7 +739,7 @@ input:-webkit-autofill:focus{
           </div>
 
           <div id="resetStatus" class="reset-status hidden"></div>
-          <div class="reset-note">Wersja testowa: wiadomość e-mail nie jest jeszcze wysyłana. Najpierw testujemy sam przepływ w aplikacji.</div>
+          <div class="reset-note">Wiadomość resetująca zostanie wysłana przez Supabase. Na tym etapie testujemy tylko, czy e-mail rzeczywiście dochodzi.</div>
         </form>
       </div>
     </section>
@@ -1406,11 +1406,12 @@ document.querySelector('#forgotPasswordBtn').onclick=()=>{
 
 document.querySelector('#resetEmailInput').addEventListener('input',updateResetSubmitState);
 
-document.querySelector('#resetForm').onsubmit=e=>{
+document.querySelector('#resetForm').onsubmit=async e=>{
   e.preventDefault();
   const input=document.querySelector('#resetEmailInput');
   const email=input.value.trim();
   const status=document.querySelector('#resetStatus');
+  const btn=document.querySelector('#resetSubmitBtn');
 
   if(!email || !input.validity.valid){
     status.textContent='Wpisz poprawny adres e-mail.';
@@ -1418,17 +1419,38 @@ document.querySelector('#resetForm').onsubmit=e=>{
     return;
   }
 
-  // Neutralny komunikat: nie zdradza, czy konto istnieje.
-  status.innerHTML=`Jeżeli konto dla adresu <strong>${email}</strong> istnieje, wyślemy link do ustawienia nowego hasła.`;
-
-  const user=JSON.parse(localStorage.getItem('vivaUser')||'null');
-  if(user && user.email && user.email.toLowerCase()===email.toLowerCase()){
-    status.innerHTML += '<br><br><small>TRYB TESTOWY: lokalne konto zostało rozpoznane. Prawdziwa wiadomość e-mail zostanie podłączona w kolejnym etapie.</small>';
-  }else{
-    status.innerHTML += '<br><br><small>TRYB TESTOWY: prawdziwa wiadomość e-mail nie jest jeszcze wysyłana.</small>';
+  if(!supabaseClient){
+    status.textContent='Nie udało się połączyć z serwerem resetu hasła. Spróbuj ponownie.';
+    status.classList.remove('hidden');
+    return;
   }
 
-  status.classList.remove('hidden');
+  btn.disabled=true;
+  const oldText=btn.textContent;
+  btn.textContent='Wysyłam…';
+
+  try{
+    const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{
+      redirectTo:'https://vivaeuropa-app.vercel.app/'
+    });
+
+    if(error){
+      console.error('Password reset error',error);
+      status.textContent='Nie udało się wysłać wiadomości. Spróbuj ponownie za chwilę.';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    status.innerHTML=`Jeżeli konto dla adresu <strong>${email}</strong> istnieje, wysłaliśmy link do ustawienia nowego hasła. Sprawdź skrzynkę e-mail.`;
+    status.classList.remove('hidden');
+  }catch(err){
+    console.error('Password reset exception',err);
+    status.textContent='Nie udało się wysłać wiadomości. Spróbuj ponownie za chwilę.';
+    status.classList.remove('hidden');
+  }finally{
+    btn.textContent=oldText;
+    updateResetSubmitState();
+  }
 };
 
 document.querySelector('#logoutBtn').onclick=async()=>{
