@@ -888,6 +888,8 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_cWYpo-30Ryq7aLelk9HEkA_tZjiS-xi';
 
 let recoverySessionReady=false;
 const RECOVERY_MODE_KEY='vivaRecoveryMode';
+const RECOVERY_MODE_TS_KEY='vivaRecoveryModeTs';
+const RECOVERY_MODE_MAX_AGE=30*60*1000;
 let supabaseClient=null;
 try{
   if(window.supabase && window.supabase.createClient){
@@ -930,6 +932,37 @@ function showToast(message){
 
 
 
+
+function rememberRecoveryMode(){
+  try{
+    sessionStorage.setItem(RECOVERY_MODE_KEY,'1');
+    localStorage.setItem(RECOVERY_MODE_KEY,'1');
+    localStorage.setItem(RECOVERY_MODE_TS_KEY,String(Date.now()));
+  }catch(e){}
+}
+
+function clearRecoveryMode(){
+  try{
+    sessionStorage.removeItem(RECOVERY_MODE_KEY);
+    localStorage.removeItem(RECOVERY_MODE_KEY);
+    localStorage.removeItem(RECOVERY_MODE_TS_KEY);
+  }catch(e){}
+}
+
+function hasFreshRecoveryMode(){
+  try{
+    if(sessionStorage.getItem(RECOVERY_MODE_KEY)==='1') return true;
+    if(localStorage.getItem(RECOVERY_MODE_KEY)!=='1') return false;
+    const ts=Number(localStorage.getItem(RECOVERY_MODE_TS_KEY)||0);
+    if(!ts || (Date.now()-ts)>RECOVERY_MODE_MAX_AGE){
+      clearRecoveryMode();
+      return false;
+    }
+    return true;
+  }catch(e){
+    return false;
+  }
+}
 
 function updateNewPasswordSubmitState(){
   const pass=document.querySelector('#newPasswordInput');
@@ -1599,7 +1632,8 @@ document.querySelector('#newPasswordForm').onsubmit=async e=>{
     status.classList.remove('hidden');
 
     recoverySessionReady=false;
-    sessionStorage.removeItem(RECOVERY_MODE_KEY);
+    clearRecoveryMode();
+    window.history.replaceState(null,'',window.location.pathname);
     await supabaseClient.auth.signOut();
     localStorage.removeItem('vivaLoggedIn');
     localStorage.removeItem('vivaLastView');
@@ -1671,7 +1705,7 @@ document.querySelector('#resetForm').onsubmit=async e=>{
 };
 
 document.querySelector('#logoutBtn').onclick=async()=>{
-  sessionStorage.removeItem(RECOVERY_MODE_KEY);
+  clearRecoveryMode();
   recoverySessionReady=false;
   try{
     if(supabaseClient) await supabaseClient.auth.signOut();
@@ -1795,15 +1829,15 @@ async function handleRecoveryOnStartup(){
 
         if(!userError && userData?.user){
           recoverySessionReady=true;
-          sessionStorage.setItem(RECOVERY_MODE_KEY,'1');
+          rememberRecoveryMode();
           setRecoveryStatus(
             'Link resetujący został potwierdzony. Możesz ustawić nowe hasło.',
             true
           );
           updateNewPasswordSubmitState();
 
-          const cleanUrl=window.location.origin + window.location.pathname;
-          window.history.replaceState(null,'',cleanUrl);
+          const recoveryUrl=window.location.pathname + '?recovery=1';
+          window.history.replaceState(null,'',recoveryUrl);
           return true;
         }
       }
@@ -1831,18 +1865,18 @@ async function handleRecoveryOnStartup(){
 
 async function restoreRecoveryAfterRefresh(){
   if(!supabaseClient) return false;
-  if(sessionStorage.getItem(RECOVERY_MODE_KEY)!=='1') return false;
+  if(!hasFreshRecoveryMode()) return false;
 
   try{
     const {data:sessionData}=await supabaseClient.auth.getSession();
     if(!sessionData?.session){
-      sessionStorage.removeItem(RECOVERY_MODE_KEY);
+      clearRecoveryMode();
       return false;
     }
 
     const {data:userData,error:userError}=await supabaseClient.auth.getUser();
     if(userError || !userData?.user){
-      sessionStorage.removeItem(RECOVERY_MODE_KEY);
+      clearRecoveryMode();
       return false;
     }
 
@@ -1922,7 +1956,7 @@ if(supabaseClient){
     if(event==='PASSWORD_RECOVERY' || (INITIAL_RECOVERY_INTENT && event==='SIGNED_IN')){
       recoverySessionReady=!!session;
       if(recoverySessionReady){
-        sessionStorage.setItem(RECOVERY_MODE_KEY,'1');
+        rememberRecoveryMode();
       }
       openNewPasswordView();
       if(recoverySessionReady){
