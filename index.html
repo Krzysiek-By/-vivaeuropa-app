@@ -538,6 +538,32 @@ input:-webkit-autofill:focus{
   line-height:1.45;
 }
 
+.new-password-card{
+  max-width:560px;
+  margin:0 auto;
+}
+.new-password-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.new-password-status{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:#eef8f0;
+  color:#20652f;
+  border:1px solid #cbe8d1;
+  line-height:1.45;
+}
+.password-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:end;
+}
+
   </style>
 </head>
 <body>
@@ -744,6 +770,41 @@ input:-webkit-autofill:focus{
       </div>
     </section>
 
+    <section class="view" id="newPasswordView">
+      <div class="test-page-no">VE-009</div>
+      <div class="panel new-password-card">
+        <p class="eyebrow">NOWE HASŁO</p>
+        <h2>Ustaw nowe hasło</h2>
+        <p class="muted">Wpisz nowe hasło do swojego konta VivaEuropa.</p>
+
+        <form id="newPasswordForm">
+          <label class="full">
+            Nowe hasło
+            <div class="password-row">
+              <input id="newPasswordInput" type="password" autocomplete="new-password" minlength="8" required>
+              <button id="newPasswordToggle" class="secondary" type="button">Pokaż</button>
+            </div>
+          </label>
+
+          <label class="full">
+            Powtórz nowe hasło
+            <div class="password-row">
+              <input id="newPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required>
+              <button id="newPasswordConfirmToggle" class="secondary" type="button">Pokaż</button>
+            </div>
+          </label>
+
+          <p class="muted">Hasło musi mieć minimum 8 znaków.</p>
+
+          <div class="new-password-actions">
+            <button id="newPasswordSubmitBtn" class="primary big" type="submit" disabled>Zapisz nowe hasło</button>
+          </div>
+
+          <div id="newPasswordStatus" class="new-password-status hidden"></div>
+        </form>
+      </div>
+    </section>
+
     <section class="view" id="adminView">
       <div class="test-page-no">VE-006</div>
       <div class="view-back-row"><button class="view-back-btn" data-back>← Wstecz</button></div>
@@ -854,6 +915,24 @@ function showToast(message){
 }
 
 
+
+
+function updateNewPasswordSubmitState(){
+  const pass=document.querySelector('#newPasswordInput');
+  const confirm=document.querySelector('#newPasswordConfirmInput');
+  const btn=document.querySelector('#newPasswordSubmitBtn');
+  if(!pass || !confirm || !btn) return;
+  const ok=pass.value.length>=8 && confirm.value.length>=8 && pass.value===confirm.value;
+  btn.disabled=!ok;
+}
+
+function openNewPasswordView(){
+  document.querySelector('#newPasswordStatus').classList.add('hidden');
+  document.querySelector('#newPasswordInput').value='';
+  document.querySelector('#newPasswordConfirmInput').value='';
+  updateNewPasswordSubmitState();
+  setView('newPassword',{skipHistory:true});
+}
 
 function updateResetSubmitState(){
   const email=document.querySelector('#resetEmailInput');
@@ -1085,7 +1164,7 @@ function setView(name, options={}){
   const bottomNav=document.querySelector('.bottom-nav');
   const showNav=(name==='home'||name==='company');
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
-  document.body.classList.toggle('onboarding', ['welcome','account','reset','admin','editor'].includes(name));
+  document.body.classList.toggle('onboarding', ['welcome','account','reset','newPassword','admin','editor'].includes(name));
   updateBackButtons();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1160,7 +1239,15 @@ function search(){
 }
 let selectedRole='user';
 function showAccount(mode){
-  if(!supabaseClient){
+  if(supabaseClient){
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      openNewPasswordView();
+    }
+  });
+}
+
+if(!supabaseClient){
   console.warn('VivaEuropa: Supabase client not initialized');
 }
 ensureAccountLanguage();
@@ -1404,6 +1491,97 @@ document.querySelector('#forgotPasswordBtn').onclick=()=>{
 };
 
 
+
+document.querySelector('#newPasswordToggle').onclick=()=>{
+  const input=document.querySelector('#newPasswordInput');
+  const btn=document.querySelector('#newPasswordToggle');
+  const showing=input.type==='text';
+  input.type=showing?'password':'text';
+  btn.textContent=showing?'Pokaż':'Ukryj';
+};
+
+document.querySelector('#newPasswordConfirmToggle').onclick=()=>{
+  const input=document.querySelector('#newPasswordConfirmInput');
+  const btn=document.querySelector('#newPasswordConfirmToggle');
+  const showing=input.type==='text';
+  input.type=showing?'password':'text';
+  btn.textContent=showing?'Pokaż':'Ukryj';
+};
+
+document.querySelector('#newPasswordInput').addEventListener('input',updateNewPasswordSubmitState);
+document.querySelector('#newPasswordConfirmInput').addEventListener('input',updateNewPasswordSubmitState);
+
+
+document.querySelector('#newPasswordForm').onsubmit=async e=>{
+  e.preventDefault();
+
+  const pass=document.querySelector('#newPasswordInput').value;
+  const confirm=document.querySelector('#newPasswordConfirmInput').value;
+  const status=document.querySelector('#newPasswordStatus');
+  const btn=document.querySelector('#newPasswordSubmitBtn');
+
+  if(pass.length<8){
+    status.textContent='Hasło musi mieć minimum 8 znaków.';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  if(pass!==confirm){
+    status.textContent='Hasła nie są takie same.';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  if(!supabaseClient){
+    status.textContent='Nie udało się połączyć z serwerem. Spróbuj ponownie.';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  const oldText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent='Zapisuję…';
+
+  try{
+    const {data,error}=await supabaseClient.auth.updateUser({password:pass});
+
+    if(error || !data?.user){
+      console.error('Password update error',error);
+      status.textContent='Nie udało się ustawić nowego hasła. Otwórz najnowszy link resetujący i spróbuj ponownie.';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    const localUser=JSON.parse(localStorage.getItem('vivaUser')||'null');
+    if(localUser){
+      localUser.pass=pass;
+      localStorage.setItem('vivaUser',JSON.stringify(localUser));
+    }
+
+    status.textContent='Hasło zostało zmienione. Za chwilę przejdziemy do logowania.';
+    status.classList.remove('hidden');
+
+    await supabaseClient.auth.signOut();
+    localStorage.removeItem('vivaLoggedIn');
+    localStorage.removeItem('vivaLastView');
+    refreshAuthUI();
+
+    setTimeout(()=>{
+      setView('account',{skipHistory:true});
+      showAccount('login');
+      showToast('Hasło zmienione. Zaloguj się nowym hasłem.');
+    },900);
+
+  }catch(err){
+    console.error('Password update exception',err);
+    status.textContent='Nie udało się ustawić nowego hasła. Spróbuj ponownie.';
+    status.classList.remove('hidden');
+  }finally{
+    btn.textContent=oldText;
+    updateNewPasswordSubmitState();
+  }
+};
+
 document.querySelector('#resetEmailInput').addEventListener('input',updateResetSubmitState);
 
 document.querySelector('#resetForm').onsubmit=async e=>{
@@ -1536,6 +1714,31 @@ function restoreLoggedView(){
   setView('home',{skipHistory:true});
 }
 
+
+async function handleRecoveryOnStartup(){
+  if(!supabaseClient) return false;
+
+  try{
+    const hash=window.location.hash||'';
+    const search=window.location.search||'';
+    const looksLikeRecovery=
+      hash.includes('type=recovery') ||
+      search.includes('type=recovery') ||
+      hash.includes('access_token=');
+
+    if(!looksLikeRecovery) return false;
+
+    const {data}=await supabaseClient.auth.getSession();
+    if(data?.session){
+      openNewPasswordView();
+      return true;
+    }
+  }catch(e){
+    console.error('Recovery startup error',e);
+  }
+  return false;
+}
+
 function initSplash(){
   const splash=document.querySelector('#splashScreen');
   const text=document.querySelector('#splashText');
@@ -1597,9 +1800,16 @@ ensureAccountLanguage();
 refreshAuthUI();
 updateAccountSubmitState();
 updateResetSubmitState();
-initSplash();
-renderQuickCats();
-render(companies);
+updateNewPasswordSubmitState();
+
+(async()=>{
+  const recoveryHandled=await handleRecoveryOnStartup();
+  if(!recoveryHandled){
+    initSplash();
+  }
+  renderQuickCats();
+  render(companies);
+})();
 
 window.setTimeout(()=>{
   const indicator=document.querySelector('#reloadIndicator');
