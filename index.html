@@ -1239,18 +1239,7 @@ function search(){
 }
 let selectedRole='user';
 function showAccount(mode){
-  if(supabaseClient){
-  supabaseClient.auth.onAuthStateChange((event,session)=>{
-    if(event==='PASSWORD_RECOVERY'){
-      openNewPasswordView();
-    }
-  });
-}
-
-if(!supabaseClient){
-  console.warn('VivaEuropa: Supabase client not initialized');
-}
-ensureAccountLanguage();
+  ensureAccountLanguage();
   accountMode=mode;
   setView('account');
   document.querySelector('#accountForm').classList.remove('hidden');
@@ -1719,24 +1708,45 @@ async function handleRecoveryOnStartup(){
   if(!supabaseClient) return false;
 
   try{
-    const hash=window.location.hash||'';
-    const search=window.location.search||'';
-    const looksLikeRecovery=
-      hash.includes('type=recovery') ||
-      search.includes('type=recovery') ||
-      hash.includes('access_token=');
+    const url=new URL(window.location.href);
+    const hashParams=new URLSearchParams((url.hash||'').replace(/^#/,''));
+    const searchParams=url.searchParams;
+
+    const type=hashParams.get('type') || searchParams.get('type') || '';
+    const hasAccessToken=!!hashParams.get('access_token');
+    const hasCode=!!searchParams.get('code');
+
+    const looksLikeRecovery =
+      type==='recovery' ||
+      hasAccessToken ||
+      hasCode;
 
     if(!looksLikeRecovery) return false;
 
-    const {data}=await supabaseClient.auth.getSession();
-    if(data?.session){
-      openNewPasswordView();
-      return true;
+    if(hasCode){
+      const code=searchParams.get('code');
+      const {error}=await supabaseClient.auth.exchangeCodeForSession(code);
+      if(error){
+        console.error('Recovery code exchange error',error);
+      }
     }
+
+    for(let i=0;i<8;i++){
+      const {data}=await supabaseClient.auth.getSession();
+      if(data?.session){
+        openNewPasswordView();
+        const cleanUrl=url.origin + url.pathname;
+        window.history.replaceState(null,'',cleanUrl);
+        return true;
+      }
+      await new Promise(resolve=>setTimeout(resolve,150));
+    }
+
+    return false;
   }catch(e){
     console.error('Recovery startup error',e);
+    return false;
   }
-  return false;
 }
 
 function initSplash(){
@@ -1763,11 +1773,11 @@ function initSplash(){
     return;
   }
 
-  button.addEventListener('click',()=>{
+  button.onclick=()=>{
     splash.classList.add('hidden');
     sessionStorage.setItem('vivaSplashSeen','1');
     setView('welcome',{skipHistory:true});
-  });
+  };
 
   if(sessionStorage.getItem('vivaSplashSeen')==='1'){
     splash.classList.add('hidden');
@@ -1795,6 +1805,16 @@ window.addEventListener('resize',()=>{
   const showNav=(name==='home'||name==='company');
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
 });
+
+if(supabaseClient){
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      openNewPasswordView();
+    }
+  });
+}else{
+  console.warn('VivaEuropa: Supabase client not initialized');
+}
 
 ensureAccountLanguage();
 refreshAuthUI();
