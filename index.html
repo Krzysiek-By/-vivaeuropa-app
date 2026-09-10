@@ -1272,6 +1272,553 @@ body.splash-active{
   color:#FFD15A;
 }
 
+
+
+/* =========================================================
+   VivaEuropa v0.57 — APP STYLE B
+   VE-001 pozostaje bez zmian.
+   Wszystkie podstrony: ciemny granat / niebieski / złoty,
+   szkło, kontrast, mobile-first.
+   ========================================================= */
+
+:root{
+  --ve-navy:#071A31;
+  --ve-navy-2:#0A2340;
+  --ve-navy-3:#0D2D50;
+  --ve-blue:#1E6AFF;
+  --ve-blue-2:#2D86FF;
+  --ve-gold:#F4B000;
+  --ve-gold-2:#FFC93D;
+  --ve-green:#19C978;
+  --ve-text:#F7FAFF;
+  --ve-muted:#9DB0C8;
+  --ve-line:rgba(77,169,255,.44);
+  --ve-glass:rgba(7,26,49,.88);
+  --ve-shadow:0 18px 44px rgba(0,0,0,.34);
+}
+
+/* Tło całej aplikacji po VE-001 */
+body:not(.splash-active){
+  background:
+    linear-gradient(180deg,rgba(3,13,25,.60),rgba(3,13,25,.88)),
+    var(--locale-image) center/cover fixed no-repeat,
+    #061526!important;
+  color:var(--ve-text)!important;
+  min-height:100dvh;
+}
+body:not(.splash-active) main{
+  min-height:calc(100dvh - 72px);
+}
+body:not(.splash-active) .view{
+  color:var(--ve-text);
+}
+
+/* Górny pasek */
+body:not(.splash-active) .topbar{
+  background:rgba(4,17,33,.92)!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  padding-top:max(12px,env(safe-area-inset-top))!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+body:not(.splash-active) .brand{
+  color:var(--ve-text)!important;
+}
+body:not(.splash-active) .brand-logo{
+  width:52px!important;
+  height:52px!important;
+  border-radius:14px!important;
+  object-fit:contain!important;
+  background:rgba(255,255,255,.04)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.26)!important;
+}
+body:not(.splash-active) .brand-text strong{
+  font-size:22px!important;
+  color:white!important;
+}
+body:not(.splash-active) .brand-text small{
+  color:var(--ve-muted)!important;
+  font-size:11px!important;
+}
+
+/* Powroty i numery stron */
+body:not(.splash-active) .view-back-row{
+  max-width:1120px;
+  margin:0 auto;
+  padding:18px 18px 0;
+}
+body:not(.splash-active) .view-back-btn,
+body:not(.splash-active) .back{
+  background:rgba(7,26,49,.78)!important;
+  color:#D9E8FF!important;
+  border:1px solid var(--ve-line)!important;
+  border-radius:999px!important;
+  padding:9px 14px!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+body:not(.splash-active) .test-page-no{
+  background:rgba(5,20,37,.84)!important;
+  color:#8EA6C2!important;
+  border:1px solid rgba(91,168,255,.25)!important;
+}
+
+/* Wspólny glass-card */
+body:not(.splash-active) .welcome-card,
+body:not(.splash-active) .panel,
+body:not(.splash-active) .company-card,
+body:not(.splash-active) .search-card,
+body:not(.splash-active) .result-card,
+body:not(.splash-active) .info-box,
+body:not(.splash-active) .guest-card,
+body:not(.splash-active) .welcome-main,
+body:not(.splash-active) .form-section,
+body:not(.splash-active) .admin-row,
+body:not(.splash-active) .module-section,
+body:not(.splash-active) .map-skeleton{
+  background:
+    linear-gradient(180deg,rgba(11,38,69,.94),rgba(6,25,47,.94))!important;
+  border:1px solid var(--ve-line)!important;
+  color:var(--ve-text)!important;
+  box-shadow:var(--ve-shadow)!important;
+}
+
+/* Typografia */
+body:not(.splash-active) h1,
+body:not(.splash-active) h2,
+body:not(.splash-active) h3,
+body:not(.splash-active) h4,
+body:not(.splash-active) strong{
+  color:var(--ve-text);
+}
+body:not(.splash-active) .eyebrow{
+  color:var(--ve-gold-2)!important;
+  letter-spacing:.12em!important;
+}
+body:not(.splash-active) .muted,
+body:not(.splash-active) .lead,
+body:not(.splash-active) .meta,
+body:not(.splash-active) .form-section-hint,
+body:not(.splash-active) .field-help,
+body:not(.splash-active) .welcome-card>p,
+body:not(.splash-active) .guest-card p,
+body:not(.splash-active) .guest-list{
+  color:var(--ve-muted)!important;
+}
+
+/* Przyciski */
+body:not(.splash-active) .primary{
+  background:linear-gradient(135deg,var(--ve-blue-2),#155CDE)!important;
+  color:white!important;
+  border:1px solid rgba(117,190,255,.75)!important;
+  box-shadow:0 10px 28px rgba(30,106,255,.28)!important;
+}
+body:not(.splash-active) .primary:hover,
+body:not(.splash-active) .primary:active{
+  background:linear-gradient(135deg,#3A91FF,#1D66E6)!important;
+}
+body:not(.splash-active) .ghost,
+body:not(.splash-active) .secondary,
+body:not(.splash-active) .panel-tab,
+body:not(.splash-active) .cat-btn,
+body:not(.splash-active) .results-mode button{
+  background:rgba(7,26,49,.82)!important;
+  color:#DCE9FA!important;
+  border:1px solid rgba(83,167,255,.44)!important;
+}
+body:not(.splash-active) .ghost:hover,
+body:not(.splash-active) .panel-tab.active,
+body:not(.splash-active) .results-mode button.active{
+  color:white!important;
+  border-color:#2D86FF!important;
+  box-shadow:0 0 0 1px rgba(45,134,255,.18),0 8px 24px rgba(30,106,255,.18)!important;
+}
+body:not(.splash-active) .danger{
+  background:rgba(197,53,53,.17)!important;
+  color:#FFC0C0!important;
+  border:1px solid rgba(255,107,107,.30)!important;
+}
+
+/* Formularze */
+body:not(.splash-active) input,
+body:not(.splash-active) textarea,
+body:not(.splash-active) select{
+  background:rgba(4,19,36,.76)!important;
+  color:var(--ve-text)!important;
+  border:1px solid rgba(88,172,255,.52)!important;
+  border-radius:14px!important;
+  outline:none!important;
+}
+body:not(.splash-active) input::placeholder,
+body:not(.splash-active) textarea::placeholder{
+  color:#8197B3!important;
+}
+body:not(.splash-active) input:focus,
+body:not(.splash-active) textarea:focus,
+body:not(.splash-active) select:focus{
+  border-color:#52A7FF!important;
+  box-shadow:0 0 0 3px rgba(30,106,255,.16)!important;
+}
+body:not(.splash-active) label{
+  color:#D9E7F7!important;
+}
+
+/* ===== VE-002 ===== */
+body:not(.splash-active) #welcomeView .welcome-wrap{
+  max-width:900px!important;
+  padding:28px 16px 70px!important;
+}
+body:not(.splash-active) #welcomeView .welcome-card{
+  border-radius:32px!important;
+  padding:30px!important;
+  text-align:center!important;
+}
+body:not(.splash-active) #welcomeView .welcome-logo{
+  width:108px!important;
+  height:108px!important;
+  object-fit:contain!important;
+  background:transparent!important;
+  border-radius:22px!important;
+  box-shadow:none!important;
+}
+body:not(.splash-active) #welcomeView .welcome-card h2{
+  font-size:clamp(38px,7vw,62px)!important;
+  margin-top:8px!important;
+}
+body:not(.splash-active) #welcomeView .welcome-grid{
+  grid-template-columns:1fr!important;
+  gap:22px!important;
+}
+body:not(.splash-active) #welcomeView .welcome-main{
+  padding:22px!important;
+  border-radius:24px!important;
+}
+body:not(.splash-active) #welcomeView .role-title{
+  color:#D9E7F7!important;
+}
+body:not(.splash-active) #welcomeView .role-actions{
+  gap:12px!important;
+}
+body:not(.splash-active) #welcomeView .role-chip{
+  min-height:58px!important;
+  background:rgba(5,21,40,.82)!important;
+  color:#DDEBFF!important;
+  border:1px solid rgba(72,164,255,.48)!important;
+  font-size:18px!important;
+}
+body:not(.splash-active) #welcomeView .role-chip.active{
+  background:linear-gradient(135deg,#FFD34D,#F4B000)!important;
+  color:#09203B!important;
+  border-color:#FFE17D!important;
+  box-shadow:0 0 24px rgba(244,176,0,.28)!important;
+}
+body:not(.splash-active) #welcomeView #welcomeLoginBtn{
+  min-height:58px!important;
+  font-size:19px!important;
+}
+body:not(.splash-active) #welcomeView #welcomeRegisterBtn{
+  min-height:56px!important;
+  font-size:18px!important;
+}
+body:not(.splash-active) #welcomeView .guest-card{
+  border-radius:24px!important;
+  padding:24px!important;
+}
+body:not(.splash-active) #welcomeView .guest-icon{
+  background:rgba(244,176,0,.12)!important;
+  border:1px solid rgba(244,176,0,.38)!important;
+  color:var(--ve-gold-2)!important;
+}
+body:not(.splash-active) #welcomeView .guest-list li::before{
+  color:var(--ve-gold-2)!important;
+}
+
+/* ===== VE-003 HOME ===== */
+body:not(.splash-active) #homeView .hero{
+  padding:44px max(18px,calc((100vw - 1100px)/2)) 26px!important;
+  background:transparent!important;
+}
+body:not(.splash-active) #homeView .hero h1{
+  max-width:820px!important;
+  font-size:clamp(38px,7vw,66px)!important;
+  line-height:1.02!important;
+}
+body:not(.splash-active) #homeView .hero h1 span{
+  color:var(--ve-gold-2)!important;
+}
+body:not(.splash-active) #homeView .search-card{
+  padding:18px!important;
+  border-radius:24px!important;
+  max-width:980px!important;
+}
+body:not(.splash-active) .location-mode-switch{
+  background:rgba(4,18,34,.72)!important;
+  border:1px solid rgba(85,169,255,.35)!important;
+}
+body:not(.splash-active) .location-mode-btn{
+  color:#CFE0F6!important;
+}
+body:not(.splash-active) .location-mode-btn.active{
+  background:linear-gradient(135deg,#20C978,#0A9B5C)!important;
+  color:white!important;
+  box-shadow:0 0 22px rgba(25,201,120,.30)!important;
+}
+body:not(.splash-active) .location-status{
+  background:rgba(5,25,45,.78)!important;
+  border:1px solid rgba(72,164,255,.34)!important;
+  color:#CFE0F6!important;
+}
+body:not(.splash-active) .location-status-dot{
+  background:var(--ve-green)!important;
+  box-shadow:0 0 14px rgba(25,201,120,.62)!important;
+}
+body:not(.splash-active) .quick-cats{
+  max-width:980px!important;
+  gap:10px!important;
+}
+body:not(.splash-active) .cat-btn{
+  padding:12px 16px!important;
+  border-radius:16px!important;
+}
+body:not(.splash-active) .results-wrap{
+  background:rgba(3,13,25,.28)!important;
+  border-top:1px solid rgba(255,255,255,.05)!important;
+}
+body:not(.splash-active) .pill{
+  background:rgba(244,176,0,.16)!important;
+  color:var(--ve-gold-2)!important;
+  border:1px solid rgba(244,176,0,.32)!important;
+}
+
+/* Karty firm */
+body:not(.splash-active) .results{
+  gap:18px!important;
+}
+body:not(.splash-active) .result-card{
+  border-radius:22px!important;
+  overflow:hidden!important;
+}
+body:not(.splash-active) .result-cover{
+  min-height:150px!important;
+  background:
+    radial-gradient(circle at 50% 40%,rgba(61,144,255,.34),transparent 45%),
+    linear-gradient(135deg,#123B68,#071A31)!important;
+  color:white!important;
+  text-shadow:0 10px 24px rgba(0,0,0,.32);
+}
+body:not(.splash-active) .result-body h3{
+  font-size:20px!important;
+}
+body:not(.splash-active) .rating{
+  color:var(--ve-gold-2)!important;
+}
+body:not(.splash-active) .status-open{
+  color:#29E995!important;
+}
+
+/* ===== VE-004 karta firmy ===== */
+body:not(.splash-active) #companyView{
+  padding-bottom:40px;
+}
+body:not(.splash-active) #companyView .company-card{
+  border-radius:28px!important;
+  overflow:hidden!important;
+  max-width:980px!important;
+}
+body:not(.splash-active) #companyView .company-hero{
+  background:
+    radial-gradient(circle at 82% 12%,rgba(45,134,255,.36),transparent 30%),
+    linear-gradient(135deg,#0D3158,#071A31)!important;
+  padding:34px!important;
+  border-bottom:1px solid rgba(86,172,255,.35)!important;
+}
+body:not(.splash-active) #companyView .company-hero .emoji{
+  width:92px;
+  height:92px;
+  display:grid;
+  place-items:center;
+  border-radius:24px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(244,176,0,.28);
+}
+body:not(.splash-active) #companyView .company-content{
+  padding:24px!important;
+}
+body:not(.splash-active) #companyView .company-gallery{
+  gap:12px!important;
+}
+body:not(.splash-active) #companyView .company-photo{
+  background:linear-gradient(135deg,#0B2A4B,#103D68)!important;
+  border:1px solid rgba(82,168,255,.42)!important;
+  border-radius:18px!important;
+}
+body:not(.splash-active) #companyView .info-box{
+  border-radius:18px!important;
+}
+body:not(.splash-active) #companyView .company-actions .primary:first-child{
+  background:linear-gradient(135deg,#FFD34D,#F4B000)!important;
+  color:#081A30!important;
+  border-color:#FFE486!important;
+  box-shadow:0 10px 30px rgba(244,176,0,.24)!important;
+}
+
+/* ===== VE-005 / 008 / 009 konto i reset ===== */
+body:not(.splash-active) #accountView .panel,
+body:not(.splash-active) #resetView .panel,
+body:not(.splash-active) #newPasswordView .panel{
+  border-radius:28px!important;
+  max-width:620px!important;
+}
+body:not(.splash-active) .forgot-btn,
+body:not(.splash-active) .link-btn{
+  color:#62AEFF!important;
+}
+
+/* ===== VE-006 panel / admin / firma ===== */
+body:not(.splash-active) #adminView .panel{
+  max-width:1100px!important;
+  border-radius:28px!important;
+}
+body:not(.splash-active) .panel-tabs{
+  gap:8px!important;
+}
+body:not(.splash-active) .panel-tab{
+  border-radius:999px!important;
+}
+body:not(.splash-active) .admin-row{
+  border-radius:18px!important;
+}
+body:not(.splash-active) .admin-emoji{
+  width:50px;
+  height:50px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:rgba(30,106,255,.12);
+  border:1px solid rgba(72,164,255,.35);
+}
+
+/* ===== VE-007 edycja / formularz firmy ===== */
+body:not(.splash-active) #editorView .panel{
+  max-width:1180px!important;
+  border-radius:28px!important;
+}
+body:not(.splash-active) #editorView .form-section{
+  padding:20px!important;
+  border-radius:20px!important;
+}
+body:not(.splash-active) #editorView .form-section-title{
+  color:white!important;
+}
+body:not(.splash-active) #editorView .editor-preview{
+  background:
+    linear-gradient(180deg,rgba(12,42,74,.95),rgba(5,22,42,.96))!important;
+  border:1px solid rgba(82,168,255,.42)!important;
+  color:white!important;
+}
+body:not(.splash-active) #editorView button[type="submit"],
+body:not(.splash-active) #editorView .primary.big{
+  background:linear-gradient(135deg,#FFD34D,#F4B000)!important;
+  color:#07182C!important;
+  border-color:#FFE486!important;
+}
+
+/* ===== VE-010 i moduły ===== */
+body:not(.splash-active) #moduleView .panel{
+  max-width:1000px!important;
+  border-radius:28px!important;
+}
+body:not(.splash-active) .placeholder-note{
+  background:rgba(30,106,255,.08)!important;
+  border:1px dashed rgba(81,166,255,.32)!important;
+  color:#AFC2D9!important;
+}
+body:not(.splash-active) .admin-note{
+  background:rgba(244,176,0,.10)!important;
+  border:1px solid rgba(244,176,0,.30)!important;
+  color:#F9D979!important;
+}
+
+/* Dolne menu */
+body:not(.splash-active) .bottom-nav{
+  background:rgba(4,17,33,.96)!important;
+  border-top:1px solid rgba(88,172,255,.28)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+body:not(.splash-active) .nav-item{
+  color:#9CB0C9!important;
+}
+body:not(.splash-active) .nav-item.active{
+  color:#3E92FF!important;
+  text-shadow:0 0 18px rgba(45,134,255,.38);
+}
+
+/* Toast / bannery */
+body:not(.splash-active) .toast{
+  background:rgba(5,22,42,.96)!important;
+  color:white!important;
+  border:1px solid rgba(82,168,255,.38)!important;
+}
+body:not(.splash-active) .guest-mode-banner,
+body:not(.splash-active) .locked-note{
+  background:rgba(244,176,0,.10)!important;
+  color:#F7D97F!important;
+  border:1px solid rgba(244,176,0,.28)!important;
+}
+
+/* Mobile first */
+@media(max-width:800px){
+  body:not(.splash-active) .topbar{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  body:not(.splash-active) .brand-logo{
+    width:48px!important;
+    height:48px!important;
+  }
+  body:not(.splash-active) #welcomeView .welcome-card{
+    padding:22px 16px!important;
+  }
+  body:not(.splash-active) #welcomeView .welcome-logo{
+    width:92px!important;
+    height:92px!important;
+  }
+  body:not(.splash-active) #welcomeView .welcome-card h2{
+    font-size:38px!important;
+  }
+  body:not(.splash-active) #homeView .hero{
+    padding:30px 14px 22px!important;
+  }
+  body:not(.splash-active) #homeView .hero h1{
+    font-size:40px!important;
+  }
+  body:not(.splash-active) .search-card{
+    grid-template-columns:1fr!important;
+  }
+  body:not(.splash-active) .results{
+    grid-template-columns:1fr!important;
+  }
+  body:not(.splash-active) .panel{
+    margin-left:12px!important;
+    margin-right:12px!important;
+  }
+  body:not(.splash-active) #companyView .company-card{
+    margin-left:12px!important;
+    margin-right:12px!important;
+  }
+  body:not(.splash-active) .bottom-nav{
+    padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+}
+
+/* Tablet */
+@media(min-width:801px) and (max-width:1180px){
+  body:not(.splash-active) .results{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1323,8 +1870,8 @@ body.splash-active{
 
   <header class="topbar">
     <button class="brand" data-view="home" aria-label="VivaEuropa - strona główna">
-      <img class="brand-logo" src="apple-touch-icon.png" alt="VivaEuropa" />
-      <span class="brand-text"><strong>VivaEuropa</strong><small>Blisko Ciebie.</small></span>
+      <img class="brand-logo" src="vivaeuropa-logo-full.png" alt="VivaEuropa" />
+      <span class="brand-text"><strong>VivaEuropa</strong><small>Lokalnie. Europejsko. Razem.</small></span>
     </button>
     <div class="top-actions">
       <button class="ghost" id="loginBtn">Zaloguj się</button>
@@ -1339,7 +1886,7 @@ body.splash-active{
       <div class="test-page-no">VE-002</div>
       <div class="welcome-wrap">
         <div class="welcome-card">
-          <img src="apple-touch-icon.png" class="welcome-logo" alt="VivaEuropa">
+          <img src="vivaeuropa-logo-full.png" class="welcome-logo" alt="VivaEuropa">
           <p class="eyebrow">VE-002</p>
           <h2>Witaj w VivaEuropa</h2>
           <p>Wybierz, jak chcesz korzystać z VivaEuropa.</p>
