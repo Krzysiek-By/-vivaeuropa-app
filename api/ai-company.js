@@ -13,17 +13,21 @@ function languageName(code){
 }
 async function openAIText(body){
   const lang=languageName(body.language);
-  const facts=[
+  const isSocial=body.action==='social';
+  const facts=(isSocial ? [
+    `Company name: ${cleanText(body.name,160)}`,
+    `Category: ${cleanText(body.category,120)}`,
+    `Owner keywords/services: ${cleanText(body.currentDescription,1600)}`
+  ] : [
     `Company name: ${cleanText(body.name,160)}`,
     `Category: ${cleanText(body.category,120)}`,
     `City: ${cleanText(body.city,120)}`,
     `Address: ${cleanText(body.address,180)}`,
     `Existing description: ${cleanText(body.currentDescription,1200)}`
-  ].join('\n');
+  ]).join('\n');
 
-  const isSocial=body.action==='social';
   const instructions=isSocial
-    ? `Write one short social-media post for this local business in ${lang}. Keep it natural, useful, factual and not exaggerated. Do not invent offers, prices, awards, opening hours or claims. Avoid excessive emojis and hashtags. Return only the finished post.`
+    ? `Write a very short profile description for this local business in ${lang}, based only on the owner's supplied services and keywords. Maximum 3 short sentences and maximum 450 characters total. Keep only the most important services. Do NOT include or repeat any street, house number, postal code, city, country, phone number, email, website, opening hours or social-media details. Do not invent services, offers, prices, awards, history or claims. Avoid exaggerated marketing language. Return only the finished profile description.`
     : `Write a concise profile description for this local business in ${lang}. Make it natural, professional and easy to understand. Use only the supplied facts. Do not invent services, prices, awards, history, opening hours or claims. Avoid exaggerated marketing language. Return only the finished description.`;
 
   const r=await fetch('https://api.openai.com/v1/responses',{
