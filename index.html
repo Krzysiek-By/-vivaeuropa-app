@@ -2616,6 +2616,34 @@ body:not(.splash-active) #moduleView #moduleTitle{
   text-align:center!important;
   width:100%!important;
 }
+
+/* ===== v0.88.4 — VE-010: responsywne nagłówki modułów ===== */
+body:not(.splash-active) #moduleView #moduleTitle{
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  font-size:clamp(30px,6.2vw,48px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.025em!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  hyphens:auto!important;
+}
+@media(max-width:800px){
+  body:not(.splash-active) #moduleView .panel{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+  body:not(.splash-active) #moduleView #moduleTitle{
+    font-size:clamp(28px,8.2vw,38px)!important;
+    line-height:1.08!important;
+  }
+}
+@media(max-width:430px){
+  body:not(.splash-active) #moduleView #moduleTitle{
+    font-size:clamp(27px,7.8vw,34px)!important;
+  }
+}
 body:not(.splash-active) #moduleView #cmCountry:disabled{
   -webkit-appearance:none!important;
   appearance:none!important;
