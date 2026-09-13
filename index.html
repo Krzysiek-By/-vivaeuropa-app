@@ -4746,48 +4746,68 @@ function render(list=companies){
 function openCompany(id){
   const c=companies.find(x=>x.id===id); if(!c)return;
   localStorage.setItem('vivaLastCompanyId',String(id));
+  const lang=getVivaAppLanguage();
+  const de=lang==='de';
   const safeWww=c.www||'';
+  const safeWwwHref=safeWww ? normalizeWebsiteUrl(safeWww) : '';
+  const fullPhone=[c.phonePrefix||'',c.phone||''].filter(Boolean).join(' ').trim() || c.phone || '';
+  const telPhone=fullPhone.replace(/[^+\d]/g,'');
+  const messengers=normalizeMessengerList(c.messengers);
+  if(!messengers.length) messengers.push(...legacyMessengers(c));
+  const messengerLines=messengers.filter(m=>m&&m.value).map(m=>`${escapeHtml(m.type)}: ${escapeHtml(m.value)}`);
+  const socialLines=[
+    c.instagram ? `Instagram: ${escapeHtml(c.instagram)}` : '',
+    c.facebook ? `Facebook: ${escapeHtml(c.facebook)}` : '',
+    c.tiktok ? `TikTok: ${escapeHtml(c.tiktok)}` : ''
+  ].filter(Boolean);
+  const t=(pl,deText)=>de?deText:vivaTranslateString(pl,lang);
+  const statusText=isOpenNow(c)?t('Otwarte teraz','Jetzt geöffnet'):t('Godziny nieznane','Öffnungszeiten unbekannt');
+  const reviewsLabel=de ? (Number(c.reviews||0)===1?'Bewertung':'Bewertungen') : vivaTranslateString('Opinie',lang);
+  const distanceText=Number.isFinite(Number(c.distance)) ? `${Number(c.distance).toFixed(1)} km` : '';
+  const addressHtml=[escapeHtml(c.address||''),`${escapeHtml(c.postal||'')} ${escapeHtml(c.city||'')}`.trim(),escapeHtml(c.country||'')].filter(Boolean).join('<br>');
+  const contactHtml=[fullPhone?escapeHtml(fullPhone):'',c.email?escapeHtml(c.email):'',safeWww?escapeHtml(safeWww.replace(/^https?:\/\//,'')):''].filter(Boolean).join('<br>') || '—';
   document.querySelector('#companyCard').innerHTML = guestMode
-    ? `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${c.name}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${c.name}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0})</div></div>
+    ? `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0})</div></div>
        <div class="company-content">
          <div class="company-grid">
-           <div class="info-box"><h4>Adres</h4><p>${c.address}<br>około ${Number(c.distance||0).toFixed(1)} km</p></div>
-           <div class="info-box"><h4>Godziny</h4><p>${c.hours||'—'}</p></div>
-           <div class="info-box"><h4>Kontakt</h4><p>Dostępny po zalogowaniu</p></div>
-           <div class="info-box"><h4>O firmie</h4><p>${c.desc||'—'}</p></div>
+           <div class="info-box"><h4>${t('Adres','Adresse')}</h4><p>${escapeHtml(c.address||'—')}<br>${distanceText||'—'}</p></div>
+           <div class="info-box"><h4>${t('Godziny otwarcia','Öffnungszeiten')}</h4><p>${escapeHtml(c.hours||'—')}</p></div>
+           <div class="info-box"><h4>${t('Kontakt','Kontakt')}</h4><p>${de?'Nach der Anmeldung verfügbar':'Dostępny po zalogowaniu'}</p></div>
+           <div class="info-box"><h4>${de?'Über das Unternehmen':'O firmie'}</h4><p>${escapeHtml(c.desc||'—')}</p></div>
          </div>
 <div class="route-choice">
-           <a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">${vivaTranslateString('Google Maps',getVivaAppLanguage())}</a>
-           <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',getVivaAppLanguage())}</a>
+           <a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">${vivaTranslateString('Google Maps',lang)}</a>
+           <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',lang)}</a>
          </div>
-         <div class="locked-note">🔒 Zaloguj się lub załóż bezpłatne konto, aby zobaczyć pełne dane kontaktowe, więcej wyników i zapisywać miejsca.</div>
+         <div class="locked-note">🔒 ${de?'Melde dich an oder erstelle ein kostenloses Konto, um vollständige Kontaktdaten zu sehen, mehr Ergebnisse zu erhalten und Orte zu speichern.':'Zaloguj się lub załóż bezpłatne konto, aby zobaczyć pełne dane kontaktowe, więcej wyników i zapisywać miejsca.'}</div>
          <div class="company-actions">
-           <button class="primary" onclick="setGuestMode(false);showAccount('login')">Zaloguj się</button>
-           <button class="ghost" onclick="setGuestMode(false);showAccount('register')">Załóż konto</button>
+           <button class="primary" onclick="setGuestMode(false);showAccount('login')">${de?'Anmelden':'Zaloguj się'}</button>
+           <button class="ghost" onclick="setGuestMode(false);showAccount('register')">${de?'Konto erstellen':'Załóż konto'}</button>
          </div>
        </div>`
-    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${c.name}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${c.name}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0}) • ${Number(c.distance||0).toFixed(1)} km</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${isOpenNow(c)?'Otwarte teraz':'Status godzin nieznany'}</div></div>
+    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0})${distanceText?` • ${distanceText}`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
        <div class="company-content">
-         <div class="company-gallery"><div class="company-photo">🏢</div><div class="company-photo">📷</div><div class="company-photo">${c.emoji||'📍'}</div></div>
+         <div class="company-gallery"><div class="company-photo" title="${de?'Unternehmen':'Firma'}">🏢</div><div class="company-photo" title="${de?'Fotos':'Zdjęcia'}">📷</div><div class="company-photo" title="${escapeHtmlAttr(translateCategory(c.cat))}">${escapeHtml(translateCategory(c.cat))}</div></div>
          <div class="company-grid">
-           <div class="info-box"><h4>Adres</h4><p>${c.address}<br>${c.postal||''} ${c.city||''}<br>${c.country||''}</p></div>
-           <div class="info-box"><h4>Godziny</h4><p>${c.hours||'—'}</p></div>
-           <div class="info-box"><h4>Kontakt</h4><p>${c.phone||'—'}<br>${c.email||'—'}<br>${safeWww.replace(/^https?:\/\//,'')}</p></div>
-           <div class="info-box"><h4>Social / WhatsApp</h4><p>${c.whatsapp||'—'}<br>${c.instagram||'—'}<br>${c.facebook||'—'}</p></div>
-           <div class="info-box"><h4>O firmie</h4><p>${c.desc||'—'}</p></div>
-           <div class="info-box"><h4>Opinie</h4><p>★ ${Number(c.rating||0).toFixed(1)} • ${c.reviews||0} opinii</p></div>
+           <div class="info-box"><h4>${t('Adres','Adresse')}</h4><p>${addressHtml||'—'}</p></div>
+           <div class="info-box"><h4>${t('Godziny otwarcia','Öffnungszeiten')}</h4><p>${escapeHtml(c.hours||'—')}</p></div>
+           <div class="info-box"><h4>${t('Kontakt','Kontakt')}</h4><p>${contactHtml}</p></div>
+           ${messengerLines.length?`<div class="info-box"><h4>${de?'Messenger-Dienste':'Komunikatory'}</h4><p>${messengerLines.join('<br>')}</p></div>`:''}
+           ${socialLines.length?`<div class="info-box"><h4>Social Media</h4><p>${socialLines.join('<br>')}</p></div>`:''}
+           <div class="info-box"><h4>${de?'Über das Unternehmen':'O firmie'}</h4><p>${escapeHtml(c.desc||'—')}</p></div>
+           <div class="info-box"><h4>${de?'Bewertungen':'Opinie'}</h4><p>★ ${Number(c.rating||0).toFixed(1)} • ${c.reviews||0} ${reviewsLabel}</p></div>
          </div>
          <div class="company-actions">
-           <a class="primary" href="tel:${(c.phone||'').replace(/\s/g,'')}">Zadzwoń</a>
-           ${c.www?`<a class="ghost" href="${c.www}" target="_blank" rel="noopener">WWW</a>`:''}
+           ${telPhone?`<a class="primary" href="tel:${telPhone}">${de?'Anrufen':'Zadzwoń'}</a>`:''}
+           ${safeWwwHref?`<a class="ghost" href="${safeWwwHref}" target="_blank" rel="noopener">${de?'Webseite':'WWW'}</a>`:''}
 <div class="route-choice">
-           <a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">${vivaTranslateString('Google Maps',getVivaAppLanguage())}</a>
-           <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',getVivaAppLanguage())}</a>
+           <a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">${vivaTranslateString('Google Maps',lang)}</a>
+           <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',lang)}</a>
          </div>
-           <button class="ghost" onclick="toggleFavorite(${c.id})">♡ Ulubione</button>
-           ${canEditCompany(c)?`<button class="ghost" onclick="editCompany(${c.id})">Edytuj firmę</button>`:''}
+           <button class="ghost" onclick="toggleFavorite(${c.id})">♡ ${de?'Favoriten':'Ulubione'}</button>
+           ${canEditCompany(c)?`<button class="ghost" onclick="editCompany(${c.id})">${de?'Geschäftsbereich bearbeiten':'Edytuj firmę'}</button>`:''}
          </div>
-         <div class="placeholder-note">Kupony i promocje — gałąź przygotowana, aktywacja później.</div>
+         <div class="placeholder-note">${de?'Gutscheine und Aktionen – Bereich vorbereitet, Aktivierung später.':'Kupony i promocje — gałąź przygotowana, aktywacja później.'}</div>
        </div>`;
   setView('company');
 }
