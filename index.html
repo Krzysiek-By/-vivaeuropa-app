@@ -2695,6 +2695,63 @@ body:not(.splash-active) #companyView .company-grid{margin-top:0!important}
   body:not(.splash-active) #companyView .company-gallery-summary .company-photo{min-height:118px!important}
   body:not(.splash-active) #companyView .company-photo-thumb img{min-height:118px!important}
 }
+
+/* ===== v0.88.8 VE-004 premium photo showcase ===== */
+body:not(.splash-active) #companyView .company-hero-meta{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px
+}
+body:not(.splash-active) #companyView .hero-category-chip,
+body:not(.splash-active) #companyView .hero-meta-stat{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(9,29,61,.22);border:1px solid rgba(162,196,232,.20);
+  border-radius:999px;padding:8px 12px;color:#F4F8FF;font-weight:800
+}
+body:not(.splash-active) #companyView .hero-category-chip img{
+  width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))
+}
+body:not(.splash-active) #companyView .company-photo-showcase{margin-bottom:20px}
+body:not(.splash-active) #companyView .company-photo-feature{
+  position:relative;border:1px solid rgba(162,196,232,.28);border-radius:22px;
+  padding:14px;background:linear-gradient(180deg,rgba(16,50,96,.82),rgba(8,32,64,.78));
+  box-shadow:0 18px 28px rgba(0,0,0,.18)
+}
+body:not(.splash-active) #companyView .photo-showcase-collage{
+  display:grid;gap:10px;min-height:190px
+}
+body:not(.splash-active) #companyView .photo-showcase-collage[data-count="1"]{grid-template-columns:1fr}
+body:not(.splash-active) #companyView .photo-showcase-collage[data-count="2"]{grid-template-columns:1.15fr .85fr}
+body:not(.splash-active) #companyView .photo-showcase-collage[data-count="3"]{
+  grid-template-columns:1.15fr .85fr;grid-template-rows:repeat(2,minmax(92px,1fr))
+}
+body:not(.splash-active) #companyView .photo-showcase-collage[data-count="3"] img:first-child{
+  grid-row:1 / span 2;height:100%
+}
+body:not(.splash-active) #companyView .photo-showcase-collage img{
+  width:100%;height:190px;object-fit:cover;border-radius:18px;display:block
+}
+body:not(.splash-active) #companyView .photo-count-badge{
+  position:absolute;right:18px;top:18px;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(5,16,34,.82);border:1px solid rgba(255,255,255,.14);color:#fff;
+  border-radius:999px;padding:9px 12px;font-weight:900;backdrop-filter:blur(8px)
+}
+body:not(.splash-active) #companyView .photo-showcase-empty{
+  min-height:190px;border-radius:18px;display:grid;place-items:center;color:#CFE0F7;
+  background:rgba(7,24,46,.45);font-size:44px
+}
+@media (max-width:800px){
+  body:not(.splash-active) #companyView .company-photo-showcase{margin-bottom:18px}
+  body:not(.splash-active) #companyView .company-photo-feature{padding:12px;border-radius:20px}
+  body:not(.splash-active) #companyView .photo-showcase-collage{min-height:170px}
+  body:not(.splash-active) #companyView .photo-showcase-collage[data-count="2"]{grid-template-columns:1fr 1fr}
+  body:not(.splash-active) #companyView .photo-showcase-collage img{height:170px;border-radius:16px}
+  body:not(.splash-active) #companyView .photo-showcase-collage[data-count="3"]{grid-template-rows:repeat(2,80px)}
+  body:not(.splash-active) #companyView .photo-showcase-collage[data-count="3"] img:first-child{height:100%}
+  body:not(.splash-active) #companyView .photo-count-badge{right:14px;top:14px;padding:8px 11px;font-size:.92rem}
+  body:not(.splash-active) #companyView .hero-category-chip,
+  body:not(.splash-active) #companyView .hero-meta-stat{padding:7px 10px;font-size:.95rem}
+  body:not(.splash-active) #companyView .hero-category-chip img{width:22px;height:22px}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4811,7 +4868,7 @@ function openCompany(id){
   const contactHtml=[fullPhone?escapeHtml(fullPhone):'',c.email?escapeHtml(c.email):'',safeWww?escapeHtml(safeWww.replace(/^https?:\/\//,'')):''].filter(Boolean).join('<br>') || '—';
   const photoList=Array.isArray(c.photos)?c.photos.filter(p=>p&&p.data):[];
   const orderedPhotos=[...photoList].sort((a,b)=>(b.main===true)-(a.main===true));
-  const previewPhotos=orderedPhotos.slice(0,4);
+  const previewPhotos=orderedPhotos.slice(0,3);
   const fallbackPhoto=companyDemoImage(c) || '';
   const categoryIsTaxi=String(c.cat||'').toLowerCase().includes('taxi');
   document.querySelector('#companyCard').innerHTML = guestMode
@@ -4833,11 +4890,10 @@ function openCompany(id){
            <button class="ghost" onclick="setGuestMode(false);showAccount('register')">${de?'Konto erstellen':'Załóż konto'}</button>
          </div>
        </div>`
-    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0})${distanceText?` • ${distanceText}`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
+    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div class="company-hero-meta"><span class="hero-category-chip">${categoryIsTaxi?'<img src="taxi-category-icon.png" alt="Taxi">':''}<span>${escapeHtml(translateCategory(c.cat))}</span></span><span class="hero-meta-stat">★ ${Number(c.rating||0).toFixed(1)} (${c.reviews||0})</span>${distanceText?`<span class="hero-meta-stat">${distanceText}</span>`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
        <div class="company-content">
-         <div class="company-gallery company-gallery-summary">
-           <div class="company-photo company-photo-thumb" title="${de?'Fotos':'Zdjęcia'}">${previewPhotos.length?`<div class="company-photo-collage" data-count="${previewPhotos.length}">${previewPhotos.map(p=>`<img src="${p.data}" alt="${de?'Unternehmensfoto':'Zdjęcie firmy'}">`).join('')}</div>`:(fallbackPhoto?`<div class="company-photo-collage" data-count="1"><img src="${fallbackPhoto}" alt="${de?'Fotos':'Zdjęcia'}"></div>`:'<span class="company-tile-icon">📷</span>')}<span class="company-tile-label">${de?'Fotos':'Zdjęcia'}${photoList.length?` · ${photoList.length}`:''}</span></div>
-           <div class="company-photo company-category-tile" title="${escapeHtmlAttr(translateCategory(c.cat))}">${categoryIsTaxi?'<img class="company-category-icon-img" src="taxi-category-icon.png" alt="Taxi">':`<span class="company-tile-icon">📍</span>`}<span class="company-tile-label">${escapeHtml(translateCategory(c.cat))}</span></div>
+         <div class="company-photo-showcase">
+           <div class="company-photo-feature" title="${de?'Fotos':'Zdjęcia'}">${previewPhotos.length?`<div class="photo-showcase-collage" data-count="${previewPhotos.length}">${previewPhotos.map(p=>`<img src="${p.data}" alt="${de?'Unternehmensfoto':'Zdjęcie firmy'}">`).join('')}</div>`:(fallbackPhoto?`<div class="photo-showcase-collage" data-count="1"><img src="${fallbackPhoto}" alt="${de?'Fotos':'Zdjęcia'}"></div>`:'<div class="photo-showcase-empty">📷</div>')}${(photoList.length || fallbackPhoto)?`<span class="photo-count-badge">${photoList.length || 1} ${de?'Fotos':'zdjęć'}</span>`:''}</div>
          </div>
          <div class="company-grid">
            <div class="info-box"><h4>${t('Adres','Adresse')}</h4><p>${addressHtml||'—'}</p></div>
