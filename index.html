@@ -2310,10 +2310,23 @@ body:not(.splash-active) #logoutBtn:active{
 .company-master-status.ok{color:#28D890}
 
 
+/* v0.88.1 — VE-007 unified form geometry */
+#editorView .form-section{display:grid;gap:20px}
+#editorView .form-section .form-section-title{margin:0!important}
+#editorView .form-section .form-section-hint{margin:-10px 0 4px!important}
+#editorView .editor-field{display:grid;gap:8px;min-width:0}
+#editorView .editor-field>label{margin:0!important;display:block!important;font-size:1rem!important;font-weight:800!important;line-height:1.25!important;color:#F2F6FC!important}
+#editorView .editor-field input,
+#editorView .editor-field select{width:100%!important;min-height:58px!important;height:58px!important;padding:0 16px!important;border-radius:16px!important;margin:0!important;font-size:1rem!important}
+#editorView .editor-field textarea{width:100%!important;min-height:118px!important;padding:14px 16px!important;border-radius:16px!important;margin:0!important;font-size:1rem!important;resize:vertical}
+#editorView .country-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin:0!important}
+#editorView .req{display:inline!important;margin-left:2px!important;color:#F5B82E!important;font-weight:900!important}
+@media(max-width:680px){#editorView .country-row{grid-template-columns:1fr}}
+
 /* v0.88.0 — VE-007 Kontakt: equal proportions + flexible messengers */
 #editorView .contact-section{display:grid;gap:20px}
-#editorView .contact-section .form-section-title{margin-bottom:-10px}
-#editorView .contact-section .form-section-hint{margin-bottom:0}
+#editorView .contact-section .form-section-title{margin:0!important}
+#editorView .contact-section .form-section-hint{margin:-10px 0 4px!important}
 #editorView .contact-field{display:grid;gap:8px}
 #editorView .contact-field>label{margin:0!important;display:block!important;font-size:1rem!important;font-weight:800!important;color:#F2F6FC!important}
 #editorView .contact-field input,
@@ -2961,19 +2974,22 @@ body:not(.splash-active) #moduleView #cmCountry:disabled{
             <h3 class="form-section-title">1. Dane podstawowe</h3>
             <p class="form-section-hint">Najważniejsze dane, po których klient rozpozna firmę.</p>
 
-            <label>Nazwa działalności <span class="req">*</span>
+            <div class="editor-field">
+              <label for="fName">Nazwa działalności <span class="req">*</span></label>
               <input id="fName" autocomplete="organization" placeholder="np. Autohaus Muster – Bad Tölz" required>
-            </label>
+            </div>
 
-            <label>Kategoria <span class="req">*</span>
+            <div class="editor-field">
+              <label for="fCat">Kategoria <span class="req">*</span></label>
               <input id="fCat" placeholder="np. Warsztat samochodowy" required>
-            </label>
+            </div>
 
             <input id="fEmoji" type="hidden" value="📍">
 
-            <label>Krótki opis
+            <div class="editor-field">
+              <label for="fDesc">Krótki opis</label>
               <textarea id="fDesc" rows="4" placeholder="Napisz krótko, czym zajmuje się firma i co oferuje."></textarea>
-            </label>
+            </div>
             <div class="full ai-company-box">
               <h4>Asystent AI firmy</h4>
               <div>Wpisz usługi lub słowa-klucze w opisie, a AI przygotuje z nich naturalny opis do profilu firmy.</div>
@@ -2989,7 +3005,8 @@ body:not(.splash-active) #moduleView #cmCountry:disabled{
             <p class="form-section-hint">Dane lokalizacji potrzebne później do mapy, GPS i obliczania odległości.</p>
 
             <div class="country-row">
-              <label>Kraj <span class="req">*</span>
+              <div class="editor-field">
+                <label for="fCountry">Kraj <span class="req">*</span></label>
                 <select id="fCountry" required>
                   <option value="">Wybierz kraj</option>
                   <option value="Deutschland">Deutschland</option>
@@ -3000,20 +3017,23 @@ body:not(.splash-active) #moduleView #cmCountry:disabled{
                   <option value="Słowacja">Słowacja</option>
                   <option value="Inny">Inny</option>
                 </select>
-              </label>
+              </div>
 
-              <label>Kod pocztowy <span class="req">*</span>
+              <div class="editor-field">
+                <label for="fPostal">Kod pocztowy <span class="req">*</span></label>
                 <input id="fPostal" inputmode="text" placeholder="np. 83646" required>
-              </label>
+              </div>
             </div>
 
-            <label>Miejscowość <span class="req">*</span>
+            <div class="editor-field">
+              <label for="fCity">Miejscowość <span class="req">*</span></label>
               <input id="fCity" autocomplete="address-level2" placeholder="np. Bad Tölz" required>
-            </label>
+            </div>
 
-            <label>Ulica i numer <span class="req">*</span>
+            <div class="editor-field">
+              <label for="fAddress">Ulica i numer <span class="req">*</span></label>
               <input id="fAddress" autocomplete="street-address" placeholder="np. Marktstraße 12" required>
-            </label>
+            </div>
 
             <input id="fLocationRole" type="hidden" value="branch">
 
@@ -3071,16 +3091,18 @@ body:not(.splash-active) #moduleView #cmCountry:disabled{
             <h3 class="form-section-title">4. Social media</h3>
             <p class="form-section-hint">Opcjonalne linki do profili firmy.</p>
 
-            <label>Instagram
+            <div class="editor-field">
+              <label for="fInstagram">Instagram</label>
               <input id="fInstagram" placeholder="@nazwa lub link">
-            </label>
+            </div>
 
             <label>Facebook
               <input id="fFacebook" placeholder="Nazwa profilu lub link">
             </label>
-            <label>TikTok
+            <div class="editor-field">
+              <label for="fTiktok">TikTok</label>
               <input id="fTiktok" placeholder="@nazwa lub link">
-            </label>
+            </div>
           </div>
 
           <div class="form-section">
