@@ -7080,6 +7080,22 @@ function vivaTranslateString(source,lang){
   return source;
 }
 
+
+// VE v0.88.3 — additional DE translations for dynamically rendered company modules.
+Object.assign(VIVA_UI_TRANSLATIONS.de, {
+  "Szkielet pakietów Basic / Pro.": "Übersicht der Pakete Basic und Pro.",
+  "Karta firmy, kontakty, podstawowa obecność w katalogu.": "Unternehmensprofil, Kontaktdaten und grundlegende Präsenz im Verzeichnis.",
+  "Kupony/promocje i funkcje rozszerzone — później.": "Gutscheine, Aktionen und erweiterte Funktionen – später verfügbar.",
+  "Gałąź płatności firmy.": "Zahlungsbereich des Unternehmens.",
+  "Prawdziwy operator płatności będzie podłączony później. Struktura gałęzi jest gotowa.": "Der echte Zahlungsanbieter wird später angebunden. Die Struktur des Bereichs ist vorbereitet.",
+  "Szkielet statystyk firmy.": "Übersicht der Unternehmensstatistiken.",
+  "Wyświetlenia": "Aufrufe",
+  "0 — prawdziwe dane później.": "0 – echte Daten folgen später.",
+  "Wejścia w kontakt": "Kontaktaufrufe",
+  "Gałąź przygotowana strukturalnie.": "Der Bereich ist strukturell vorbereitet.",
+  "Tworzenie kuponów i kodów rabatowych aktywujemy później razem z pakietem Pro.": "Gutscheine und Rabattcodes werden später zusammen mit dem Pro-Paket aktiviert."
+});
+
 function vivaTranslateTextNode(node,lang){
   if(!node || node.nodeType!==Node.TEXT_NODE) return;
   let source=VIVA_TEXT_SOURCE.get(node);
