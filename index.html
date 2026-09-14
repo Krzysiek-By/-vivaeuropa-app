@@ -3441,17 +3441,21 @@ body.guest-mode .gps-refresh-inline::before{
   font-weight:800;
 }
 
+
+/* ===== v0.91.5 Never block app with reload overlay ===== */
+#reloadIndicator,
+.reload-indicator{
+  display:none!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  visibility:hidden!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
 </head>
 <body>
-  <div id="reloadIndicator" class="reload-indicator">
-    <div class="reload-box">
-      <div class="reload-spinner" aria-hidden="true"></div>
-      <span>Odświeżam VivaEuropa…</span>
-    </div>
-  </div>
   <div id="refreshConfirm" class="refresh-confirm" aria-live="polite">
     <span class="refresh-dot"></span>
     <span id="refreshConfirmText">Odświeżono</span>
@@ -8674,11 +8678,7 @@ updateNewPasswordSubmitState();
   render(companies);
 })();
 
-window.setTimeout(()=>{
-  const indicator=document.querySelector('#reloadIndicator');
-  if(indicator) indicator.classList.add('hidden');
-  showRefreshConfirmation();
-},850);
+window.setTimeout(showRefreshConfirmation,850);
 
 window.addEventListener('pageshow',()=>{
   const currentUrl=new URL(window.location.href);
@@ -8688,12 +8688,9 @@ window.addEventListener('pageshow',()=>{
     window.history.replaceState(null,'',clean);
   }
 
-  const indicator=document.querySelector('#reloadIndicator');
-  if(indicator){
-    indicator.classList.remove('hidden');
-    window.setTimeout(()=>indicator.classList.add('hidden'),850);
-  }
-  window.setTimeout(showRefreshConfirmation,900);
+  pullRefreshing=false;
+  resetPullRefresh();
+  window.setTimeout(showRefreshConfirmation,350);
 });
 
   </script>
