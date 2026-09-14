@@ -3909,7 +3909,10 @@ function setGuestMode(on){
   guestMode=!!on;
   if(guestMode) localStorage.setItem('vivaGuestMode','1');
   else localStorage.removeItem('vivaGuestMode');
+  applyGuestRadiusOptions();
 }
+
+applyGuestRadiusOptions();
 
 function showToast(message){
   const old=document.querySelector('.app-toast');
@@ -6446,6 +6449,30 @@ function openModule(key){
   if(key==='companyData') bindCompanyMasterForm();
   applyGlobalLanguage(lang);
 }
+
+function applyGuestRadiusOptions(){
+  const sel=document.querySelector('#radiusSelect');
+  if(!sel) return;
+
+  if(!sel.dataset.fullOptions){
+    sel.dataset.fullOptions=sel.innerHTML;
+  }
+
+  const current=String(sel.value||'5');
+
+  if(guestMode){
+    sel.innerHTML=`
+      <option value="1">bis 1 km</option>
+      <option value="5">5 km</option>
+      <option value="10">10 km</option>`;
+    sel.value=['1','5','10'].includes(current)?current:'5';
+  }else{
+    sel.innerHTML=sel.dataset.fullOptions;
+    const values=[...sel.options].map(o=>o.value);
+    sel.value=values.includes(current)?current:(values.includes('5')?'5':values[0]);
+  }
+}
+
 function search(){
   refreshCompanyDistances();
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
