@@ -3082,6 +3082,12 @@ body:not(.splash-active) #companyNameInput::placeholder{
   }
 }
 
+
+/* ===== v0.90.1 VE-005 company main e-mail guidance ===== */
+body:not(.splash-active) #companyEmailHelp{
+  margin-top:8px;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3298,7 +3304,11 @@ body:not(.splash-active) #companyNameInput::placeholder{
               <input id="companyCountryRegister" type="text" value="Deutschland" readonly aria-readonly="true" autocomplete="off">
             </label>
 
-            <label class="full">E-mail<input id="emailInput" type="email" autocomplete="email" required /></label>
+            <label class="full" id="emailLabel">
+              <span id="emailLabelText">E-Mail</span>
+              <input id="emailInput" type="email" autocomplete="email" required />
+              <small id="companyEmailHelp" class="company-register-help hidden">Bitte die zentrale E-Mail-Adresse des Unternehmens eintragen. E-Mail-Adressen einzelner Filialen oder Geschäftsbereiche kannst du später separat hinterlegen.</small>
+            </label>
 
             <label class="full">
               Hasło
@@ -6280,6 +6290,24 @@ function showAccount(mode, options={}){
   document.querySelector('#companyNameLabel').classList.toggle('hidden', !reg || !company);
   document.querySelector('#companyCountryRegisterLabel').classList.toggle('hidden', !reg || !company);
   if(reg && company) bindCompanyRegisterCountry();
+
+  const emailLabelText=document.querySelector('#emailLabelText');
+  const emailInput=document.querySelector('#emailInput');
+  const companyEmailHelp=document.querySelector('#companyEmailHelp');
+  if(emailLabelText){
+    emailLabelText.textContent=(reg && company)
+      ? (de?'Haupt-E-Mail des Unternehmens':'Główny e-mail firmy')
+      : (de?'E-Mail':'E-mail');
+  }
+  if(emailInput){
+    emailInput.placeholder=(reg && company)
+      ? (de?'z. B. kontakt@musterfirma.de':'np. kontakt@firma.pl')
+      : '';
+  }
+  if(companyEmailHelp){
+    companyEmailHelp.classList.toggle('hidden', !(reg && company));
+  }
+
   document.querySelector('#confirmPasswordLabel').classList.toggle('hidden', !reg);
   document.querySelector('#passwordNote').classList.toggle('hidden', !reg);
   document.querySelector('#termsLabel').classList.toggle('hidden', !reg);
