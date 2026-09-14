@@ -5057,20 +5057,25 @@ function renderLocationStatus(mode='idle'){
 
   if(vivaLocation){
     wrap.classList.add('ok');
-    const meters=Math.round(vivaLocation.accuracy||0);
-    if(meters){
-      const gpsText={
-        pl:`GPS aktywny, dokładność ok. ${meters} m.`,
-        de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
-        en:`GPS active, accuracy approx. ${meters} m.`,
-        fr:`GPS actif, précision env. ${meters} m.`,
-        it:`GPS attivo, precisione ca. ${meters} m.`,
-        es:`GPS activo, precisión aprox. ${meters} m.`
-      };
+    if(guestMode){
+      const gpsText={pl:'GPS aktywny',de:'GPS aktiv',en:'GPS active',fr:'GPS actif',it:'GPS attivo',es:'GPS activo'};
       text.textContent=gpsText[lang]||gpsText.en;
     }else{
-      const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
-      text.textContent=gpsText[lang]||gpsText.en;
+      const meters=Math.round(vivaLocation.accuracy||0);
+      if(meters){
+        const gpsText={
+          pl:`GPS aktywny, dokładność ok. ${meters} m.`,
+          de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
+          en:`GPS active, accuracy approx. ${meters} m.`,
+          fr:`GPS actif, précision env. ${meters} m.`,
+          it:`GPS attivo, precisione ca. ${meters} m.`,
+          es:`GPS activo, precisión aprox. ${meters} m.`
+        };
+        text.textContent=gpsText[lang]||gpsText.en;
+      }else{
+        const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
+        text.textContent=gpsText[lang]||gpsText.en;
+      }
     }
     return;
   }
@@ -8358,7 +8363,7 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setView('home');
   if(!vivaLocation) await requestVivaLocation({silent:true});
   refreshCompanyDistances();
-  search();
+  render(companies);
 };
 
 
