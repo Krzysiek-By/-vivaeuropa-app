@@ -3459,6 +3459,81 @@ textarea::-webkit-input-placeholder{
   .guest-category-items{grid-template-columns:1fr!important}
 }
 
+
+/* ===== v0.90.21 Responsive Guest quick categories ===== */
+.guest-quick-categories{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+.guest-quick-category{
+  min-height:88px!important;
+  padding:10px 7px!important;
+}
+
+.guest-quick-category-icon{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  min-height:42px!important;
+  font-size:29px!important;
+}
+
+.guest-quick-category-icon img{
+  width:42px!important;
+  height:42px!important;
+  border-radius:10px!important;
+}
+
+.guest-quick-category-label{
+  font-size:12.5px!important;
+}
+
+@media (min-width:700px){
+  .guest-quick-categories{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+  .guest-quick-category{
+    min-height:94px!important;
+  }
+  .guest-quick-category-icon,
+  .guest-quick-category-icon img{
+    width:48px!important;
+    height:48px!important;
+    min-width:48px!important;
+    min-height:48px!important;
+  }
+  .guest-quick-category-icon{
+    font-size:33px!important;
+  }
+  .guest-quick-category-label{
+    font-size:13px!important;
+  }
+}
+
+@media (min-width:1024px){
+  .guest-quick-categories{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:14px!important;
+  }
+  .guest-quick-category{
+    min-height:100px!important;
+  }
+  .guest-quick-category-icon,
+  .guest-quick-category-icon img{
+    width:52px!important;
+    height:52px!important;
+    min-width:52px!important;
+    min-height:52px!important;
+  }
+  .guest-quick-category-icon{
+    font-size:36px!important;
+  }
+  .guest-quick-category-label{
+    font-size:13.5px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
