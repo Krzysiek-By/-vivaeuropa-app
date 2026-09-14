@@ -3042,6 +3042,25 @@ textarea::placeholder{
   }
 }
 
+
+/* ===== v0.89.8 VE-005 company country field ===== */
+body:not(.splash-active) #companyCountryRegister{
+  width:100%!important;
+  min-height:72px!important;
+  padding:16px 18px!important;
+  border-radius:18px!important;
+  background:rgba(4,19,36,.82)!important;
+  border:1px solid rgba(88,172,255,.52)!important;
+  color:var(--ve-text)!important;
+  -webkit-text-fill-color:var(--ve-text)!important;
+  box-shadow:none!important;
+  cursor:default!important;
+}
+body:not(.splash-active) #companyCountryRegister:focus{
+  border-color:rgba(88,172,255,.52)!important;
+  box-shadow:none!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3251,7 +3270,7 @@ textarea::placeholder{
             <label id="surnameLabel" class="hidden">Nazwisko<input id="surnameInput" autocomplete="family-name" /></label>
             <label id="companyNameLabel" class="full hidden">Nazwa firmy<input id="companyNameInput" autocomplete="organization" /></label>
             <label id="companyCountryRegisterLabel" class="full hidden">Kraj firmy
-              <select id="companyCountryRegister"></select>
+              <input id="companyCountryRegister" type="text" value="Deutschland" readonly aria-readonly="true" autocomplete="off">
             </label>
 
             <label class="full">E-mail<input id="emailInput" type="email" autocomplete="email" required /></label>
@@ -4064,13 +4083,13 @@ function companyCountryOptions(selected){
 }
 
 function bindCompanyRegisterCountry(){
-  const select=document.querySelector('#companyCountryRegister');
-  if(!select) return;
-  const existing=select.dataset.ready==='1';
-  if(!existing){
-    select.innerHTML=companyCountryOptions('Deutschland');
-    select.dataset.ready='1';
-  }
+  const field=document.querySelector('#companyCountryRegister');
+  if(!field) return;
+  field.value='Deutschland';
+  field.readOnly=true;
+  field.setAttribute('readonly','');
+  field.setAttribute('aria-readonly','true');
+  field.dataset.ready='1';
 }
 
 function formatCompanyCustomerNumber(prefix,sequence){
