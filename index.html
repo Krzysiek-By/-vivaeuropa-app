@@ -3274,6 +3274,26 @@ textarea::-webkit-input-placeholder{
   font-weight:400!important;
 }
 
+
+/* ===== RECOVERY STEP 5: only GPS / Manuell ===== */
+#manualLocationRow.hidden{display:none!important}
+#locationStatus{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+#locationStatusText{flex:1}
+.gps-status-refresh{
+  flex:0 0 auto;
+  width:30px!important;
+  min-width:30px!important;
+  height:30px!important;
+  padding:0!important;
+  border-radius:9px!important;
+  font-size:18px!important;
+  line-height:1!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3403,13 +3423,12 @@ textarea::-webkit-input-placeholder{
           </label>
           <label>
             <span>Gdzie?</span>
-            <div class="location-mode-switch" aria-label="Tryb lokalizacji">
+            <div class="location-mode-switch" aria-label="Standortmodus">
               <button type="button" class="location-mode-btn active" id="locationModeGps">◎ GPS</button>
-              <button type="button" class="location-mode-btn" id="locationModeManual">⌨ Ręcznie</button>
+              <button type="button" class="location-mode-btn" id="locationModeManual">⌨ Manuell</button>
             </div>
-            <div class="location-row">
-              <input id="locationInput" placeholder="Moja lokalizacja (GPS)" autocomplete="off" disabled />
-              <button class="icon-btn" id="gpsBtn" title="Odśwież GPS">↻</button>
+            <div class="location-row hidden" id="manualLocationRow">
+              <input id="locationInput" placeholder="z. B. Bad Tölz, 83646 oder Adresse" autocomplete="off" />
             </div>
           </label>
           <div class="search-advanced">
@@ -3445,6 +3464,7 @@ textarea::-webkit-input-placeholder{
         <div id="locationStatus" class="location-status">
           <span class="location-status-dot"></span>
           <span id="locationStatusText">Lokalizacja nie została jeszcze pobrana.</span>
+          <button class="icon-btn gps-status-refresh" id="gpsBtn" type="button" title="GPS aktualisieren">↻</button>
         </div>
 
       </div>
@@ -4988,33 +5008,38 @@ function setLocationMode(mode,{requestGps=false}={}){
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
   updateLocationModeButtons();
 
-  if(!els?.loc) return;
+  const manualRow=document.querySelector('#manualLocationRow');
+  const gpsBtn=document.querySelector('#gpsBtn');
 
   if(locationMode==='gps'){
-    els.loc.disabled=true;
-    els.loc.value='';
-    els.loc.placeholder=vivaTranslateString('Moja lokalizacja (GPS)',getVivaAppLanguage());
-    if(requestGps){
-      requestVivaLocation();
-    }else{
-      renderLocationStatus();
+    if(manualRow) manualRow.classList.add('hidden');
+    if(gpsBtn) gpsBtn.classList.remove('hidden');
+    if(els?.loc){
+      els.loc.disabled=true;
+      els.loc.value='';
     }
+    if(requestGps) requestVivaLocation();
+    else renderLocationStatus();
     return;
   }
 
-  els.loc.disabled=false;
-  els.loc.placeholder=vivaTranslateString('np. Kraków, 31-042, Rynek Główny 1',getVivaAppLanguage());
-  const saved=loadManualLocation();
-  els.loc.value=saved||'';
+  if(manualRow) manualRow.classList.remove('hidden');
+  if(gpsBtn) gpsBtn.classList.add('hidden');
+
+  if(els?.loc){
+    els.loc.disabled=false;
+    els.loc.placeholder='z. B. Bad Tölz, 83646 oder Adresse';
+    const saved=loadManualLocation();
+    els.loc.value=saved||'';
+  }
 
   const wrap=document.querySelector('#locationStatus');
   const text=document.querySelector('#locationStatusText');
   if(wrap && text){
     wrap.classList.remove('warn');
     wrap.classList.add('ok');
-    text.textContent=saved
-      ? vivaTranslateString(`Lokalizacja ręczna: ${saved}`,getVivaAppLanguage())
-      : vivaTranslateString('Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.',getVivaAppLanguage());
+    const saved=loadManualLocation();
+    text.textContent=saved?`Manuell: ${saved}`:'Manuellen Standort eingeben.';
   }
 }
 
