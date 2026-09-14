@@ -3259,6 +3259,25 @@ body:not(.splash-active) .legal-footer-live > span{
   body:not(.splash-active) .legal-footer-live .legal-footer-live-btn{font-size:12.5px!important;padding:8px 2px!important;}
 }
 
+
+/* ===== v0.91.0 Placeholder hierarchy fix ===== */
+body:not(.splash-active) input::placeholder,
+body:not(.splash-active) textarea::placeholder,
+input::placeholder,
+textarea::placeholder{
+  color:rgba(164,178,196,.58)!important;
+  opacity:1!important;
+  font-weight:400!important;
+}
+
+/* Safari / iOS consistency */
+body:not(.splash-active) input::-webkit-input-placeholder,
+body:not(.splash-active) textarea::-webkit-input-placeholder{
+  color:rgba(164,178,196,.58)!important;
+  opacity:1!important;
+  font-weight:400!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
