@@ -3141,6 +3141,75 @@ body:not(.splash-active) .legal-footer a:hover{
   .legal-doc-actions{justify-content:flex-start}
 }
 
+
+/* ===== v0.90.6 Legal in-app viewer ===== */
+body:not(.splash-active) .legal-footer{
+  color:rgba(220,232,246,.92)!important;
+}
+body:not(.splash-active) .legal-footer a{
+  color:#8BC8FF!important;
+  opacity:1!important;
+}
+.legal-draft-warning{
+  margin:0 0 14px;
+  padding:10px 12px;
+  border:1px solid rgba(244,176,0,.45);
+  border-radius:12px;
+  background:rgba(244,176,0,.10);
+  color:#FFD56A;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.4;
+}
+.legal-inapp-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin:0 0 14px;
+}
+.legal-inapp-content{
+  text-align:left;
+  color:#EAF2FC;
+  line-height:1.65;
+}
+.legal-inapp-content h3{
+  margin:24px 0 8px;
+  color:#FFFFFF;
+  font-size:18px;
+  line-height:1.35;
+}
+.legal-inapp-content p{
+  margin:0 0 12px;
+  color:#CFDCEE;
+  font-size:15px;
+}
+.legal-inapp-content ul{
+  margin:0 0 14px 20px;
+  padding:0;
+  color:#CFDCEE;
+}
+.legal-inapp-content li{margin:6px 0}
+.legal-doc-actions button{
+  white-space:nowrap;
+}
+@media(max-width:620px){
+  .legal-inapp-content p{font-size:14px}
+  .legal-inapp-content h3{font-size:17px}
+  .legal-inapp-actions{justify-content:flex-start}
+}
+@media print{
+  body *{visibility:hidden!important}
+  #moduleView,#moduleView *{visibility:visible!important}
+  #moduleView{position:absolute!important;left:0;top:0;width:100%!important;background:#fff!important}
+  #moduleView .topbar,
+  #moduleView .view-back-row,
+  .legal-inapp-actions,
+  .bottom-nav,
+  .legal-footer{display:none!important}
+  #moduleView .panel{border:0!important;box-shadow:none!important;background:#fff!important;color:#000!important}
+  .legal-inapp-content,.legal-inapp-content p,.legal-inapp-content li,.legal-inapp-content h3{color:#000!important}
+  .legal-draft-warning{color:#000!important;border:1px solid #999!important;background:#fff!important}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3383,7 +3452,7 @@ body:not(.splash-active) .legal-footer a:hover{
 
             <label id="termsLabel" class="checkbox-row full hidden">
               <input id="termsInput" type="checkbox" />
-              <span>Ich akzeptiere die <a href="legal/Nutzungsbedingungen_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Nutzungsbedingungen</a> und habe die <a href="legal/Datenschutzerklaerung_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Datenschutzerklärung</a> zur Kenntnis genommen.</span>
+              <span>Ich akzeptiere die <a href="#" onclick="event.stopPropagation();openLegalDocument('terms');return false;">Nutzungsbedingungen</a> und habe die <a href="#" onclick="event.stopPropagation();openLegalDocument('privacy');return false;">Datenschutzerklärung</a> zur Kenntnis genommen.</span>
             </label>
 
             <button id="forgotPasswordBtn" class="forgot-btn full" type="button">Nie pamiętasz hasła?</button>
@@ -3689,13 +3758,13 @@ body:not(.splash-active) .legal-footer a:hover{
   </main>
 
   <footer class="legal-footer" aria-label="Rechtliche Informationen">
-    <a href="legal/Impressum_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Impressum</a>
+    <a href="#" onclick="openLegalDocument('imprint');return false;">Impressum</a>
     <span>·</span>
-    <a href="legal/Datenschutzerklaerung_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Datenschutz</a>
+    <a href="#" onclick="openLegalDocument('privacy');return false;">Datenschutz</a>
     <span>·</span>
-    <a href="legal/Nutzungsbedingungen_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Nutzungsbedingungen</a>
+    <a href="#" onclick="openLegalDocument('terms');return false;">Nutzungsbedingungen</a>
     <span>·</span>
-    <a href="legal/Gastnutzung_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">Gastnutzung</a>
+    <a href="#" onclick="openLegalDocument('guest');return false;">Gastnutzung</a>
   </footer>
 
   <nav class="bottom-nav" aria-label="Nawigacja">
@@ -5371,14 +5440,13 @@ const moduleData={
   legalDocuments:{
     eyebrow:'RECHTLICHES',
     title:'Rechtliches & Dokumente',
-    intro:'Dokumente ansehen, drucken oder zur rechtlichen Prüfung weitergeben.',
+    intro:'Dokumente direkt in VivaEuropa lesen und drucken.',
     html:()=>`<div class="legal-doc-list">
-      <div class="legal-doc-row"><div><strong>Nutzungsbedingungen</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><a href="legal/Nutzungsbedingungen_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">PDF</a><a href="legal/Nutzungsbedingungen_VivaEuropa_ENTWURF.docx" target="_blank" rel="noopener">Word</a></div></div>
-      <div class="legal-doc-row"><div><strong>Datenschutzerklärung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><a href="legal/Datenschutzerklaerung_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">PDF</a><a href="legal/Datenschutzerklaerung_VivaEuropa_ENTWURF.docx" target="_blank" rel="noopener">Word</a></div></div>
-      <div class="legal-doc-row"><div><strong>Impressum</strong><small>Betreiberdaten vor Veröffentlichung ergänzen</small></div><div class="legal-doc-actions"><a href="legal/Impressum_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">PDF</a><a href="legal/Impressum_VivaEuropa_ENTWURF.docx" target="_blank" rel="noopener">Word</a></div></div>
-      <div class="legal-doc-row"><div><strong>Hinweise zur Gastnutzung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><a href="legal/Gastnutzung_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">PDF</a><a href="legal/Gastnutzung_VivaEuropa_ENTWURF.docx" target="_blank" rel="noopener">Word</a></div></div>
-      <div class="legal-doc-row"><div><strong>Urheberrecht & Datenbanknutzung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><a href="legal/Urheberrecht_Datenbank_VivaEuropa_ENTWURF.pdf" target="_blank" rel="noopener">PDF</a><a href="legal/Urheberrecht_Datenbank_VivaEuropa_ENTWURF.docx" target="_blank" rel="noopener">Word</a></div></div>
-      <div style="margin-top:8px"><a class="ghost" href="legal/index.html" target="_blank" rel="noopener">Alle Dokumente öffnen</a></div>
+      <div class="legal-doc-row"><div><strong>Nutzungsbedingungen</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><button class="ghost" onclick="openLegalDocument('terms')">Öffnen</button></div></div>
+      <div class="legal-doc-row"><div><strong>Datenschutzerklärung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><button class="ghost" onclick="openLegalDocument('privacy')">Öffnen</button></div></div>
+      <div class="legal-doc-row"><div><strong>Impressum</strong><small>Betreiberdaten vor Veröffentlichung ergänzen</small></div><div class="legal-doc-actions"><button class="ghost" onclick="openLegalDocument('imprint')">Öffnen</button></div></div>
+      <div class="legal-doc-row"><div><strong>Hinweise zur Gastnutzung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><button class="ghost" onclick="openLegalDocument('guest')">Öffnen</button></div></div>
+      <div class="legal-doc-row"><div><strong>Urheberrecht & Datenbanknutzung</strong><small>Arbeitsentwurf DE</small></div><div class="legal-doc-actions"><button class="ghost" onclick="openLegalDocument('copyright')">Öffnen</button></div></div>
     </div>`
   },
   favorites:{
@@ -6244,10 +6312,33 @@ async function captureLocationGPS({auto=false}={}){
 function bindLocationGPS(){ /* techniczna lokalizacja działa tylko w tle */
 }
 
+const vivaLegalDocuments={"terms": {"title": "Nutzungsbedingungen", "html": "<h3>1. Geltungsbereich</h3><p>Diese Nutzungsbedingungen regeln die Nutzung von VivaEuropa durch nicht registrierte Gäste, registrierte Privatnutzer sowie Unternehmenskonten. VivaEuropa ist als digitaler Dienst zur Suche, Darstellung und Verwaltung lokaler Unternehmen, Dienstleistungen, Orte und weiterer nützlicher Informationen vorgesehen.</p><p>Dieser Text ist ein Arbeitsentwurf. Vor einer öffentlichen Freischaltung müssen Betreiberangaben, technische Dienstleister, Zahlungsmodelle und die endgültigen Funktionen durch eine rechtskundige Person geprüft und ergänzt werden.</p><h3>2. Vertragspartner und Betreiber</h3><p>Betreiber von VivaEuropa ist:</p><p>[VOR VERÖFFENTLICHUNG AUSFÜLLEN]<br>Name / Firma:<br>Rechtsform:<br>Vertretungsberechtigte Person:<br>Anschrift:<br>E-Mail:<br>Telefon:</p><p>Für registrierte Nutzer kommt ein Nutzungsverhältnis mit dem Betreiber zustande, sobald die Registrierung abgeschlossen und das Konto freigeschaltet ist.</p><h3>3. Nutzung ohne Registrierung</h3><p>VivaEuropa kann in einem eingeschränkten Umfang auch ohne Registrierung genutzt werden. Gäste dürfen die öffentlich bereitgestellten Such- und Informationsfunktionen bestimmungsgemäß verwenden.</p><p>Eine automatisierte, massenhafte oder systematische Auslese, Vervielfältigung, Weitergabe oder kommerzielle Verwertung von Daten, Profilen, Bildern, Bewertungen, Kategorien oder sonstigen Inhalten ist ohne ausdrückliche Erlaubnis des Betreibers nicht gestattet.</p><h3>4. Registrierung und Konten</h3><p>Für bestimmte Funktionen ist ein persönliches Nutzerkonto oder ein Unternehmenskonto erforderlich. Bei der Registrierung sind die verlangten Angaben wahrheitsgemäß und aktuell anzugeben.</p><p>Zugangsdaten sind vertraulich zu behandeln. Kontoinhaber sind verpflichtet, den Betreiber unverzüglich zu informieren, wenn sie einen Missbrauch ihres Kontos vermuten.</p><p>Ein Konto darf grundsätzlich nur im eigenen Namen bzw. mit Berechtigung für das angegebene Unternehmen geführt werden.</p><h3>5. Unternehmenskonten und Unternehmensdaten</h3><p>Bei Unternehmenskonten ist der rechtliche bzw. zentrale Unternehmensbezug von einzelnen Geschäftsbereichen, Filialen und Standorten zu unterscheiden. Zentrale Unternehmensdaten – insbesondere rechtlicher Unternehmensname, Haupt-E-Mail und gegebenenfalls Rechnungsdaten – sind korrekt anzugeben.</p><p>Für einzelne Filialen, Standorte oder Geschäftsbereiche können später gesonderte Kontaktdaten, Bezeichnungen und Adressen hinterlegt werden.</p><p>Der Betreiber kann zur Vermeidung von Missbrauch einen Unternehmensnachweis verlangen und Unternehmensprofile bis zum Abschluss einer Prüfung zurückhalten.</p><h3>6. Zulässige Inhalte</h3><p>Nutzer und Unternehmen dürfen nur Inhalte einstellen, zu deren Nutzung sie berechtigt sind. Unzulässig sind insbesondere rechtswidrige, irreführende, diskriminierende, beleidigende, betrügerische oder fremde Rechte verletzende Inhalte.</p><p>Es ist untersagt, sich als eine andere Person oder ein anderes Unternehmen auszugeben oder bewusst falsche Unternehmens-, Kontakt-, Standort- oder Angebotsdaten zu veröffentlichen.</p><h3>7. Rechte an hochgeladenen Inhalten</h3><p>Urheberrechte und sonstige Rechte an vom Nutzer eingestellten eigenen Inhalten verbleiben grundsätzlich beim jeweiligen Rechteinhaber.</p><p>Soweit für den Betrieb von VivaEuropa erforderlich, räumt der Nutzer dem Betreiber für die Dauer der Veröffentlichung ein einfaches, räumlich erforderliches Recht ein, die Inhalte technisch zu speichern, anzuzeigen, zu vervielfältigen, für unterschiedliche Endgeräte aufzubereiten und innerhalb des Dienstes öffentlich zugänglich zu machen.</p><p>Der Nutzer sichert zu, dass er hierzu berechtigt ist.</p><h3>8. Datenbank- und Inhaltsnutzung</h3><p>Die Zusammenstellung, Struktur, Auswahl und technische Aufbereitung von VivaEuropa sowie rechtlich geschützte Inhalte dürfen nicht ohne Erlaubnis übernommen oder systematisch ausgelesen werden.</p><p>Insbesondere sind Scraping, automatisierte Abfragen zur Erstellung konkurrierender Datenbanken, massenhafte Downloads und die Weiterveräußerung von VivaEuropa-Daten untersagt, soweit keine gesetzliche Erlaubnis besteht.</p><h3>9. Verfügbarkeit und Richtigkeit</h3><p>VivaEuropa bemüht sich um eine hohe Verfügbarkeit und aktuelle Informationen. Eine ununterbrochene, fehlerfreie oder jederzeit vollständige Verfügbarkeit kann jedoch nicht garantiert werden.</p><p>Angaben zu Unternehmen, Öffnungszeiten, Preisen, Angeboten, Entfernungen, Verfügbarkeit oder Standorten können sich ändern. Nutzer sollen wichtige Angaben bei Bedarf direkt beim jeweiligen Anbieter überprüfen.</p><h3>10. KI-Funktionen</h3><p>Soweit VivaEuropa künftig KI-gestützte Funktionen bereitstellt, dienen deren Ausgaben als Unterstützung. KI-Ausgaben können unvollständig oder fehlerhaft sein und ersetzen keine rechtliche, medizinische, steuerliche, finanzielle oder sonstige fachliche Beratung.</p><p>Vor Freischaltung konkreter KI-Dienste sind die eingesetzten Anbieter, Datenflüsse und Datenschutzinformationen gesondert zu ergänzen.</p><h3>11. Entgeltliche Leistungen und Abonnements</h3><p>Kostenpflichtige Pakete, Abonnements, Pro-Funktionen oder sonstige entgeltliche Leistungen werden erst nach ausdrücklicher Buchung zu den jeweils angezeigten Preisen und Bedingungen bereitgestellt.</p><p>Vor Einführung kostenpflichtiger Leistungen sind Laufzeit, Verlängerung, Kündigung, Zahlungsweg, Verbraucherinformationen und gegebenenfalls Widerrufsrechte in einer final geprüften Fassung zu ergänzen.</p><h3>12. Sperrung und Beendigung</h3><p>Der Betreiber kann Inhalte vorübergehend ausblenden oder Konten einschränken, wenn konkrete Anhaltspunkte für Rechtsverstöße, Missbrauch, Sicherheitsprobleme oder erhebliche Verstöße gegen diese Bedingungen bestehen.</p><p>Vor dauerhaften Maßnahmen sollen – soweit rechtlich und praktisch möglich – die Umstände geprüft und verhältnismäßige Maßnahmen gewählt werden.</p><h3>13. Haftung</h3><p>Es gelten die gesetzlichen Haftungsregeln. Eine Haftungsbeschränkung für Vorsatz, grobe Fahrlässigkeit, Verletzungen von Leben, Körper oder Gesundheit sowie zwingende gesetzliche Haftung wird durch diese Bedingungen nicht beabsichtigt.</p><p>Die konkrete Haftungsklausel ist vor Veröffentlichung anwaltlich zu prüfen.</p><h3>14. Änderungen der Bedingungen</h3><p>Änderungen dieser Nutzungsbedingungen werden den registrierten Nutzern in geeigneter Form bekanntgegeben, wenn sie das bestehende Nutzungsverhältnis wesentlich betreffen. Soweit rechtlich erforderlich, wird eine erneute Zustimmung eingeholt.</p><h3>15. Schlussbestimmungen</h3><p>Es gilt das gesetzlich anwendbare Recht. Zwingende Verbraucherschutzvorschriften bleiben unberührt.</p><p>Gerichtsstands- und Rechtswahlklauseln werden erst nach Prüfung der endgültigen Betreiberstruktur ergänzt.</p><h3>Prüfhinweis</h3><p>Dieser Entwurf ist noch keine zur Veröffentlichung freigegebene Rechtsfassung. Er muss insbesondere an Betreiber, Rechtsform, Geschäftsmodell, Zahlungsabwicklung, Hosting, KI-Dienste, Karten-/GPS-Dienste, Analytics, App-Stores und die endgültige Datenverarbeitung angepasst und anwaltlich geprüft werden.</p>"}, "privacy": {"title": "Datenschutzerklärung", "html": "<h3>1. Verantwortlicher</h3><p>Verantwortlich für die Verarbeitung personenbezogener Daten im Zusammenhang mit VivaEuropa ist:</p><p>[VOR VERÖFFENTLICHUNG AUSFÜLLEN]<br>Name / Firma:<br>Rechtsform:<br>Anschrift:<br>E-Mail:<br>Telefon:<br>Datenschutzbeauftragter, falls erforderlich:</p><h3>2. Grundsätze</h3><p>VivaEuropa verarbeitet personenbezogene Daten nur, soweit dies für die Bereitstellung des Dienstes, die Verwaltung von Konten, die Darstellung von Unternehmen, die Sicherheit, die Kommunikation oder weitere ausdrücklich beschriebene Zwecke erforderlich ist.</p><p>Diese Datenschutzerklärung ist ein Arbeitsentwurf und wird vor Veröffentlichung an die tatsächlich eingesetzten technischen Anbieter und Datenflüsse angepasst.</p><h3>3. Nutzung ohne Konto</h3><p>Bei einer Nutzung ohne Registrierung können technisch erforderliche Daten verarbeitet werden, etwa IP-Adresse, Zeitstempel, Geräte-/Browserinformationen, Sicherheits- und Protokolldaten sowie Daten, die zur Auslieferung des Dienstes erforderlich sind.</p><p>Soweit eine Standortfunktion nur auf ausdrücklichen Wunsch des Nutzers aktiviert wird, kann der aktuelle Standort zur Suche nach nahegelegenen Orten verarbeitet werden. Eine dauerhafte Standortverfolgung ist nicht vorgesehen, sofern sie nicht später ausdrücklich als eigene Funktion eingeführt und transparent beschrieben wird.</p><h3>4. Registrierung eines Privatkontos</h3><p>Bei der Registrierung eines Privatkontos können insbesondere Name, E-Mail-Adresse, Zugangsdaten bzw. technische Authentifizierungsdaten, Einstellungen, Favoriten und vom Nutzer freiwillig gespeicherte Informationen verarbeitet werden.</p><p>Pflichtfelder werden im jeweiligen Formular gekennzeichnet.</p><h3>5. Registrierung und Nutzung eines Unternehmenskontos</h3><p>Bei Unternehmenskonten können insbesondere Unternehmensname, rechtliche Unternehmensdaten, zentrale Kontaktadresse, Haupt-E-Mail, Ansprechpartner, Telefonnummer, Rechnungsdaten, Register- und Steuerangaben sowie ein Unternehmensnachweis verarbeitet werden.</p><p>Daten einzelner Geschäftsbereiche, Filialen oder Standorte können getrennt von den zentralen Unternehmensdaten gespeichert werden.</p><h3>6. Unternehmensnachweise</h3><p>Hochgeladene Nachweise wie Gewerbeanmeldung, Handelsregisterauszug oder vergleichbare Dokumente dürfen ausschließlich zur Prüfung der Berechtigung und Echtheit eines Unternehmens verwendet werden.</p><p>Diese Dokumente werden nicht öffentlich angezeigt. Vor Aktivierung dieser Funktion müssen Speicherort, Zugriffskonzept, Löschfristen und gegebenenfalls eingesetzte OCR-/KI-Dienste abschließend festgelegt werden.</p><h3>7. Standortdaten</h3><p>Standortdaten werden nur verarbeitet, wenn der Nutzer die Standortfunktion aktiviert oder einen Ort manuell eingibt. Sie dienen insbesondere dazu, Entfernungen zu berechnen und relevante Ergebnisse in der Umgebung anzuzeigen.</p><p>Die Betriebssystem- bzw. Browserberechtigung für Standortzugriff kann vom Nutzer jederzeit über die Geräteeinstellungen geändert werden.</p><h3>8. Kontakt- und Kommunikationsdaten</h3><p>Wenn Nutzer oder Unternehmen VivaEuropa kontaktieren, werden die übermittelten Kommunikationsdaten verarbeitet, um die Anfrage zu bearbeiten und gegebenenfalls das Nutzungsverhältnis zu verwalten.</p><h3>9. Rechtsgrundlagen</h3><p>Je nach Verarbeitung kommen insbesondere die Erfüllung eines Vertrags oder vorvertraglicher Maßnahmen, gesetzliche Pflichten, berechtigte Interessen des Betreibers oder eine Einwilligung als Rechtsgrundlage in Betracht.</p><p>Die konkreten Rechtsgrundlagen werden in der finalen Fassung für jede Verarbeitung präzise zugeordnet.</p><h3>10. Hosting und technische Dienstleister</h3><p>VivaEuropa wird derzeit als Web-/PWA-Anwendung entwickelt. Für Hosting, Authentifizierung, Datenbank, E-Mail-Versand, Karten, Push-Nachrichten, Zahlungsdienste, KI-Funktionen oder Analyse können externe Dienstleister eingesetzt werden.</p><p>Vor Veröffentlichung werden die tatsächlich eingesetzten Anbieter einschließlich Sitz, Zweck, Auftragsverarbeitung und möglicher Drittlandübermittlungen konkret benannt.</p><h3>11. Cookies, Local Storage und ähnliche Technologien</h3><p>VivaEuropa kann technisch notwendige Speichermechanismen im Endgerät verwenden, beispielsweise Local Storage oder vergleichbare Technologien, um Einstellungen, Sitzungszustände oder für die gewünschte Funktion erforderliche Informationen zu speichern.</p><p>Nicht technisch notwendige Tracking-, Analyse- oder Marketingtechnologien werden – falls später eingesetzt – erst nach der dafür erforderlichen Einwilligung aktiviert.</p><h3>12. Empfänger und Drittlandübermittlungen</h3><p>Personenbezogene Daten werden nur an Empfänger übermittelt, soweit dies für den jeweiligen Zweck erforderlich ist, eine gesetzliche Pflicht besteht oder eine entsprechende Rechtsgrundlage vorliegt.</p><p>Sollten Dienstleister außerhalb des Europäischen Wirtschaftsraums eingesetzt werden, werden die dafür erforderlichen Schutzmechanismen in der finalen Fassung beschrieben.</p><h3>13. Speicherdauer</h3><p>Personenbezogene Daten werden nur so lange gespeichert, wie sie für den jeweiligen Zweck erforderlich sind oder gesetzliche Aufbewahrungsfristen bestehen.</p><p>Konkrete Löschfristen für Konten, Nachweise, Protokolle, Supportdaten und Abrechnungsunterlagen werden vor Produktivstart festgelegt.</p><h3>14. Rechte betroffener Personen</h3><p>Betroffene Personen haben im Rahmen der gesetzlichen Voraussetzungen insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch.</p><p>Soweit eine Verarbeitung auf Einwilligung beruht, kann die Einwilligung grundsätzlich mit Wirkung für die Zukunft widerrufen werden.</p><p>Außerdem besteht das Recht, sich bei einer zuständigen Datenschutzaufsichtsbehörde zu beschweren.</p><h3>15. Minderjährige</h3><p>VivaEuropa richtet sich nicht gezielt an Kinder. Vor Produktivstart ist festzulegen, ob und ab welchem Mindestalter eigene Konten zulässig sind und ob besondere Schutzmaßnahmen erforderlich sind.</p><h3>16. Sicherheit</h3><p>VivaEuropa trifft angemessene technische und organisatorische Maßnahmen zum Schutz personenbezogener Daten. Das konkrete Sicherheitskonzept wird mit der produktiven Backend-, Authentifizierungs- und Speicherarchitektur fortgeschrieben.</p><h3>17. Änderungen</h3><p>Diese Datenschutzerklärung wird angepasst, wenn sich Funktionen, Dienstleister, Rechtsgrundlagen oder Datenverarbeitungen wesentlich ändern.</p><h3>Prüfhinweis</h3><p>Vor Veröffentlichung müssen insbesondere die tatsächlichen Betreiberangaben, Hosting-/Backend-Dienste, Supabase-Konfiguration, E-Mail-Dienst, Karten-/GPS-Dienste, Push-Dienst, KI-Anbieter, Zahlungsanbieter, App-Store-Abwicklung, Analytics, Löschfristen und internationale Datenübermittlungen geprüft und konkret eingetragen werden.</p>"}, "imprint": {"title": "Impressum", "html": "<h3>Angaben zum Anbieter</h3><p>[VOR VERÖFFENTLICHUNG ZWINGEND AUSFÜLLEN]</p><p>Name / Firma:<br>Rechtsform:<br>Vertretungsberechtigte Person:<br>Straße / Hausnummer:<br>PLZ / Ort:<br>Land:</p><h3>Kontakt</h3><p>E-Mail:<br>Telefon:</p><h3>Registerangaben</h3><p>Registergericht:<br>Registernummer:</p><p>Nur angeben, soweit eine entsprechende Registereintragung besteht.</p><h3>Steuerangaben</h3><p>Umsatzsteuer-Identifikationsnummer:<br>Wirtschafts-Identifikationsnummer:</p><p>Nur angeben, soweit vorhanden bzw. gesetzlich erforderlich.</p><h3>Aufsichtsbehörde / Berufsrecht</h3><p>Nur ausfüllen, falls die Tätigkeit einer behördlichen Zulassung oder besonderen berufsrechtlichen Regelung unterliegt.</p><h3>Verantwortlich für redaktionelle Inhalte</h3><p>Falls für konkrete redaktionelle Inhalte gesetzlich erforderlich:</p><p>Name:<br>Anschrift:</p><h3>Hinweis</h3><p>Dieses Impressum ist noch nicht veröffentlichungsfähig. Die Platzhalter müssen vor dem öffentlichen Start vollständig und rechtlich korrekt ausgefüllt werden. Das Impressum soll in VivaEuropa leicht erkennbar, unmittelbar erreichbar und dauerhaft verfügbar sein.</p>"}, "guest": {"title": "Hinweise zur Gastnutzung", "html": "<h3>1. Nutzung ohne Registrierung</h3><p>VivaEuropa kann in einem eingeschränkten Umfang ohne eigenes Konto genutzt werden. Als Gast können insbesondere öffentliche Suchergebnisse, Unternehmensprofile und frei zugängliche Informationen angezeigt werden.</p><h3>2. Keine Pflicht zur Registrierung für reine Ansicht</h3><p>Für die reine Nutzung öffentlich zugänglicher Such- und Informationsfunktionen ist grundsätzlich kein Konto erforderlich. Bestimmte Funktionen – etwa Favoriten, persönliche Einstellungen, exklusive Vorteile oder erweiterte KI-Funktionen – können registrierten Nutzern vorbehalten sein.</p><h3>3. Zulässige Nutzung</h3><p>Die Inhalte dürfen für den persönlichen, normalen Gebrauch innerhalb von VivaEuropa genutzt werden. Es ist nicht erlaubt, den Dienst zu manipulieren, Sicherheitsmechanismen zu umgehen oder den Betrieb zu stören.</p><h3>4. Kein Scraping und keine Massenkopien</h3><p>Automatisiertes Scraping, massenhafte Downloads, systematische Übernahme von Unternehmensdaten oder der Aufbau einer konkurrierenden Datenbank aus VivaEuropa-Inhalten sind ohne ausdrückliche Erlaubnis nicht gestattet, soweit keine gesetzliche Erlaubnis besteht.</p><h3>5. Richtigkeit von Informationen</h3><p>Öffnungszeiten, Kontaktdaten, Preise, Angebote, Standortinformationen und sonstige Angaben können sich kurzfristig ändern. Bei wichtigen Entscheidungen sollen Informationen direkt beim jeweiligen Anbieter überprüft werden.</p><h3>6. Standortfunktion</h3><p>Wenn ein Gast die Standortfunktion aktiviert, wird der Standort zur gewünschten Umkreissuche verwendet. Der Nutzer entscheidet über die Standortberechtigung in seinem Gerät bzw. Browser.</p><h3>7. Datenschutz</h3><p>Weitere Informationen zur Verarbeitung personenbezogener Daten stehen in der Datenschutzerklärung von VivaEuropa.</p><h3>8. Rechte an VivaEuropa</h3><p>Marken, Logos, Software, Gestaltung, Datenbankstruktur und geschützte Inhalte dürfen nur im Rahmen der gesetzlichen Bestimmungen und dieser Nutzungsregeln verwendet werden.</p><h3>Prüfhinweis</h3><p>Diese Hinweise sind ein Arbeitsentwurf und müssen vor Veröffentlichung zusammen mit den vollständigen Nutzungsbedingungen und der Datenschutzerklärung rechtlich geprüft werden.</p>"}, "copyright": {"title": "Urheberrecht & Datenbanknutzung", "html": "<h3>1. Zweck</h3><p>Dieses Dokument erläutert in verständlicher Form, wie Inhalte, Daten und technische Bestandteile von VivaEuropa genutzt werden dürfen. Es ergänzt die Nutzungsbedingungen und ersetzt keine gesetzlichen Regelungen.</p><h3>2. VivaEuropa-Inhalte</h3><p>Soweit rechtlich geschützt, können insbesondere Software, Texte, Gestaltung, Grafiken, Logos, Auswahl und Anordnung von Daten sowie die Datenbankstruktur von VivaEuropa urheberrechtlich oder durch weitere Schutzrechte geschützt sein.</p><h3>3. Inhalte von Unternehmen und Nutzern</h3><p>Rechte an von Unternehmen oder Nutzern eingestellten Bildern, Logos, Texten und sonstigen Inhalten können bei den jeweiligen Rechteinhabern liegen. Aus der Anzeige in VivaEuropa folgt keine Erlaubnis, solche Inhalte außerhalb des Dienstes weiterzuverwenden.</p><h3>4. Erlaubte Nutzung</h3><p>Zulässig ist die normale persönliche Nutzung der öffentlich zugänglichen VivaEuropa-Funktionen. Einzelne Informationen dürfen im Rahmen gesetzlicher Schranken genutzt werden.</p><h3>5. Nicht erlaubte Nutzung</h3><p>Ohne ausdrückliche Erlaubnis sind insbesondere nicht gestattet:</p><ul><li>systematisches oder automatisiertes Auslesen von VivaEuropa,</li><li>massenhafte Vervielfältigung von Unternehmensprofilen,</li><li>Aufbau oder Ergänzung konkurrierender Datenbanken aus VivaEuropa-Daten,</li><li>Verkauf oder Lizenzierung kopierter VivaEuropa-Daten,</li><li>Entfernung von Schutz-, Quellen- oder Rechtehinweisen,</li><li>unberechtigte Nutzung von Logos, Marken oder geschützten Bildern.</li></ul><h3>6. Technische Schutzmaßnahmen</h3><p>Der Versuch, Zugriffsbeschränkungen, Rate-Limits, Authentifizierung, Sicherheitsmechanismen oder andere technische Schutzmaßnahmen zu umgehen, ist nicht gestattet.</p><h3>7. Meldung von Rechtsverletzungen</h3><p>Rechteinhaber sollen eine mögliche Rechtsverletzung unter der im Impressum angegebenen Kontaktadresse melden können. Ein geeignetes Melde- und Prüfverfahren wird vor Produktivstart eingerichtet.</p><h3>Prüfhinweis</h3><p>Dieser Entwurf muss vor Veröffentlichung anwaltlich auf die konkrete Datenbankstruktur, Datenquellen, Lizenzmodelle, Markenstrategie und geplante Nutzung externer Daten geprüft werden.</p>"}};
+
 function getFavoriteCompanies(){
   let ids=[];try{ids=JSON.parse(localStorage.getItem('vivaFavorites')||'[]')||[]}catch{}
   return companies.filter(c=>ids.map(Number).includes(Number(c.id)));
 }
+
+function openLegalDocument(key){
+  const d=vivaLegalDocuments[key];
+  if(!d) return;
+  const viewerHtml=`
+    <div class="legal-inapp-viewer">
+      <div class="legal-draft-warning">ENTWURF – noch nicht zur Veröffentlichung freigegeben</div>
+      <div class="legal-inapp-actions">
+        <button type="button" class="ghost" onclick="window.print()">Drucken</button>
+      </div>
+      <article class="legal-inapp-content">${d.html}</article>
+    </div>`;
+  document.querySelector('#moduleEyebrow').textContent='RECHTLICHES';
+  document.querySelector('#moduleTitle').textContent=d.title;
+  document.querySelector('#moduleIntro').textContent='VivaEuropa · Arbeitsentwurf Deutschland · Stand 14.09.2026';
+  document.querySelector('#moduleContent').innerHTML=viewerHtml;
+  localStorage.setItem('vivaLastModule','legal:'+key);
+  setView('module');
+  window.scrollTo({top:0,behavior:'auto'});
+}
+
 function openModule(key){
   const m=moduleData[key];
   if(!m) return;
