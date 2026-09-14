@@ -3379,7 +3379,7 @@ body:not(.splash-active) .legal-footer-live > span{
       <div class="hero">
         <p class="eyebrow">LOKALNE FIRMY • USŁUGI • MIEJSCA</p>
         <h1>Znajdź to, czego potrzebujesz <span>blisko Ciebie.</span></h1>
-        <p class="lead">Na początek testujemy prosty fundament VivaEuropa: lokalizacja, wyszukiwanie i karta firmy.</p>
+        <p class="lead">Finde lokale Unternehmen, Dienstleistungen und Orte in deiner Nähe – schnell und nach Entfernung.</p>
 
         <div class="search-card">
           <label>
@@ -3436,7 +3436,7 @@ body:not(.splash-active) .legal-footer-live > span{
 
       <section class="results-wrap">
         <div class="section-head">
-          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Firmy testowe</h2></div>
+          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Wyniki wyszukiwania</h2></div>
           <span class="pill" id="resultCount">0</span>
         </div>
         <div class="results-mode">
@@ -6464,7 +6464,7 @@ function search(){
     return bs-as || Number(a.distance||0)-Number(b.distance||0);
   });
 
-  els.title.textContent=q||l||selectedCategoryFilter?'Wyniki wyszukiwania':'Firmy testowe';
+  els.title.textContent='Wyniki wyszukiwania';
   render(list);
   renderMapPins(list);
   saveTreePrefs();
@@ -8117,7 +8117,7 @@ async function ensureClientGPS(){
 
   if(vivaLocation){
     refreshCompanyDistances();
-    render(companies);
+    search();
     return true;
   }
   return false;
@@ -8343,7 +8343,7 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setView('home');
   if(!vivaLocation) await requestVivaLocation({silent:true});
   refreshCompanyDistances();
-  render(companies);
+  search();
 };
 
 
