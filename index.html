@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -2751,6 +2751,11 @@ body:not(.splash-active) #companyView .photo-showcase-empty{
   body:not(.splash-active) #companyView .hero-meta-stat{padding:7px 10px;font-size:.95rem}
   body:not(.splash-active) #companyView .hero-category-chip img{width:22px;height:22px}
 }
+
+
+/* ===== v0.88.9 DE-ONLY market mode =====
+   Language dictionaries and selector markup stay in the code for later reactivation. */
+body.viva-de-only .splash-lang-wrap{display:none!important}
 
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -7316,14 +7321,16 @@ function detectVivaLanguage(){
 }
 
 const VIVA_APP_LANGUAGE_KEY='vivaAppLanguage';
+const VIVA_DE_ONLY_MODE=true;
 
 function getVivaAppLanguage(){
+  if(VIVA_DE_ONLY_MODE) return 'de';
   const saved=localStorage.getItem(VIVA_APP_LANGUAGE_KEY);
   return saved && splashTranslations[saved] ? saved : detectVivaLanguage();
-  enforceStarredRequiredFields(document);
 }
 
 function setVivaAppLanguage(code){
+  if(VIVA_DE_ONLY_MODE) code='de';
   if(!splashTranslations[code]) return;
   localStorage.setItem(VIVA_APP_LANGUAGE_KEY,code);
   applySplashLanguage(code);
@@ -7623,6 +7630,10 @@ async function restoreRecoveryAfterRefresh(){
 function initSplash(){
   document.documentElement.classList.add('splash-active');
   document.body.classList.add('splash-active');
+  if(VIVA_DE_ONLY_MODE){
+    document.body.classList.add('viva-de-only');
+    localStorage.setItem(VIVA_APP_LANGUAGE_KEY,'de');
+  }
   const splash=document.querySelector('#splashScreen');
   const text=document.querySelector('#splashText');
   const button=document.querySelector('#splashContinue');
@@ -7633,7 +7644,7 @@ function initSplash(){
   applySplashLanguage(getVivaAppLanguage());
   applyGlobalLanguage(getVivaAppLanguage());
 
-  if(lang && langMenu){
+  if(!VIVA_DE_ONLY_MODE && lang && langMenu){
     lang.onclick=(ev)=>{
       ev.stopPropagation();
       const willOpen=langMenu.classList.contains('hidden');
