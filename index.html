@@ -3370,6 +3370,95 @@ textarea::-webkit-input-placeholder{
   box-sizing:border-box!important;
 }
 
+
+/* ===== v0.90.20 Guest quick categories + full category picker ===== */
+.guest-quick-categories{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:16px!important;
+}
+.guest-quick-category{
+  min-height:82px!important;
+  border:1px solid rgba(73,150,230,.38)!important;
+  border-radius:18px!important;
+  background:rgba(6,27,52,.76)!important;
+  color:#f4f8ff!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:9px 7px!important;
+  font:inherit!important;
+  font-weight:800!important;
+  text-align:center!important;
+  box-sizing:border-box!important;
+}
+.guest-quick-category.active{
+  border-color:#2d8cff!important;
+  background:linear-gradient(145deg,#1769ff,#1f7cff)!important;
+  box-shadow:0 8px 22px rgba(25,113,255,.28)!important;
+}
+.guest-quick-category-icon{
+  width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:10px!important;font-size:25px!important;line-height:1!important;
+}
+.guest-quick-category-icon img{
+  display:block!important;width:34px!important;height:34px!important;object-fit:contain!important;border-radius:8px!important;
+}
+.guest-quick-category-label{
+  display:block!important;font-size:12px!important;line-height:1.15!important;white-space:normal!important;
+}
+.guest-category-picker{
+  position:fixed!important;inset:0!important;z-index:9998!important;
+  display:flex!important;align-items:flex-end!important;justify-content:center!important;
+}
+.guest-category-picker.hidden{display:none!important}
+.guest-category-picker-backdrop{
+  position:absolute!important;inset:0!important;background:rgba(1,10,24,.72)!important;backdrop-filter:blur(3px)!important;
+}
+.guest-category-picker-sheet{
+  position:relative!important;z-index:1!important;width:min(720px,100%)!important;max-height:82vh!important;overflow:auto!important;
+  background:#071d34!important;border:1px solid rgba(72,157,244,.48)!important;border-radius:24px 24px 0 0!important;
+  padding:20px 18px calc(24px + env(safe-area-inset-bottom))!important;box-shadow:0 -18px 54px rgba(0,0,0,.38)!important;
+}
+.guest-category-picker-head{
+  display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;margin-bottom:14px!important;
+}
+.guest-category-picker-head h3{margin:3px 0 0!important;color:#fff!important;font-size:25px!important}
+.guest-category-close{
+  width:42px!important;height:42px!important;border-radius:14px!important;border:1px solid rgba(98,166,235,.42)!important;
+  background:#0b2948!important;color:#fff!important;font-size:29px!important;line-height:1!important;
+}
+.guest-category-search{
+  width:100%!important;height:50px!important;min-height:50px!important;margin:0 0 14px!important;border-radius:14px!important;
+  border:1px solid #3277b5!important;background:#06182d!important;color:#fff!important;padding:0 14px!important;
+  font-size:16px!important;box-sizing:border-box!important;
+}
+.guest-category-tree{display:grid!important;gap:10px!important}
+.guest-category-group{
+  border:1px solid rgba(69,137,204,.34)!important;border-radius:14px!important;overflow:hidden!important;background:rgba(6,29,52,.70)!important;
+}
+.guest-category-group summary{
+  cursor:pointer!important;list-style:none!important;padding:13px 14px!important;color:#fff!important;font-weight:800!important;
+}
+.guest-category-group summary::-webkit-details-marker{display:none!important}
+.guest-category-items{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;padding:0 10px 10px!important;
+}
+.guest-category-item{
+  min-height:42px!important;border:1px solid rgba(69,137,204,.36)!important;border-radius:11px!important;
+  background:#081f38!important;color:#eaf3ff!important;text-align:left!important;padding:8px 10px!important;font-size:13px!important;font-weight:700!important;
+}
+.guest-category-empty{padding:18px!important;color:#aebed1!important;text-align:center!important}
+@media(max-width:420px){
+  .guest-quick-categories{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .guest-quick-category{min-height:80px!important}
+  .guest-category-items{grid-template-columns:1fr!important}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3533,7 +3622,23 @@ textarea::-webkit-input-placeholder{
               </select>
             </label>
           </div>
-          <div class="tree-toolbar" id="categoryFilters"></div>
+          <div class="tree-toolbar guest-quick-categories" id="categoryFilters"></div>
+
+          <div id="guestCategoryPicker" class="guest-category-picker hidden" aria-hidden="true">
+            <div class="guest-category-picker-backdrop" data-category-close></div>
+            <div class="guest-category-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="guestCategoryPickerTitle">
+              <div class="guest-category-picker-head">
+                <div>
+                  <p class="eyebrow">KATEGORIEN</p>
+                  <h3 id="guestCategoryPickerTitle">Kategorie auswählen</h3>
+                </div>
+                <button type="button" class="guest-category-close" data-category-close aria-label="Schließen">×</button>
+              </div>
+              <input id="guestCategorySearch" class="guest-category-search" type="search"
+                     placeholder="z. B. Apotheke, Bäckerei, Taxi" autocomplete="off">
+              <div id="guestCategoryTree" class="guest-category-tree"></div>
+            </div>
+          </div>
           <button class="primary big" id="searchBtn">Szukaj</button>
         </div>
 
@@ -4970,23 +5075,146 @@ function restoreTreePrefs(){
   selectedCategoryFilter=prefs.selectedCategoryFilter||'';
   resultsMode=prefs.resultsMode||'list';
 }
+const VIVA_GUEST_QUICK_CATEGORIES=[
+  {id:'',label:'Alle',icon:'◎'},
+  {id:'__categories__',label:'Kategorien',icon:'▦'},
+  {id:'public_bathroom',label:'WC',icon:'WC'},
+  {id:'__pannenhilfe__',label:'Pannenhilfe',icon:'🔧'},
+  {id:'taxi_service',label:'Taxi',image:'taxi-category-icon.png'},
+  {id:'pharmacy',label:'Apotheke',icon:'✚'},
+  {id:'gas_station',label:'Tankstelle',icon:'⛽'},
+  {id:'electric_vehicle_charging_station',label:'Ladestation',icon:'⚡'}
+];
+
+const VIVA_GUEST_CATEGORY_ALIASES={
+  '__pannenhilfe__':['car_repair','tire_shop','gas_station']
+};
+
+function guestCategoryMatchesCompany(c,filter){
+  if(!filter) return true;
+  const alias=VIVA_GUEST_CATEGORY_ALIASES[filter];
+  if(alias) return alias.includes(String(c.cat||''));
+  return String(c.cat||'')===filter;
+}
+
+function guestQuickCategoryIcon(item){
+  if(item.image){
+    return `<span class="guest-quick-category-icon"><img src="${escapeHtmlAttr(item.image)}" alt=""></span>`;
+  }
+  return `<span class="guest-quick-category-icon">${escapeHtml(item.icon||'•')}</span>`;
+}
+
 function renderCategoryFilters(){
   const root=document.querySelector('#categoryFilters');
   if(!root) return;
-  const cats=['',...categories()];
-  root.innerHTML=cats.map(cat=>{
-    const label=cat ? translateCategory(cat) : vivaTranslateString('Wszystkie',getVivaAppLanguage());
-    return `<button type="button" class="tree-chip ${selectedCategoryFilter===cat?'active':''}" data-cat="${cat}">${label}</button>`;
+
+  const quickIds=new Set(VIVA_GUEST_QUICK_CATEGORIES.map(x=>x.id));
+  const isMasterSelection=!!selectedCategoryFilter && !quickIds.has(selectedCategoryFilter);
+
+  root.innerHTML=VIVA_GUEST_QUICK_CATEGORIES.map(item=>{
+    const active=
+      (item.id==='' && !selectedCategoryFilter) ||
+      (item.id==='__categories__' && isMasterSelection) ||
+      (item.id===selectedCategoryFilter);
+
+    return `<button type="button"
+      class="guest-quick-category ${active?'active':''}"
+      data-quick-cat="${escapeHtmlAttr(item.id)}">
+      ${guestQuickCategoryIcon(item)}
+      <span class="guest-quick-category-label">${escapeHtml(item.label)}</span>
+    </button>`;
   }).join('');
-  root.querySelectorAll('[data-cat]').forEach(btn=>{
+
+  root.querySelectorAll('[data-quick-cat]').forEach(btn=>{
     btn.onclick=()=>{
-      selectedCategoryFilter=btn.dataset.cat||'';
+      const id=btn.dataset.quickCat||'';
+      if(id==='__categories__'){
+        openGuestCategoryPicker();
+        return;
+      }
+      selectedCategoryFilter=id;
       renderCategoryFilters();
       saveTreePrefs();
       search();
     };
   });
 }
+
+function buildGuestCategoryTree(query=''){
+  const root=document.querySelector('#guestCategoryTree');
+  if(!root) return;
+
+  const q=String(query||'').trim().toLocaleLowerCase('de-DE');
+  const groups=[];
+
+  for(const [group,types] of Object.entries(VIVA_CATEGORY_MASTER)){
+    const groupLabel=VIVA_CATEGORY_GROUP_DE[group]||group;
+    const filtered=types.filter(type=>{
+      const label=vivaCategoryLabel(type);
+      return !q ||
+        label.toLocaleLowerCase('de-DE').includes(q) ||
+        type.toLocaleLowerCase('de-DE').includes(q) ||
+        groupLabel.toLocaleLowerCase('de-DE').includes(q);
+    });
+
+    if(!filtered.length) continue;
+
+    groups.push(`
+      <details class="guest-category-group" ${q?'open':''}>
+        <summary>${escapeHtml(groupLabel)} <span>(${filtered.length})</span></summary>
+        <div class="guest-category-items">
+          ${filtered.map(type=>`
+            <button type="button" class="guest-category-item" data-master-cat="${escapeHtmlAttr(type)}">
+              ${escapeHtml(vivaCategoryLabel(type))}
+            </button>
+          `).join('')}
+        </div>
+      </details>
+    `);
+  }
+
+  root.innerHTML=groups.length
+    ? groups.join('')
+    : '<div class="guest-category-empty">Keine passende Kategorie gefunden.</div>';
+
+  root.querySelectorAll('[data-master-cat]').forEach(btn=>{
+    btn.onclick=()=>{
+      selectedCategoryFilter=btn.dataset.masterCat||'';
+      closeGuestCategoryPicker();
+      renderCategoryFilters();
+      saveTreePrefs();
+      search();
+    };
+  });
+}
+
+function openGuestCategoryPicker(){
+  const picker=document.querySelector('#guestCategoryPicker');
+  const searchInput=document.querySelector('#guestCategorySearch');
+  if(!picker) return;
+  picker.classList.remove('hidden');
+  picker.setAttribute('aria-hidden','false');
+  buildGuestCategoryTree('');
+  if(searchInput){
+    searchInput.value='';
+    setTimeout(()=>searchInput.focus(),80);
+  }
+}
+
+function closeGuestCategoryPicker(){
+  const picker=document.querySelector('#guestCategoryPicker');
+  if(!picker) return;
+  picker.classList.add('hidden');
+  picker.setAttribute('aria-hidden','true');
+}
+
+document.querySelectorAll('[data-category-close]').forEach(btn=>{
+  btn.onclick=()=>closeGuestCategoryPicker();
+});
+
+document.querySelector('#guestCategorySearch')?.addEventListener('input',e=>{
+  buildGuestCategoryTree(e.target.value);
+});
 function setResultsMode(mode){
   resultsMode=mode==='map'?'map':'list';
   document.querySelector('#resultsListBtn')?.classList.toggle('active',resultsMode==='list');
@@ -6609,7 +6837,7 @@ function search(){
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
     (!l||`${c.city} ${c.address} ${c.postal||''} ${c.country||''}`.toLowerCase().includes(l)) &&
-    (!selectedCategoryFilter || c.cat===selectedCategoryFilter) &&
+    guestCategoryMatchesCompany(c,selectedCategoryFilter) &&
     Number(c.distance||0)<=radius &&
     (openFilter!=='open' || isOpenNow(c))
   );
