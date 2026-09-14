@@ -6311,7 +6311,7 @@ function showAccount(mode, options={}){
   document.querySelector('#confirmPasswordLabel').classList.toggle('hidden', !reg);
   document.querySelector('#passwordNote').classList.toggle('hidden', !reg);
   document.querySelector('#termsLabel').classList.toggle('hidden', !reg);
-  document.querySelector('#forgotPasswordBtn').classList.toggle('hidden', reg || company);
+  document.querySelector('#forgotPasswordBtn').classList.toggle('hidden', reg);
 
   document.querySelector('#nameInput').required = reg && !company;
   document.querySelector('#surnameInput').required = reg && !company;
