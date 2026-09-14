@@ -3351,6 +3351,26 @@ textarea::-webkit-input-placeholder{
   line-height:1!important;
 }
 
+
+/* ===== RECOVERY STEP 9: equal field heights only ===== */
+#searchInput,
+#radiusSelect,
+#sortSelect,
+#openFilterSelect{
+  height:50px!important;
+  min-height:50px!important;
+  max-height:50px!important;
+  box-sizing:border-box!important;
+}
+
+#radiusSelect,
+#sortSelect,
+#openFilterSelect{
+  padding-top:0!important;
+  padding-bottom:0!important;
+  line-height:50px!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
