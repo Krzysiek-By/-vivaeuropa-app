@@ -4890,6 +4890,7 @@ function activateManualLocation(){
 }
 
 const viewHistory=[];
+const accountModeHistory=[];
 let currentView='home';
 
 
@@ -5043,6 +5044,15 @@ function setView(name, options={}){
 
 function goBack(){
   const logged=localStorage.getItem('vivaLoggedIn')==='1';
+
+  // Konto ma dwa tryby w tym samym widoku (logowanie / rejestracja).
+  // Jeżeli użytkownik przeszedł z logowania do rejestracji, Zurück ma najpierw
+  // wrócić do poprzedniego trybu konta, a dopiero kolejne cofnięcie do VE-002.
+  if(currentView==='account' && accountModeHistory.length){
+    const previousMode=accountModeHistory.pop();
+    showAccount(previousMode,{skipHistory:true,skipAccountModeHistory:true});
+    return;
+  }
 
   while(viewHistory.length){
     const candidate=viewHistory.pop();
@@ -6163,6 +6173,13 @@ function search(){
 let selectedRole='user';
 function showAccount(mode, options={}){
   ensureAccountLanguage();
+  const {skipAccountModeHistory=false}=options;
+  const comingFromAccount=currentView==='account';
+  if(comingFromAccount && accountMode!==mode && !skipAccountModeHistory){
+    accountModeHistory.push(accountMode);
+  }else if(!comingFromAccount && !skipAccountModeHistory){
+    accountModeHistory.length=0;
+  }
   accountMode=mode;
   setView('account',options);
   document.querySelector('#accountForm').classList.remove('hidden');
