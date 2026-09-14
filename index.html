@@ -3394,7 +3394,7 @@ textarea::-webkit-input-placeholder{
       <div class="hero">
         <p class="eyebrow">LOKALNE FIRMY • USŁUGI • MIEJSCA</p>
         <h1>Znajdź to, czego potrzebujesz <span>blisko Ciebie.</span></h1>
-        <p class="lead">Na początek testujemy prosty fundament VivaEuropa: lokalizacja, wyszukiwanie i karta firmy.</p>
+        <p class="lead">Finde lokale Unternehmen, Dienstleistungen und Orte in deiner Nähe – schnell und nach Entfernung.</p>
 
         <div class="search-card">
           <label>
@@ -3451,7 +3451,7 @@ textarea::-webkit-input-placeholder{
 
       <section class="results-wrap">
         <div class="section-head">
-          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Firmy testowe</h2></div>
+          <div><p class="eyebrow">ERGEBNISSE</p><h2 id="resultsTitle">Suchergebnisse</h2></div>
           <span class="pill" id="resultCount">0</span>
         </div>
         <div class="results-mode">
@@ -6479,7 +6479,7 @@ function search(){
     return bs-as || Number(a.distance||0)-Number(b.distance||0);
   });
 
-  els.title.textContent=q||l||selectedCategoryFilter?'Wyniki wyszukiwania':'Firmy testowe';
+  els.title.textContent='Suchergebnisse';
   render(list);
   renderMapPins(list);
   saveTreePrefs();
