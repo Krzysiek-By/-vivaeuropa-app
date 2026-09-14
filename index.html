@@ -6052,30 +6052,30 @@ function search(){
   saveTreePrefs();
 }
 let selectedRole='user';
-function showAccount(mode){
+function showAccount(mode, options={}){
   ensureAccountLanguage();
   accountMode=mode;
-  setView('account');
+  setView('account',options);
   document.querySelector('#accountForm').classList.remove('hidden');
   document.querySelector('#switchModeBtn').classList.remove('hidden');
 
   const reg=mode==='register';
   const company=selectedRole==='company';
+  const de=getVivaAppLanguage()==='de';
 
-  document.querySelector('#accountTitle').textContent =
-    reg ? (company?'Załóż konto firmy':'Załóż konto użytkownika')
-        : (company?'Logowanie firmy':'Logowanie użytkownika');
+  document.querySelector('#accountTitle').textContent = reg
+    ? (company ? (de?'Unternehmenskonto erstellen':'Załóż konto firmy') : (de?'Nutzerkonto erstellen':'Załóż konto użytkownika'))
+    : (company ? (de?'Unternehmen anmelden':'Logowanie firmy') : (de?'Nutzer anmelden':'Logowanie użytkownika'));
 
-  document.querySelector('#accountIntro').textContent =
-    reg
-      ? (company
-          ? 'Utwórz konto firmy do testowania własnych wpisów.'
-          : 'Utwórz bezpłatne konto użytkownika.')
-      : (company
-          ? 'Zaloguj się do testowego konta firmy.'
-          : 'Zaloguj się do swojego konta.');
+  document.querySelector('#accountIntro').textContent = reg
+    ? (company
+        ? (de?'Erstelle ein Unternehmenskonto für deine Einträge.':'Utwórz konto firmy do testowania własnych wpisów.')
+        : (de?'Erstelle ein kostenloses Nutzerkonto.':'Utwórz bezpłatne konto użytkownika.'))
+    : (company
+        ? (de?'Melde dich bei deinem Unternehmenskonto an.':'Zaloguj się do testowego konta firmy.')
+        : (de?'Melde dich bei deinem Konto an.':'Zaloguj się do swojego konta.'));
 
-  document.querySelector('#accountSubmit').textContent=reg?'Załóż konto':'Zaloguj się';
+  document.querySelector('#accountSubmit').textContent=reg?(de?'Konto erstellen':'Załóż konto'):(de?'Anmelden':'Zaloguj się');
 
   document.querySelector('#nameLabel').classList.toggle('hidden', !reg || company);
   document.querySelector('#surnameLabel').classList.toggle('hidden', !reg || company);
@@ -6096,8 +6096,9 @@ function showAccount(mode){
 
   document.querySelector('#passwordInput').autocomplete = reg ? 'new-password' : 'current-password';
 
-  document.querySelector('#switchModeBtn').textContent =
-    reg?'Masz już konto? Zaloguj się':'Nie masz konta? Załóż konto';
+  document.querySelector('#switchModeBtn').textContent = reg
+    ? (de?'Du hast bereits ein Konto? Anmelden':'Masz już konto? Zaloguj się')
+    : (de?'Noch kein Konto? Konto erstellen':'Nie masz konta? Załóż konto');
 
   document.querySelector('#accountStatus').classList.add('hidden');
   updateAccountSubmitState();
@@ -7576,7 +7577,7 @@ function restoreExactView(){
       });
     }
     const savedMode=localStorage.getItem('vivaLastAccountMode');
-    showAccount(savedMode==='register'?'register':'login');
+    showAccount(savedMode==='register'?'register':'login',{skipHistory:true});
     return true;
   }
 
