@@ -8358,7 +8358,7 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setView('home');
   if(!vivaLocation) await requestVivaLocation({silent:true});
   refreshCompanyDistances();
-  render(companies);
+  search();
 };
 
 
