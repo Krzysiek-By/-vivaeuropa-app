@@ -3210,6 +3210,55 @@ body:not(.splash-active) .legal-footer a{
   .legal-draft-warning{color:#000!important;border:1px solid #999!important;background:#fff!important}
 }
 
+
+/* ===== v0.90.8 verified legal footer fix ===== */
+body:not(.splash-active) .legal-footer-live{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px 7px!important;
+  max-width:1100px!important;
+  margin:18px auto 92px!important;
+  padding:16px 18px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+body:not(.splash-active) .legal-footer-live .legal-footer-live-btn{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  border:0!important;
+  background:transparent!important;
+  margin:0!important;
+  padding:8px 4px!important;
+  color:#79BEFF!important;
+  -webkit-text-fill-color:#79BEFF!important;
+  opacity:1!important;
+  visibility:visible!important;
+  font:inherit!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  text-decoration:none!important;
+}
+body:not(.splash-active) .legal-footer-live .legal-footer-live-btn:active{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+}
+body:not(.splash-active) .legal-footer-live > span{
+  color:#79BEFF!important;
+  opacity:.7!important;
+  pointer-events:none!important;
+}
+@media(max-width:620px){
+  body:not(.splash-active) .legal-footer-live{padding:14px 12px!important;gap:2px 5px!important;}
+  body:not(.splash-active) .legal-footer-live .legal-footer-live-btn{font-size:12.5px!important;padding:8px 2px!important;}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3757,14 +3806,14 @@ body:not(.splash-active) .legal-footer a{
 
   </main>
 
-  <footer class="legal-footer" aria-label="Rechtliche Informationen">
-    <a href="#" onclick="openLegalDocument('imprint');return false;">Impressum</a>
-    <span>·</span>
-    <a href="#" onclick="openLegalDocument('privacy');return false;">Datenschutz</a>
-    <span>·</span>
-    <a href="#" onclick="openLegalDocument('terms');return false;">Nutzungsbedingungen</a>
-    <span>·</span>
-    <a href="#" onclick="openLegalDocument('guest');return false;">Gastnutzung</a>
+  <footer class="legal-footer legal-footer-live" aria-label="Rechtliche Informationen" style="position:relative;z-index:99999;pointer-events:auto;isolation:isolate;">
+    <button type="button" class="legal-footer-live-btn" onclick="openLegalDocument('imprint')">Impressum</button>
+    <span aria-hidden="true">·</span>
+    <button type="button" class="legal-footer-live-btn" onclick="openLegalDocument('privacy')">Datenschutz</button>
+    <span aria-hidden="true">·</span>
+    <button type="button" class="legal-footer-live-btn" onclick="openLegalDocument('terms')">Nutzungsbedingungen</button>
+    <span aria-hidden="true">·</span>
+    <button type="button" class="legal-footer-live-btn" onclick="openLegalDocument('guest')">Gastnutzung</button>
   </footer>
 
   <nav class="bottom-nav" aria-label="Nawigacja">
