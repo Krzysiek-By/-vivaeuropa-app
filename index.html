@@ -5283,9 +5283,25 @@ function requestVivaLocation({silent=false}={}){
     }
 
     renderLocationStatus('loading');
+    let finished=false;
+
+    const finish=(ok)=>{
+      if(finished) return;
+      finished=true;
+      clearTimeout(watchdog);
+      resolve(ok);
+    };
+
+    const watchdog=window.setTimeout(()=>{
+      if(finished) return;
+      renderLocationStatus(vivaLocation?'idle':'unavailable');
+      if(!silent && !vivaLocation) showToast('Nie udało się pobrać lokalizacji.');
+      finish(!!vivaLocation);
+    },12000);
 
     navigator.geolocation.getCurrentPosition(
       position=>{
+        if(finished) return;
         saveLocation(position.coords);
         localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
         locationMode='gps';
@@ -5297,17 +5313,20 @@ function requestVivaLocation({silent=false}={}){
         els.loc.value='';
         els.loc.placeholder=vivaTranslateString('Moja lokalizacja (GPS)',getVivaAppLanguage());
         if(!silent) showToast('Lokalizacja została pobrana.');
-        resolve(true);
+        finish(true);
       },
       error=>{
+        if(finished) return;
         if(error && error.code===1){
           renderLocationStatus('denied');
           if(!silent) showToast('Dostęp do lokalizacji nie został udzielony.');
         }else{
-          renderLocationStatus('unavailable');
-          if(!silent) showToast('Nie udało się pobrać lokalizacji.');
+          // Jeśli mamy wcześniejszą poprawną lokalizację, nie pokazuj
+          // nieskończonego "odświeżania" — wróć do ostatniego stanu.
+          renderLocationStatus(vivaLocation?'idle':'unavailable');
+          if(!silent && !vivaLocation) showToast('Nie udało się pobrać lokalizacji.');
         }
-        resolve(false);
+        finish(!!vivaLocation);
       },
       {enableHighAccuracy:true,timeout:10000,maximumAge:300000}
     );
@@ -5401,13 +5420,25 @@ function startPullRefresh(){
   wrap.classList.remove('ready');
   text.textContent='Odświeżam…';
 
-  // Krótka pauza, żeby użytkownik widział reakcję interfejsu,
-  // następnie prawdziwe przeładowanie strony.
+  // iOS/PWA: zwykły reload jest stabilniejszy niż dokładanie
+  // parametru do adresu i location.replace(...).
   window.setTimeout(()=>{
-    const url=new URL(window.location.href);
-    url.searchParams.set('viva_refresh',Date.now().toString());
-    window.location.replace(url.toString());
-  },450);
+    try{
+      window.location.reload();
+    }catch(_){
+      pullRefreshing=false;
+      resetPullRefresh();
+    }
+  },300);
+
+  // Awaryjnie nie zostawiaj spinnera w nieskończoność,
+  // gdy WebView zablokuje przeładowanie.
+  window.setTimeout(()=>{
+    if(pullRefreshing){
+      pullRefreshing=false;
+      resetPullRefresh();
+    }
+  },5000);
 }
 
 document.addEventListener('touchstart',e=>{
@@ -5455,6 +5486,11 @@ document.addEventListener('touchend',()=>{
 document.addEventListener('touchcancel',()=>{
   if(!pullRefreshing) resetPullRefresh();
 },{passive:true});
+
+window.addEventListener('pageshow',()=>{
+  pullRefreshing=false;
+  resetPullRefresh();
+});
 
 function showRefreshConfirmation(){
   const box=document.querySelector('#refreshConfirm');
