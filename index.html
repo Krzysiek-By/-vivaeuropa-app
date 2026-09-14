@@ -2870,6 +2870,42 @@ body:not(.splash-active) #welcomeView .guest-card-emotional .guest-cta{
   }
 }
 
+
+/* ===== v0.89.2 VE-001 + VE-002 micro polish ===== */
+body:not(.splash-active) #welcomeView .role-title{
+  margin-bottom:18px!important;
+}
+.refresh-confirm{
+  gap:8px!important;
+  padding:8px 12px!important;
+  min-height:38px!important;
+  max-width:calc(100vw - 36px)!important;
+  border-radius:999px!important;
+  background:rgba(6,27,52,.94)!important;
+  color:#F7FBFF!important;
+  border:1px solid rgba(72,164,255,.30)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+  font-size:13px!important;
+  line-height:1.15!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  backdrop-filter:blur(10px)!important;
+}
+.refresh-confirm.show{
+  transform:translateX(-50%) translateY(2px)!important;
+}
+.refresh-dot{
+  width:8px!important;
+  height:8px!important;
+  flex:0 0 8px!important;
+  background:#32D583!important;
+  box-shadow:0 0 0 3px rgba(50,213,131,.16),0 0 10px rgba(50,213,131,.35)!important;
+}
+@media(max-width:520px){
+  body:not(.splash-active) #welcomeView .role-title{margin-bottom:16px!important;}
+  .refresh-confirm{padding:7px 11px!important;font-size:12.5px!important;min-height:36px!important;}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4856,8 +4892,7 @@ function showRefreshConfirmation(){
   const now=new Date();
   const hh=String(now.getHours()).padStart(2,'0');
   const mm=String(now.getMinutes()).padStart(2,'0');
-  const ss=String(now.getSeconds()).padStart(2,'0');
-  text.textContent=`Odświeżono ${hh}:${mm}:${ss}`;
+  text.textContent=`Aktualisiert · ${hh}:${mm}`;
   box.classList.add('show');
   window.setTimeout(()=>box.classList.remove('show'),1800);
 }
