@@ -6920,7 +6920,7 @@ function search(){
   let effectiveRadius=requestedRadius;
   let list=baseFilter(effectiveRadius);
 
-  if(!list.length){
+  if(!guestMode && !list.length){
     const larger=radiusSteps.filter(r=>r>requestedRadius);
     for(const candidate of larger){
       const candidateList=baseFilter(candidate);
@@ -6934,7 +6934,13 @@ function search(){
 
   const note=document.querySelector('#radiusExpandNote');
   if(note){
-    if(list.length && effectiveRadius>requestedRadius){
+    if(guestMode && !list.length){
+      note.textContent=vivaTemplate(
+        'Im gewählten Umkreis von {from} km wurden keine Ergebnisse gefunden.',
+        {from:requestedRadius}
+      );
+      note.classList.add('show');
+    }else if(list.length && effectiveRadius>requestedRadius){
       note.textContent=vivaTemplate(
         'W promieniu {from} km nic nie znaleziono. Pokazujemy wyniki do {to} km.',
         {from:requestedRadius,to:effectiveRadius}
