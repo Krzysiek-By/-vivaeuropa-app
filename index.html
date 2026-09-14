@@ -3259,102 +3259,6 @@ body:not(.splash-active) .legal-footer-live > span{
   body:not(.splash-active) .legal-footer-live .legal-footer-live-btn{font-size:12.5px!important;padding:8px 2px!important;}
 }
 
-
-/* ===== RECOVERY: placeholder hierarchy ===== */
-body:not(.splash-active) input::placeholder,
-body:not(.splash-active) textarea::placeholder,
-input::placeholder,
-textarea::placeholder{
-  color:rgba(164,178,196,.58)!important;
-  opacity:1!important;
-  font-weight:400!important;
-}
-body:not(.splash-active) input::-webkit-input-placeholder,
-body:not(.splash-active) textarea::-webkit-input-placeholder{
-  color:rgba(164,178,196,.58)!important;
-  opacity:1!important;
-  font-weight:400!important;
-}
-
-
-/* ===== RECOVERY SAFE: guest compact UI ===== */
-.manual-location-row.hidden{display:none!important}
-.location-status-inline{
-  display:flex!important;
-  align-items:center!important;
-  gap:8px!important;
-}
-
-#searchInput,
-#radiusSelect,
-#sortSelect,
-#openFilterSelect{
-  width:100%!important;
-  min-height:50px!important;
-  height:50px!important;
-  border-radius:14px!important;
-  font-size:16px!important;
-  line-height:1.2!important;
-}
-
-#searchInput{padding:0 15px!important}
-
-#radiusSelect,
-#sortSelect,
-#openFilterSelect{
-  padding:0 40px 0 15px!important;
-}
-
-body.guest-mode .location-status-inline{
-  min-height:32px!important;
-  margin-top:8px!important;
-  padding:5px 7px!important;
-  gap:7px!important;
-  border:0!important;
-  border-radius:9px!important;
-  background:transparent!important;
-  box-shadow:none!important;
-}
-
-body.guest-mode .location-status-dot{
-  width:9px!important;
-  height:9px!important;
-  min-width:9px!important;
-  min-height:9px!important;
-  box-shadow:0 0 8px rgba(34,211,143,.55)!important;
-}
-
-body.guest-mode #locationStatusText{
-  flex:1!important;
-  font-size:13px!important;
-  font-weight:700!important;
-  line-height:1.2!important;
-  color:rgba(220,234,247,.88)!important;
-}
-
-body.guest-mode .gps-refresh-inline{
-  min-width:28px!important;
-  width:28px!important;
-  height:28px!important;
-  padding:0!important;
-  border:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:transparent!important;
-  font-size:0!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-}
-
-body.guest-mode .gps-refresh-inline::before{
-  content:"↻";
-  color:#FFD24B;
-  font-size:20px;
-  line-height:1;
-  font-weight:800;
-}
-
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3475,7 +3379,7 @@ body.guest-mode .gps-refresh-inline::before{
       <div class="hero">
         <p class="eyebrow">LOKALNE FIRMY • USŁUGI • MIEJSCA</p>
         <h1>Znajdź to, czego potrzebujesz <span>blisko Ciebie.</span></h1>
-        <p class="lead">Finde lokale Unternehmen, Dienstleistungen und Orte in deiner Nähe – schnell und nach Entfernung.</p>
+        <p class="lead">Na początek testujemy prosty fundament VivaEuropa: lokalizacja, wyszukiwanie i karta firmy.</p>
 
         <div class="search-card">
           <label>
@@ -3488,15 +3392,9 @@ body.guest-mode .gps-refresh-inline::before{
               <button type="button" class="location-mode-btn active" id="locationModeGps">◎ GPS</button>
               <button type="button" class="location-mode-btn" id="locationModeManual">⌨ Ręcznie</button>
             </div>
-
-            <div class="location-row manual-location-row hidden" id="manualLocationRow">
-              <input id="locationInput" placeholder="np. Kraków, 31-042, Rynek Główny 1" autocomplete="off" />
-            </div>
-
-            <div id="locationStatus" class="location-status location-status-inline">
-              <span class="location-status-dot"></span>
-              <span id="locationStatusText">Lokalizacja nie została jeszcze pobrana.</span>
-              <button class="gps-refresh-inline" id="gpsBtn" type="button" title="Odśwież GPS">↻</button>
+            <div class="location-row">
+              <input id="locationInput" placeholder="Moja lokalizacja (GPS)" autocomplete="off" disabled />
+              <button class="icon-btn" id="gpsBtn" title="Odśwież GPS">↻</button>
             </div>
           </label>
           <div class="search-advanced">
@@ -3529,11 +3427,16 @@ body.guest-mode .gps-refresh-inline::before{
           <button class="primary big" id="searchBtn">Szukaj</button>
         </div>
 
+        <div id="locationStatus" class="location-status">
+          <span class="location-status-dot"></span>
+          <span id="locationStatusText">Lokalizacja nie została jeszcze pobrana.</span>
+        </div>
+
       </div>
 
       <section class="results-wrap">
         <div class="section-head">
-          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Wyniki wyszukiwania</h2></div>
+          <div><p class="eyebrow">WYNIKI</p><h2 id="resultsTitle">Firmy testowe</h2></div>
           <span class="pill" id="resultCount">0</span>
         </div>
         <div class="results-mode">
@@ -3969,12 +3872,9 @@ const ADMIN_PASS='Viva2026!';
 let guestMode = localStorage.getItem('vivaGuestMode')==='1';
 function setGuestMode(on){
   guestMode=!!on;
-  document.body.classList.toggle('guest-mode',guestMode);
   if(guestMode) localStorage.setItem('vivaGuestMode','1');
   else localStorage.removeItem('vivaGuestMode');
 }
-
-document.body.classList.toggle('guest-mode',guestMode);
 
 function showToast(message){
   const old=document.querySelector('.app-toast');
@@ -5075,32 +4975,29 @@ function setLocationMode(mode,{requestGps=false}={}){
 
   if(!els?.loc) return;
 
-  const manualRow=document.querySelector('#manualLocationRow');
-  const gpsRefresh=document.querySelector('#gpsBtn');
-
   if(locationMode==='gps'){
-    if(manualRow) manualRow.classList.add('hidden');
-    if(gpsRefresh) gpsRefresh.classList.remove('hidden');
     els.loc.disabled=true;
     els.loc.value='';
-    if(requestGps) requestVivaLocation();
-    else renderLocationStatus();
+    els.loc.placeholder=vivaTranslateString('Moja lokalizacja (GPS)',getVivaAppLanguage());
+    if(requestGps){
+      requestVivaLocation();
+    }else{
+      renderLocationStatus();
+    }
     return;
   }
 
-  if(manualRow) manualRow.classList.remove('hidden');
-  if(gpsRefresh) gpsRefresh.classList.add('hidden');
   els.loc.disabled=false;
   els.loc.placeholder=vivaTranslateString('np. Kraków, 31-042, Rynek Główny 1',getVivaAppLanguage());
   const saved=loadManualLocation();
   els.loc.value=saved||'';
 
   const wrap=document.querySelector('#locationStatus');
-  const statusText=document.querySelector('#locationStatusText');
-  if(wrap && statusText){
+  const text=document.querySelector('#locationStatusText');
+  if(wrap && text){
     wrap.classList.remove('warn');
     wrap.classList.add('ok');
-    statusText.textContent=saved
+    text.textContent=saved
       ? vivaTranslateString(`Lokalizacja ręczna: ${saved}`,getVivaAppLanguage())
       : vivaTranslateString('Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.',getVivaAppLanguage());
   }
@@ -5145,25 +5042,20 @@ function renderLocationStatus(mode='idle'){
 
   if(vivaLocation){
     wrap.classList.add('ok');
-    if(isGuestMode()){
-      const gpsText={pl:'GPS aktywny',de:'GPS aktiv',en:'GPS active',fr:'GPS actif',it:'GPS attivo',es:'GPS activo'};
+    const meters=Math.round(vivaLocation.accuracy||0);
+    if(meters){
+      const gpsText={
+        pl:`GPS aktywny, dokładność ok. ${meters} m.`,
+        de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
+        en:`GPS active, accuracy approx. ${meters} m.`,
+        fr:`GPS actif, précision env. ${meters} m.`,
+        it:`GPS attivo, precisione ca. ${meters} m.`,
+        es:`GPS activo, precisión aprox. ${meters} m.`
+      };
       text.textContent=gpsText[lang]||gpsText.en;
     }else{
-      const meters=Math.round(vivaLocation.accuracy||0);
-      if(meters){
-        const gpsText={
-          pl:`GPS aktywny, dokładność ok. ${meters} m.`,
-          de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
-          en:`GPS active, accuracy approx. ${meters} m.`,
-          fr:`GPS actif, précision env. ${meters} m.`,
-          it:`GPS attivo, precisione ca. ${meters} m.`,
-          es:`GPS activo, precisión aprox. ${meters} m.`
-        };
-        text.textContent=gpsText[lang]||gpsText.en;
-      }else{
-        const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
-        text.textContent=gpsText[lang]||gpsText.en;
-      }
+      const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
+      text.textContent=gpsText[lang]||gpsText.en;
     }
     return;
   }
@@ -6509,27 +6401,6 @@ function openModule(key){
   if(key==='companyData') bindCompanyMasterForm();
   applyGlobalLanguage(lang);
 }
-
-function applyGuestRadiusLimit(){
-  const sel=document.querySelector('#radiusSelect');
-  if(!sel) return;
-
-  if(!sel.dataset.fullOptions) sel.dataset.fullOptions=sel.innerHTML;
-  const current=Number(sel.value||5);
-
-  if(isGuestMode()){
-    sel.innerHTML=`
-      <option value="1">bis 1 km</option>
-      <option value="5">5 km</option>
-      <option value="10">10 km</option>`;
-    sel.value=String(current>10?10:(current===1?1:current===10?10:5));
-  }else{
-    sel.innerHTML=sel.dataset.fullOptions;
-    const values=[...sel.options].map(o=>o.value);
-    sel.value=values.includes(String(current))?String(current):(values.includes('5')?'5':values[0]);
-  }
-}
-
 function search(){
   refreshCompanyDistances();
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
@@ -6541,12 +6412,10 @@ function search(){
   const q=els.query.value.trim().toLowerCase();
   const l=rawLocation.toLowerCase();
   const radiusSelect=document.querySelector('#radiusSelect');
-  applyGuestRadiusLimit();
-  const rawRequestedRadius=Number(radiusSelect?.value||5);
-  const requestedRadius=isGuestMode()?Math.min(rawRequestedRadius,10):rawRequestedRadius;
+  const requestedRadius=Number(radiusSelect?.value||5);
   const sort=document.querySelector('#sortSelect')?.value||'distance';
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
-  const radiusSteps=isGuestMode()?[1,5,10]:[1,5,10,15,20,50,100];
+  const radiusSteps=[1,5,10,15,20,50,100];
 
   const baseFilter=(radius)=>companies.filter(c=>
     c.moderationStatus!=='blocked' &&
@@ -6595,7 +6464,7 @@ function search(){
     return bs-as || Number(a.distance||0)-Number(b.distance||0);
   });
 
-  els.title.textContent='Wyniki wyszukiwania';
+  els.title.textContent=q||l||selectedCategoryFilter?'Wyniki wyszukiwania':'Firmy testowe';
   render(list);
   renderMapPins(list);
   saveTreePrefs();
@@ -7247,7 +7116,7 @@ els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 
 document.querySelector('#locationModeGps').onclick=()=>{
   localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
-  setLocationMode('gps',{requestGps:true});
+  setLocationMode('gps',{requestGps:!vivaLocation});
 };
 document.querySelector('#locationModeManual').onclick=()=>setLocationMode('manual');
 
@@ -8474,7 +8343,7 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setView('home');
   if(!vivaLocation) await requestVivaLocation({silent:true});
   refreshCompanyDistances();
-  search();
+  render(companies);
 };
 
 
