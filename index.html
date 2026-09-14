@@ -3062,6 +3062,26 @@ body:not(.splash-active) #companyCountryRegister:focus{
   box-shadow:none!important;
 }
 
+
+/* ===== v0.90.0 VE-005 company legal-name guidance ===== */
+body:not(.splash-active) #companyNameLabel .company-register-help{
+  display:block;
+  margin-top:8px;
+  color:rgba(190,204,220,.78);
+  font-size:12.5px;
+  line-height:1.45;
+  font-weight:500;
+}
+body:not(.splash-active) #companyNameInput::placeholder{
+  color:rgba(209,218,228,.76)!important;
+}
+@media(max-width:520px){
+  body:not(.splash-active) #companyNameLabel .company-register-help{
+    font-size:12px;
+    line-height:1.4;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3269,7 +3289,11 @@ body:not(.splash-active) #companyCountryRegister:focus{
           <div class="account-grid">
             <label id="nameLabel" class="hidden">Imię<input id="nameInput" autocomplete="given-name" /></label>
             <label id="surnameLabel" class="hidden">Nazwisko<input id="surnameInput" autocomplete="family-name" /></label>
-            <label id="companyNameLabel" class="full hidden">Nazwa firmy<input id="companyNameInput" autocomplete="organization" /></label>
+            <label id="companyNameLabel" class="full hidden">
+              <span>Rechtlicher Unternehmensname</span>
+              <input id="companyNameInput" autocomplete="organization" placeholder="z. B. Musterfirma GmbH" />
+              <small class="company-register-help">Bitte den offiziellen Unternehmensnamen eintragen – nicht den Namen einer Filiale oder eines Standorts. Den Namen eines Geschäftsbereichs oder einer Filiale gibst du später separat ein.</small>
+            </label>
             <label id="companyCountryRegisterLabel" class="full hidden">Kraj firmy
               <input id="companyCountryRegister" type="text" value="Deutschland" readonly aria-readonly="true" autocomplete="off">
             </label>
