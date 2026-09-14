@@ -370,18 +370,44 @@ input:-webkit-autofill:focus{
 .app-toast{
   position:fixed;
   left:50%;
-  top:18px;
+  top:max(10px, calc(env(safe-area-inset-top) + 8px));
   transform:translateX(-50%);
   z-index:1200;
-  max-width:min(92vw,520px);
-  padding:12px 16px;
-  border-radius:14px;
-  background:#eaf8ee;
-  color:#1f6a35;
-  border:1px solid #bfe5c8;
-  box-shadow:0 14px 38px rgba(22,55,90,.16);
+  width:auto;
+  min-width:180px;
+  max-width:min(calc(100vw - 32px), 360px);
+  padding:10px 14px 12px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(8,29,55,.97), rgba(4,19,39,.97));
+  color:#F7FBFF;
+  border:1px solid rgba(82,168,255,.34);
+  box-shadow:0 12px 26px rgba(6,18,36,.32), inset 0 0 0 1px rgba(244,176,0,.10);
   font-weight:700;
+  font-size:14px;
+  line-height:1.35;
+  letter-spacing:.01em;
   text-align:center;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  animation:toastIn .18s ease-out;
+}
+.app-toast::before{
+  content:"";
+  display:block;
+  width:44px;
+  height:3px;
+  margin:0 auto 8px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #F4B000, #3E92FF);
+  opacity:.95;
+}
+@keyframes toastIn{
+  from{opacity:0;transform:translateX(-50%) translateY(-8px) scale(.98);}
+  to{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+}
+@media(max-width:640px){
+  .app-toast{max-width:min(calc(100vw - 28px), 320px);padding:9px 12px 11px;font-size:13.5px;}
+  .app-toast::before{width:38px;margin-bottom:7px;}
 }
 
 .account-menu{display:flex;align-items:center;gap:8px}
@@ -3620,9 +3646,11 @@ function showToast(message){
   if(old) old.remove();
   const toast=document.createElement('div');
   toast.className='app-toast';
-  toast.textContent=message;
+  const raw=String(message ?? '');
+  const lang=(typeof getVivaAppLanguage==='function' ? getVivaAppLanguage() : 'de') || 'de';
+  toast.textContent=(typeof vivaTranslateString==='function' ? vivaTranslateString(raw, lang) : raw);
   document.body.appendChild(toast);
-  setTimeout(()=>toast.remove(),2600);
+  setTimeout(()=>toast.remove(),2400);
 }
 
 
@@ -7496,6 +7524,12 @@ function vivaTranslateString(source,lang){
     }],
     [/^Zalogowano firmę: (.+)\.$/, {
       de:m=>`Unternehmen angemeldet: ${m[1]}.`, en:m=>`Business logged in: ${m[1]}.`, fr:m=>`Entreprise connectée : ${m[1]}.`, it:m=>`Azienda connessa: ${m[1]}.`, es:m=>`Empresa conectada: ${m[1]}.`
+    }],
+    [/^Wylogowano z konta\.$/, {
+      de:()=>`Abgemeldet.`, en:()=>`Logged out.`, fr:()=>`Déconnecté.`, it:()=>`Disconnesso.`, es:()=>`Sesión cerrada.`
+    }],
+    [/^Wylogowano z konta firmy\.$/, {
+      de:()=>`Unternehmenskonto abgemeldet.`, en:()=>`Business account logged out.`, fr:()=>`Compte entreprise déconnecté.`, it:()=>`Account aziendale disconnesso.`, es:()=>`Cuenta de empresa cerró sesión.`
     }],
     [/^Konto firmy utworzone\. Witaj, (.+)!$/, {
       de:m=>`Unternehmenskonto erstellt. Willkommen, ${m[1]}!`, en:m=>`Business account created. Welcome, ${m[1]}!`, fr:m=>`Compte entreprise créé. Bienvenue, ${m[1]} !`, it:m=>`Account azienda creato. Benvenuto, ${m[1]}!`, es:m=>`Cuenta de empresa creada. ¡Bienvenido, ${m[1]}!`
