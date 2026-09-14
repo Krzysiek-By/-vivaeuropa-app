@@ -3360,6 +3360,87 @@ body:not(.splash-active) textarea::-webkit-input-placeholder{
   font-weight:600;
 }
 
+
+/* ===== v0.91.3 Guest UI compact polish ===== */
+
+/* Search + selects: one consistent field size */
+#searchInput,
+#radiusSelect,
+#sortSelect,
+#openFilterSelect{
+  width:100%!important;
+  min-height:50px!important;
+  height:50px!important;
+  border-radius:14px!important;
+  font-size:16px!important;
+  line-height:1.2!important;
+}
+
+#searchInput{
+  padding:0 15px!important;
+}
+
+#radiusSelect,
+#sortSelect,
+#openFilterSelect{
+  padding:0 40px 0 15px!important;
+  background-position:
+    calc(100% - 19px) 22px,
+    calc(100% - 13px) 22px,
+    0 0!important;
+}
+
+/* Guest GPS status: subtle, not a large info card */
+body.guest-mode .location-status-inline{
+  min-height:32px!important;
+  margin-top:8px!important;
+  padding:5px 7px!important;
+  gap:7px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+body.guest-mode .location-status-dot{
+  width:9px!important;
+  height:9px!important;
+  min-width:9px!important;
+  min-height:9px!important;
+  box-shadow:0 0 8px rgba(34,211,143,.55)!important;
+}
+
+body.guest-mode #locationStatusText{
+  flex:1!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  color:rgba(220,234,247,.88)!important;
+}
+
+body.guest-mode .gps-refresh-inline{
+  min-width:28px!important;
+  width:28px!important;
+  height:28px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:transparent!important;
+  font-size:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+body.guest-mode .gps-refresh-inline::before{
+  content:"↻";
+  color:#FFD24B;
+  font-size:20px;
+  line-height:1;
+  font-weight:800;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3974,9 +4055,12 @@ const ADMIN_PASS='Viva2026!';
 let guestMode = localStorage.getItem('vivaGuestMode')==='1';
 function setGuestMode(on){
   guestMode=!!on;
+  document.body.classList.toggle('guest-mode',guestMode);
   if(guestMode) localStorage.setItem('vivaGuestMode','1');
   else localStorage.removeItem('vivaGuestMode');
 }
+
+document.body.classList.toggle('guest-mode',guestMode);
 
 function showToast(message){
   const old=document.querySelector('.app-toast');
@@ -5151,20 +5235,25 @@ function renderLocationStatus(mode='idle'){
 
   if(vivaLocation){
     wrap.classList.add('ok');
-    const meters=Math.round(vivaLocation.accuracy||0);
-    if(meters){
-      const gpsText={
-        pl:`GPS aktywny, dokładność ok. ${meters} m.`,
-        de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
-        en:`GPS active, accuracy approx. ${meters} m.`,
-        fr:`GPS actif, précision env. ${meters} m.`,
-        it:`GPS attivo, precisione ca. ${meters} m.`,
-        es:`GPS activo, precisión aprox. ${meters} m.`
-      };
+    if(isGuestMode()){
+      const gpsText={pl:'GPS aktywny',de:'GPS aktiv',en:'GPS active',fr:'GPS actif',it:'GPS attivo',es:'GPS activo'};
       text.textContent=gpsText[lang]||gpsText.en;
     }else{
-      const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
-      text.textContent=gpsText[lang]||gpsText.en;
+      const meters=Math.round(vivaLocation.accuracy||0);
+      if(meters){
+        const gpsText={
+          pl:`GPS aktywny, dokładność ok. ${meters} m.`,
+          de:`GPS aktiv, Genauigkeit ca. ${meters} m.`,
+          en:`GPS active, accuracy approx. ${meters} m.`,
+          fr:`GPS actif, précision env. ${meters} m.`,
+          it:`GPS attivo, precisione ca. ${meters} m.`,
+          es:`GPS activo, precisión aprox. ${meters} m.`
+        };
+        text.textContent=gpsText[lang]||gpsText.en;
+      }else{
+        const gpsText={pl:'GPS aktywny.',de:'GPS aktiv.',en:'GPS active.',fr:'GPS actif.',it:'GPS attivo.',es:'GPS activo.'};
+        text.textContent=gpsText[lang]||gpsText.en;
+      }
     }
     return;
   }
@@ -6515,15 +6604,22 @@ function applyGuestRadiusLimit(){
   const sel=document.querySelector('#radiusSelect');
   if(!sel) return;
 
-  const guest=isGuestMode();
-  [...sel.options].forEach(opt=>{
-    const km=Number(opt.value||0);
-    opt.hidden=guest && km>10;
-    opt.disabled=guest && km>10;
-  });
+  if(!sel.dataset.fullOptions){
+    sel.dataset.fullOptions=sel.innerHTML;
+  }
 
-  if(guest && Number(sel.value)>10){
-    sel.value='10';
+  const current=Number(sel.value||5);
+
+  if(isGuestMode()){
+    sel.innerHTML=`
+      <option value="1">bis 1 km</option>
+      <option value="5">5 km</option>
+      <option value="10">10 km</option>`;
+    sel.value=String(current>10?10:(current===1?1:current===10?10:5));
+  }else{
+    sel.innerHTML=sel.dataset.fullOptions;
+    const values=[...sel.options].map(o=>o.value);
+    sel.value=values.includes(String(current))?String(current):(values.includes('5')?'5':values[0]);
   }
 }
 
