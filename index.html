@@ -2906,6 +2906,45 @@ body:not(.splash-active) #welcomeView .role-title{
   .refresh-confirm{padding:7px 11px!important;font-size:12.5px!important;min-height:36px!important;}
 }
 
+
+/* ===== v0.89.4 VE-008 reset layout polish ===== */
+body:not(.splash-active) #resetView.active{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr);
+  min-height:calc(100svh - 72px);
+  padding-bottom:max(26px,env(safe-area-inset-bottom));
+}
+body:not(.splash-active) #resetView .view-back-row{
+  width:100%;
+  margin:0 auto!important;
+  padding-top:20px!important;
+  padding-bottom:10px!important;
+}
+body:not(.splash-active) #resetView .reset-card{
+  align-self:center;
+  width:min(620px,calc(100% - 32px));
+  margin:28px auto 42px!important;
+}
+body:not(.splash-active) #resetView .reset-card .muted{
+  margin-bottom:28px!important;
+}
+body:not(.splash-active) #resetView #resetForm{
+  margin-top:0!important;
+  gap:18px!important;
+}
+body:not(.splash-active) #resetView #resetForm > label{
+  gap:10px!important;
+}
+@media (max-width:800px){
+  body:not(.splash-active) #resetView.active{min-height:calc(100svh - 70px)}
+  body:not(.splash-active) #resetView .view-back-row{padding-top:18px!important;padding-bottom:12px!important}
+  body:not(.splash-active) #resetView .reset-card{
+    width:calc(100% - 28px);
+    margin:24px auto 34px!important;
+  }
+  body:not(.splash-active) #resetView .reset-card .muted{margin-bottom:24px!important}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3164,7 +3203,7 @@ body:not(.splash-active) #welcomeView .role-title{
         <form id="resetForm">
           <label class="full">
             E-mail
-            <input id="resetEmailInput" type="email" autocomplete="email" placeholder="np. twoj@email.pl" required>
+            <input id="resetEmailInput" type="email" autocomplete="email" placeholder="z. B. name@beispiel.de" required>
           </label>
 
           <div class="reset-actions">
@@ -3172,7 +3211,6 @@ body:not(.splash-active) #welcomeView .role-title{
           </div>
 
           <div id="resetStatus" class="reset-status hidden"></div>
-          <div class="reset-note">Wiadomość resetująca zostanie wysłana przez Supabase. Na tym etapie testujemy tylko, czy e-mail rzeczywiście dochodzi.</div>
         </form>
       </div>
     </section>
