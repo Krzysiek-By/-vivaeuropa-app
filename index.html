@@ -2757,6 +2757,113 @@ body:not(.splash-active) #companyView .photo-showcase-empty{
    Language dictionaries and selector markup stay in the code for later reactivation. */
 body.viva-de-only .splash-lang-wrap{display:none!important}
 
+
+/* ===== v0.89.0 VE-002 emotional guest choice ===== */
+body:not(.splash-active) #welcomeView .guest-card-emotional{
+  overflow:hidden!important;
+  padding:22px!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-head{
+  align-items:flex-start!important;
+  margin-bottom:16px!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional h3{
+  margin:1px 0 7px!important;
+  font-size:22px!important;
+  line-height:1.18!important;
+  letter-spacing:-.01em!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-intro,
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-close{
+  color:#AFC4DF!important;
+  font-size:15px!important;
+  line-height:1.52!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-intro{
+  margin:0!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional strong{
+  color:#F5F9FF!important;
+  font-weight:800!important;
+}
+body:not(.splash-active) #welcomeView .guest-list-emotional{
+  margin:18px 0 0!important;
+  padding:0!important;
+  display:grid!important;
+  gap:12px!important;
+  font-size:15px!important;
+  line-height:1.48!important;
+}
+body:not(.splash-active) #welcomeView .guest-list-emotional li{
+  position:relative!important;
+  padding-left:24px!important;
+  color:#AFC4DF!important;
+}
+body:not(.splash-active) #welcomeView .guest-list-emotional li::before{
+  left:2px!important;
+  top:.15em!important;
+  font-size:18px!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-close{
+  margin:20px 0 0!important;
+  padding:16px 17px!important;
+  border:1px solid rgba(72,164,255,.24)!important;
+  border-radius:16px!important;
+  background:rgba(9,35,69,.48)!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-choice-actions{
+  margin-top:20px!important;
+  gap:11px!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-benefits-cta{
+  min-height:58px!important;
+  font-size:17px!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+}
+body:not(.splash-active) #welcomeView .guest-card-emotional .guest-cta{
+  min-height:54px!important;
+  font-size:16px!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+}
+@media(max-width:520px){
+  body:not(.splash-active) #welcomeView .guest-card-emotional{
+    padding:17px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-head{
+    gap:10px!important;
+    margin-bottom:14px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional h3{
+    font-size:20px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-intro,
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-close,
+  body:not(.splash-active) #welcomeView .guest-list-emotional{
+    font-size:14px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-list-emotional{
+    gap:10px!important;
+    margin-top:16px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-emotional-close{
+    margin-top:17px!important;
+    padding:14px 15px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-choice-actions{
+    margin-top:17px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-benefits-cta{
+    min-height:56px!important;
+    font-size:16px!important;
+  }
+  body:not(.splash-active) #welcomeView .guest-card-emotional .guest-cta{
+    min-height:52px!important;
+    font-size:15px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -2844,24 +2951,25 @@ body.viva-de-only .splash-lang-wrap{display:none!important}
                 <button class="ghost" id="welcomeRegisterBtn">Załóż konto</button>
               </div>
             </div>
-            <div class="guest-card">
+            <div class="guest-card guest-card-emotional">
               <div class="guest-head">
                 <div class="guest-icon" aria-hidden="true">👤</div>
                 <div>
-                  <h3>Wejdź jako gość</h3>
-                  <p>Jako gość możesz korzystać z aplikacji, ale omija Cię część najciekawszych korzyści.</p>
+                  <h3>Als Gast weitermachen</h3>
+                  <p class="guest-emotional-intro">Du kannst VivaEuropa auch ohne Konto nutzen. Aber dann verpasst du genau die Vorteile, die dir unterwegs <strong>Zeit, Geld und gute Gelegenheiten sparen können.</strong></p>
                 </div>
               </div>
-              <ul class="guest-list">
-                <li>ekskluzywne korzyści i rabaty tylko dla zalogowanych</li>
-                <li>specjalne oferty i promocje niedostępne dla gości</li>
-                <li>ulubione firmy i zapisane miejsca</li>
-                <li>profile Urlop / Praca / Relaks / Hobby</li>
-                <li>pełniejszy dostęp do informacji i funkcji aplikacji</li>
+              <ul class="guest-list guest-list-emotional">
+                <li><strong>Exklusive Rabatte und Vorteile</strong> bleiben dir verborgen.</li>
+                <li><strong>Besondere Angebote und Aktionen</strong> siehst du als Gast nicht.</li>
+                <li>Deine <strong>Lieblingsorte und interessante Unternehmen</strong> kannst du nicht speichern.</li>
+                <li>VivaEuropa passt sich <strong>nicht an deine persönlichen Interessen</strong> an.</li>
+                <li>Einige hilfreiche Funktionen bleiben <strong>nur registrierten Nutzern vorbehalten.</strong></li>
               </ul>
+              <p class="guest-emotional-close">Mit einem kostenlosen Konto kannst du deine Favoriten speichern, mehr Vorteile entdecken und VivaEuropa <strong>zu deiner persönlichen App für unterwegs machen.</strong></p>
               <div class="guest-choice-actions">
-                <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Zyskaj pełne korzyści</button>
-                <button class="ghost guest-cta" id="welcomeGuestBtn">Kontynuuj jako gość</button>
+                <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
+                <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
               </div>
             </div>
           </div>
