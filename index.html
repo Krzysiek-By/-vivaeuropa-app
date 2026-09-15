@@ -8327,6 +8327,7 @@ document.querySelector('#editorCancelBtn').onclick=renderCurrentPanel;
 document.querySelector('#companyForm').onsubmit=async e=>{
   e.preventDefault();
 
+  let vivaCompanySaveStage='start';
   const saveBtn=document.querySelector('#companySaveBtn');
   if(saveBtn?.dataset.saving==='1') return;
   const originalSaveText=saveBtn?.textContent||'Zapisz placówkę';
@@ -8339,6 +8340,7 @@ document.querySelector('#companyForm').onsubmit=async e=>{
   showCompanySaveStatus('Wird gespeichert…','warn');
 
   try{
+    vivaCompanySaveStage='read-form';
     const data={
       name:document.querySelector('#fName').value.trim(),
       cat:document.querySelector('#fCat').value.trim(),
@@ -8389,6 +8391,7 @@ document.querySelector('#companyForm').onsubmit=async e=>{
     }
     const addressChanged=!existing || existing.geocodeKey!==data.geocodeKey;
     if(addressChanged || !Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
+      vivaCompanySaveStage='geocode-address';
       showCompanySaveStatus('Adresse wird geprüft und GPS ermittelt…','warn');
       const gpsOk=await geocodeCompanyAddress({silent:false});
       if(gpsOk){
@@ -8404,6 +8407,7 @@ document.querySelector('#companyForm').onsubmit=async e=>{
       return;
     }
 
+    vivaCompanySaveStage='validate-fields';
     const requiredValues=[
       ['Name des Geschäftsbereichs',data.name],
       ['Kategorie',data.cat],
@@ -8437,6 +8441,7 @@ document.querySelector('#companyForm').onsubmit=async e=>{
       return;
     }
 
+    vivaCompanySaveStage='update-company-list';
     if(editingId===null){
       const nextId=companies.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1;
       const account=getCompanyAccount();
@@ -8458,16 +8463,26 @@ document.querySelector('#companyForm').onsubmit=async e=>{
       Object.assign(c,data);
     }
 
+    vivaCompanySaveStage='save-local-storage';
     saveCompanies();
+    vivaCompanySaveStage='cleanup-editor-state';
     localStorage.removeItem('vivaEditorMode');
     localStorage.removeItem('vivaLastEditingId');
+    vivaCompanySaveStage='render-company-list';
     render(companies);
+    vivaCompanySaveStage='show-success';
     showCompanySaveStatus('Gespeichert.','ok');
     showToast(vivaTranslateString('Działalność została zapisana.',getVivaAppLanguage()));
+    vivaCompanySaveStage='render-current-panel';
     renderCurrentPanel();
   }catch(err){
-    console.error('Company save error',err);
-    const msg='Speichern fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.';
+    console.error('Company save error',vivaCompanySaveStage,err);
+    const errorName=String(err?.name||'Fehler');
+    const errorMessage=String(err?.message||'Unbekannter Fehler').replace(/\s+/g,' ').trim().slice(0,180);
+    const isQuota=errorName==='QuotaExceededError' || /quota|storage/i.test(errorMessage);
+    const msg=isQuota
+      ? `Speichern fehlgeschlagen: lokaler Speicher ist voll. [${vivaCompanySaveStage} · ${errorName}]`
+      : `Speichern fehlgeschlagen. Diagnose: ${vivaCompanySaveStage} · ${errorName}${errorMessage?` · ${errorMessage}`:''}`;
     showCompanyEditorStatus(msg);
     showCompanySaveStatus(msg);
   }finally{
