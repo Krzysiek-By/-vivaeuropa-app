@@ -5150,13 +5150,36 @@ function restoreTreePrefs(){
   selectedCategoryFilter=prefs.selectedCategoryFilter||'';
   resultsMode=prefs.resultsMode||'list';
 }
+const VIVA_CATEGORY_ICON_MAP={
+  bakery:'assets/category-icons/bakery.png',
+  pharmacy:'assets/category-icons/pharmacy.png',
+  drugstore:'assets/category-icons/pharmacy.png',
+  hair_salon:'assets/category-icons/hairdresser.png',
+  hair_care:'assets/category-icons/hairdresser.png',
+  barber_shop:'assets/category-icons/hairdresser.png',
+  ice_cream_shop:'assets/category-icons/ice-cream.png',
+  bicycle_store:'assets/category-icons/bicycle.png',
+  bike_sharing_station:'assets/category-icons/bicycle.png',
+  taxi_service:'assets/category-icons/taxi.png',
+  taxi_stand:'assets/category-icons/taxi.png',
+  restaurant:'assets/category-icons/restaurant.png',
+  shoe_repair:'assets/category-icons/shoemaker.png',
+  shoemaker:'assets/category-icons/shoemaker.png'
+};
+function vivaCategoryIcon(category){
+  const id=String(category||'');
+  if(VIVA_CATEGORY_ICON_MAP[id]) return VIVA_CATEGORY_ICON_MAP[id];
+  if(id.endsWith('_restaurant')) return VIVA_CATEGORY_ICON_MAP.restaurant;
+  return '';
+}
+
 const VIVA_GUEST_QUICK_CATEGORIES=[
   {id:'',label:'Alle',icon:'◎'},
   {id:'__categories__',label:'Kategorien',icon:'▦'},
   {id:'public_bathroom',label:'WC',icon:'WC'},
   {id:'__pannenhilfe__',label:'Pannenhilfe',icon:'🔧'},
-  {id:'taxi_service',label:'Taxi',image:'taxi-category-icon.png'},
-  {id:'pharmacy',label:'Apotheke',icon:'✚'},
+  {id:'taxi_service',label:'Taxi',image:'assets/category-icons/taxi.png'},
+  {id:'pharmacy',label:'Apotheke',image:'assets/category-icons/pharmacy.png'},
   {id:'gas_station',label:'Tankstelle',icon:'⛽'},
   {id:'electric_vehicle_charging_station',label:'Ladestation',icon:'⚡'}
 ];
@@ -5893,7 +5916,7 @@ function openCompany(id){
            <button class="ghost" onclick="setGuestMode(false);showAccount('register')">${de?'Konto erstellen':'Załóż konto'}</button>
          </div>
        </div>`
-    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div class="company-hero-meta"><span class="hero-category-chip">${categoryIsTaxi?'<img src="taxi-category-icon.png" alt="Taxi">':''}<span>${escapeHtml(translateCategory(c.cat))}</span></span><span class="hero-meta-stat">★ ${Number(c.rating||0).toFixed(1)} (${c.reviews||0})</span>${distanceText?`<span class="hero-meta-stat">${distanceText}</span>`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
+    : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div class="company-hero-meta"><span class="hero-category-chip">${vivaCategoryIcon(c.cat)?`<img src="${escapeHtmlAttr(vivaCategoryIcon(c.cat))}" alt="">`:''}<span>${escapeHtml(translateCategory(c.cat))}</span></span><span class="hero-meta-stat">★ ${Number(c.rating||0).toFixed(1)} (${c.reviews||0})</span>${distanceText?`<span class="hero-meta-stat">${distanceText}</span>`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
        <div class="company-content">
          <div class="company-photo-showcase">
            <div class="company-photo-feature" title="${de?'Fotos':'Zdjęcia'}">${previewPhotos.length?`<div class="photo-showcase-collage" data-count="${previewPhotos.length}">${previewPhotos.map(p=>`<img src="${p.data}" alt="${de?'Unternehmensfoto':'Zdjęcie firmy'}">`).join('')}</div>`:(fallbackPhoto?`<div class="photo-showcase-collage" data-count="1"><img src="${fallbackPhoto}" alt="${de?'Fotos':'Zdjęcia'}"></div>`:'<div class="photo-showcase-empty">📷</div>')}${(photoList.length || fallbackPhoto)?`<span class="photo-count-badge">${photoList.length || 1} ${de?'Fotos':'zdjęć'}</span>`:''}</div>
