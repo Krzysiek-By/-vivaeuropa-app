@@ -5306,22 +5306,22 @@ function restoreTreePrefs(){
   resultsMode=prefs.resultsMode||'list';
 }
 const VIVA_MAIN_CATEGORY_ICON_MAP={
-  "01 MOTORYZACJA":"assets/category-icons/01-motoryzacja.png",
-  "02 BIZNES":"assets/category-icons/02-biznes.png",
-  "03 KULTURA":"assets/category-icons/03-kultura.png",
-  "04 EDUKACJA":"assets/category-icons/04-edukacja.png",
-  "05 ROZRYWKA I REKREACJA":"assets/category-icons/05-rozrywka-rekreacja.png",
-  "06 OBIEKTY PUBLICZNE":"assets/category-icons/06-obiekty-publiczne.png",
-  "07 FINANSE":"assets/category-icons/07-finanse.png",
-  "08 JEDZENIE I NAPOJE":"assets/category-icons/08-jedzenie-napoje.png",
-  "09 ADMINISTRACJA I URZĘDY":"assets/category-icons/09-administracja-urzedy.png",
-  "10 ZDROWIE I WELLNESS":"assets/category-icons/10-zdrowie-wellness.png",
-  "11 MIESZKANIE":"assets/category-icons/11-mieszkanie.png",
-  "12 NOCLEGI":"assets/category-icons/12-noclegi.png",
-  "13 NATURA":"assets/category-icons/13-natura.png",
-  "14 MIEJSCA KULTU RELIGIJNEGO":"assets/category-icons/14-religia.png",
-  "15 USŁUGI":"assets/category-icons/15-uslugi.png",
-  "16 HANDEL I SKLEPY":"assets/category-icons/16-handel-sklepy.png",
+  "01 MOTORYZACJA":"assets/category-icons/01-automotive.png",
+  "02 BIZNES":"assets/category-icons/02-business.png",
+  "03 KULTURA":"assets/category-icons/03-culture.png",
+  "04 EDUKACJA":"assets/category-icons/04-education.png",
+  "05 ROZRYWKA I REKREACJA":"assets/category-icons/05-leisure.png",
+  "06 OBIEKTY PUBLICZNE":"assets/category-icons/06-public.png",
+  "07 FINANSE":"assets/category-icons/07-finance.png",
+  "08 JEDZENIE I NAPOJE":"assets/category-icons/08-food-drink.png",
+  "09 ADMINISTRACJA I URZĘDY":"assets/category-icons/09-government.png",
+  "10 ZDROWIE I WELLNESS":"assets/category-icons/10-health-wellness.png",
+  "11 MIESZKANIE":"assets/category-icons/11-housing.png",
+  "12 NOCLEGI":"assets/category-icons/12-lodging.png",
+  "13 NATURA":"assets/category-icons/13-nature.png",
+  "14 MIEJSCA KULTU RELIGIJNEGO":"assets/category-icons/14-religion.png",
+  "15 USŁUGI":"assets/category-icons/15-services.png",
+  "16 HANDEL I SKLEPY":"assets/category-icons/16-shopping.png",
   "17 SPORT":"assets/category-icons/17-sport.png",
   "18 TRANSPORT":"assets/category-icons/18-transport.png"
 };
@@ -5335,19 +5335,31 @@ function vivaCategoryIcon(category){
   const group=VIVA_MAIN_CATEGORY_ICON_MAP[id] ? id : VIVA_CATEGORY_GROUP_BY_TYPE[id];
   return group ? (VIVA_MAIN_CATEGORY_ICON_MAP[group]||'') : '';
 }
+const VIVA_QUICK_ICON_MAP={
+  wc:'assets/quick-icons/wc.png',
+  roadside:'assets/quick-icons/roadside-assistance.png',
+  taxi:'assets/quick-icons/taxi.png',
+  pharmacy:'assets/quick-icons/pharmacy.png',
+  gas:'assets/quick-icons/gas-station.png',
+  ev:'assets/quick-icons/ev-charging.png',
+  hospital:'assets/quick-icons/hospital.png',
+  cityHall:'assets/quick-icons/city-hall.png'
+};
 const VIVA_GUEST_QUICK_CATEGORIES=[
   {id:'',label:'Alle',icon:'◎'},
   {id:'__categories__',label:'Kategorien',icon:'▦'},
-  {id:'public_bathroom',label:'WC',image:VIVA_MAIN_CATEGORY_ICON_MAP['06 OBIEKTY PUBLICZNE']},
-  {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']},
-  {id:'taxi_service',label:'Taxi',image:VIVA_MAIN_CATEGORY_ICON_MAP['18 TRANSPORT']},
-  {id:'pharmacy',label:'Apotheke',image:VIVA_MAIN_CATEGORY_ICON_MAP['10 ZDROWIE I WELLNESS']},
-  {id:'gas_station',label:'Tankstelle',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']},
-  {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']}
+  {id:'public_bathroom',label:'WC',image:VIVA_QUICK_ICON_MAP.wc},
+  {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_QUICK_ICON_MAP.roadside},
+  {id:'taxi_service',label:'Taxi',image:VIVA_QUICK_ICON_MAP.taxi},
+  {id:'pharmacy',label:'Apotheke',image:VIVA_QUICK_ICON_MAP.pharmacy},
+  {id:'gas_station',label:'Tankstelle',image:VIVA_QUICK_ICON_MAP.gas},
+  {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_QUICK_ICON_MAP.ev},
+  {id:'__hospital__',label:'Krankenhaus',image:VIVA_QUICK_ICON_MAP.hospital}
 ];
 
 const VIVA_GUEST_CATEGORY_ALIASES={
-  '__pannenhilfe__':['car_repair','tire_shop','gas_station']
+  '__pannenhilfe__':['car_repair','tire_shop'],
+  '__hospital__':['hospital','general_hospital']
 };
 
 function guestCategoryMatchesCompany(c,filter){
