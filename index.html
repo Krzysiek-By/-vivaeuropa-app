@@ -6920,7 +6920,11 @@ async function revalidateStoredCompanyCoordinates(){
   if(updated) saveCompanies();
   if(attempted===0 || failed===0) localStorage.setItem(migrationKey,'1');
   refreshCompanyDistances();
-  render(companies);
+  if(guestMode){
+    await search();
+  }else{
+    render(companies);
+  }
 }
 
 async function captureLocationGPS({auto=false}={}){
@@ -8606,7 +8610,11 @@ function setVivaAppLanguage(code){
   renderCategoryFilters();
   renderQuickCats();
   setLocationMode(locationMode);
-  render(companies);
+  if(guestMode){
+    search();
+  }else{
+    render(companies);
+  }
 }
 
 function applySplashLanguage(code){
@@ -9092,7 +9100,11 @@ updateNewPasswordSubmitState();
   }
 
   renderQuickCats();
-  render(companies);
+  if(guestMode){
+    await search();
+  }else{
+    render(companies);
+  }
   setTimeout(()=>{revalidateStoredCompanyCoordinates();},250);
 })();
 
