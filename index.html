@@ -5946,7 +5946,7 @@ function render(list=companies){
         <div class="result-category">${translateCategory(c.cat)}</div>
         <h3>${c.name}</h3>
         <div class="meta">${c.city}<br>
-          <span class="rating">★ ${Number(c.rating||0).toFixed(1)}</span> (${c.reviews||0}) • ${Number(c.distance||0).toFixed(1)} km
+          <span class="rating">★ ${Number(c.rating||0).toFixed(1)}</span> (${c.reviews||0}) • ${(c.distance!==null && c.distance!==undefined && Number.isFinite(Number(c.distance))) ? `${Number(c.distance).toFixed(1)} km` : '—'}
           ${companyStatusHtml(c)}
         </div>
       </div>
@@ -8778,7 +8778,8 @@ async function ensureClientGPS(){
 
   if(isVivaLocationFresh()){
     refreshCompanyDistances();
-    render(companies);
+    const active=document.querySelector('.view.active');
+    if(active?.id==='homeView') await search();
     return true;
   }
   return false;
@@ -9002,9 +9003,11 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   setLocationMode('gps');
   setView('home');
-  await requestVivaLocation({silent:true});
-  refreshCompanyDistances();
-  render(companies);
+  const ok=await requestVivaLocation({silent:true});
+  if(ok){
+    refreshCompanyDistances();
+    await search();
+  }
 };
 
 
@@ -9018,7 +9021,7 @@ async function refreshGpsWhenReturningToApp(){
   const ok=await requestVivaLocation({silent:true});
   if(ok){
     refreshCompanyDistances();
-    render(companies);
+    await search();
   }
 }
 
