@@ -4354,6 +4354,84 @@ function refreshAuthUI(){
 function cloneDefaults(){return JSON.parse(JSON.stringify(defaultCompanies))}
 const VIVA_COMPANY_SEED_VERSION=3;
 
+// v0.90.28: zdjęcia firm przechowujemy poza localStorage w IndexedDB.
+// localStorage pozostaje tylko dla lekkich danych tekstowych i ustawień.
+const VIVA_PHOTO_DB_NAME='VivaEuropaMedia';
+const VIVA_PHOTO_DB_VERSION=1;
+const VIVA_PHOTO_STORE='companyPhotos';
+const VIVA_PHOTO_MIGRATION_KEY='vivaPhotoStorageIndexedDBV1';
+let vivaPhotoStoragePromise=null;
+
+function openVivaPhotoDb(){
+  return new Promise((resolve,reject)=>{
+    if(!('indexedDB' in window)){
+      reject(new Error('INDEXEDDB_UNAVAILABLE'));
+      return;
+    }
+    const req=indexedDB.open(VIVA_PHOTO_DB_NAME,VIVA_PHOTO_DB_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(VIVA_PHOTO_STORE)){
+        db.createObjectStore(VIVA_PHOTO_STORE,{keyPath:'companyId'});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error('INDEXEDDB_OPEN_FAILED'));
+  });
+}
+
+async function putCompanyPhotos(companyId,photos){
+  const db=await openVivaPhotoDb();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(VIVA_PHOTO_STORE,'readwrite');
+      tx.objectStore(VIVA_PHOTO_STORE).put({
+        companyId:String(companyId),
+        photos:Array.isArray(photos)?photos.map(p=>({...p})):[],
+        updatedAt:Date.now()
+      });
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error||new Error('INDEXEDDB_WRITE_FAILED'));
+      tx.onabort=()=>reject(tx.error||new Error('INDEXEDDB_WRITE_ABORTED'));
+    });
+  }finally{ db.close(); }
+}
+
+async function getCompanyPhotos(companyId){
+  const db=await openVivaPhotoDb();
+  try{
+    return await new Promise((resolve,reject)=>{
+      const tx=db.transaction(VIVA_PHOTO_STORE,'readonly');
+      const req=tx.objectStore(VIVA_PHOTO_STORE).get(String(companyId));
+      req.onsuccess=()=>resolve(Array.isArray(req.result?.photos)?req.result.photos:[]);
+      req.onerror=()=>reject(req.error||new Error('INDEXEDDB_READ_FAILED'));
+    });
+  }finally{ db.close(); }
+}
+
+async function deleteCompanyPhotos(companyId){
+  const db=await openVivaPhotoDb();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(VIVA_PHOTO_STORE,'readwrite');
+      tx.objectStore(VIVA_PHOTO_STORE).delete(String(companyId));
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error||new Error('INDEXEDDB_DELETE_FAILED'));
+      tx.onabort=()=>reject(tx.error||new Error('INDEXEDDB_DELETE_ABORTED'));
+    });
+  }finally{ db.close(); }
+}
+
+function ensureVivaPhotoStorage(){
+  if(!vivaPhotoStoragePromise){
+    vivaPhotoStoragePromise=initializeCompanyPhotoStorage().catch(err=>{
+      console.error('Photo storage init error',err);
+      return false;
+    });
+  }
+  return vivaPhotoStoragePromise;
+}
+
 function companyKey(c){
   return `${String(c.name||'').trim().toLowerCase()}|${String(c.city||'').trim().toLowerCase()}`;
 }
@@ -4387,10 +4465,40 @@ let companies=loadCompanies().map(c=>({
       : (c.moderationStatus || 'approved')
 }));
 function saveCompanies(){
-  const safe=companies.map(c=>({...c,distance:null}));
+  const photosMigrated=localStorage.getItem(VIVA_PHOTO_MIGRATION_KEY)==='1';
+  const safe=companies.map(c=>{
+    const copy={...c,distance:null};
+    if(photosMigrated) delete copy.photos;
+    return copy;
+  });
   localStorage.setItem('vivaCompanies',JSON.stringify(safe));
 }
-if(VIVA_TEST_AUTO_APPROVE_COMPANIES){saveCompanies();}
+
+async function initializeCompanyPhotoStorage(){
+  if(!('indexedDB' in window)) return false;
+  const migrated=localStorage.getItem(VIVA_PHOTO_MIGRATION_KEY)==='1';
+
+  // Jednorazowa migracja: najpierw bezpiecznie kopiujemy wszystkie stare zdjęcia
+  // z localStorage do IndexedDB, dopiero potem odchudzamy vivaCompanies.
+  if(!migrated){
+    for(const c of companies){
+      if(Array.isArray(c.photos) && c.photos.length){
+        await putCompanyPhotos(c.id,c.photos);
+      }
+    }
+    localStorage.setItem(VIVA_PHOTO_MIGRATION_KEY,'1');
+    saveCompanies();
+  }
+
+  // Przy każdym starcie hydratacja zdjęć do pamięci roboczej aplikacji.
+  for(const c of companies){
+    const stored=await getCompanyPhotos(c.id);
+    c.photos=stored;
+  }
+  return true;
+}
+
+// Nie zapisujemy automatycznie firm przed migracją zdjęć, żeby nie utracić starych fotografii.
 function isAdmin(){return localStorage.getItem('vivaAdmin')==='1';}
 function getAccountRole(){return localStorage.getItem('vivaAccountRole')||'user';}
 function isCompanyAccount(){return localStorage.getItem('vivaLoggedIn')==='1' && getAccountRole()==='company';}
@@ -7255,6 +7363,7 @@ function unblockCompany(id){
 function deleteCompanyTest(id){
   if(!isAdmin()) return;
   companies=companies.filter(x=>Number(x.id)!==Number(id));
+  deleteCompanyPhotos(id).catch(err=>console.warn('Photo delete error',err));
   saveCompanies(); openModule('adminModeration');
 }
 
@@ -7291,6 +7400,7 @@ function deleteCompanyActivity(id){
   if(!window.confirm(question+'\n\n'+label)) return;
 
   companies=companies.filter(x=>x.id!==id);
+  deleteCompanyPhotos(id).catch(err=>console.warn('Photo delete error',err));
   saveCompanies();
 
   if(editingId===id){
@@ -7715,7 +7825,8 @@ function openNewCompany(){
   }
 }
 
-function editCompany(id){
+async function editCompany(id){
+  await ensureVivaPhotoStorage();
   const c=companies.find(x=>x.id===id); if(!c || !canEditCompany(c))return;
   editingId=id;
   localStorage.setItem('vivaEditorMode','edit');
@@ -8340,6 +8451,10 @@ document.querySelector('#companyForm').onsubmit=async e=>{
   showCompanySaveStatus('Wird gespeichert…','warn');
 
   try{
+    vivaCompanySaveStage='prepare-photo-storage';
+    const photoStorageReady=await ensureVivaPhotoStorage();
+    if(!photoStorageReady) throw new Error('PHOTO_STORAGE_UNAVAILABLE');
+
     vivaCompanySaveStage='read-form';
     const data={
       name:document.querySelector('#fName').value.trim(),
@@ -8441,12 +8556,19 @@ document.querySelector('#companyForm').onsubmit=async e=>{
       return;
     }
 
+    vivaCompanySaveStage='prepare-company-id';
+    const targetId=editingId===null
+      ? companies.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1
+      : editingId;
+
+    vivaCompanySaveStage='save-photos-indexeddb';
+    await putCompanyPhotos(targetId,data.photos);
+
     vivaCompanySaveStage='update-company-list';
     if(editingId===null){
-      const nextId=companies.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1;
       const account=getCompanyAccount();
       companies.push({
-        id:nextId,
+        id:targetId,
         ...data,
         seed:false,
         moderationStatus:(VIVA_TEST_AUTO_APPROVE_COMPANIES?'approved':(isCompanyAccount()?'pending':'approved')),
@@ -8480,9 +8602,12 @@ document.querySelector('#companyForm').onsubmit=async e=>{
     const errorName=String(err?.name||'Fehler');
     const errorMessage=String(err?.message||'Unbekannter Fehler').replace(/\s+/g,' ').trim().slice(0,180);
     const isQuota=errorName==='QuotaExceededError' || /quota|storage/i.test(errorMessage);
+    const isPhotoStorage=/INDEXEDDB|PHOTO_STORAGE/i.test(errorMessage) || vivaCompanySaveStage==='save-photos-indexeddb';
     const msg=isQuota
       ? `Speichern fehlgeschlagen: lokaler Speicher ist voll. [${vivaCompanySaveStage} · ${errorName}]`
-      : `Speichern fehlgeschlagen. Diagnose: ${vivaCompanySaveStage} · ${errorName}${errorMessage?` · ${errorMessage}`:''}`;
+      : isPhotoStorage
+        ? `Speichern fehlgeschlagen: Fotospeicher konnte nicht verwendet werden. [${vivaCompanySaveStage} · ${errorName}]`
+        : `Speichern fehlgeschlagen. Diagnose: ${vivaCompanySaveStage} · ${errorName}${errorMessage?` · ${errorMessage}`:''}`;
     showCompanyEditorStatus(msg);
     showCompanySaveStatus(msg);
   }finally{
@@ -9192,6 +9317,8 @@ updateNewPasswordSubmitState();
   if(!recoveryHandled && !recoveryRestored){
     initSplash();
   }
+
+  await ensureVivaPhotoStorage();
 
   renderQuickCats();
   if(guestMode){
