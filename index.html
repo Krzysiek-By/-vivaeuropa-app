@@ -4379,12 +4379,16 @@ function loadCompanies(){
 const VIVA_TEST_AUTO_APPROVE_COMPANIES=true;
 let companies=loadCompanies().map(c=>({
   ...c,
+  distance:null,
   moderationStatus:
     VIVA_TEST_AUTO_APPROVE_COMPANIES && c.ownerEmail && c.moderationStatus==='pending'
       ? 'approved'
       : (c.moderationStatus || 'approved')
 }));
-function saveCompanies(){localStorage.setItem('vivaCompanies',JSON.stringify(companies));}
+function saveCompanies(){
+  const safe=companies.map(c=>({...c,distance:null}));
+  localStorage.setItem('vivaCompanies',JSON.stringify(safe));
+}
 if(VIVA_TEST_AUTO_APPROVE_COMPANIES){saveCompanies();}
 function isAdmin(){return localStorage.getItem('vivaAdmin')==='1';}
 function getAccountRole(){return localStorage.getItem('vivaAccountRole')||'user';}
@@ -5506,17 +5510,44 @@ function setLocationMode(mode,{requestGps=false}={}){
 }
 
 const VIVA_LOCATION_KEY='vivaLocation';
+const VIVA_LOCATION_MAX_AGE_MS=2*60*1000;
+const VIVA_MANUAL_COORDS_KEY='vivaManualLocationCoords';
 let vivaLocation=null;
+let vivaManualCoords=null;
+
+function isVivaLocationFresh(loc=vivaLocation){
+  if(!loc || !Number.isFinite(Number(loc.lat)) || !Number.isFinite(Number(loc.lng))) return false;
+  const ts=Number(loc.savedAt||loc.timestamp||0);
+  return !!ts && (Date.now()-ts)<=VIVA_LOCATION_MAX_AGE_MS;
+}
 
 function loadSavedLocation(){
   try{
     const saved=JSON.parse(localStorage.getItem(VIVA_LOCATION_KEY)||'null');
-    if(saved && Number.isFinite(saved.lat) && Number.isFinite(saved.lng)){
+    if(saved && Number.isFinite(Number(saved.lat)) && Number.isFinite(Number(saved.lng)) && isVivaLocationFresh(saved)){
       vivaLocation=saved;
       return true;
     }
   }catch(e){}
+  vivaLocation=null;
+  localStorage.removeItem(VIVA_LOCATION_KEY);
   return false;
+}
+
+function loadManualCoords(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(VIVA_MANUAL_COORDS_KEY)||'null');
+    if(saved && Number.isFinite(Number(saved.lat)) && Number.isFinite(Number(saved.lng))){
+      vivaManualCoords={lat:Number(saved.lat),lng:Number(saved.lng),label:String(saved.label||'')};
+      return true;
+    }
+  }catch(e){}
+  vivaManualCoords=null;
+  return false;
+}
+
+function getActiveSearchCoordinates(){
+  return locationMode==='manual' ? vivaManualCoords : vivaLocation;
 }
 
 function saveLocation(coords){
@@ -5542,7 +5573,7 @@ function renderLocationStatus(mode='idle'){
     return;
   }
 
-  if(vivaLocation){
+  if(isVivaLocationFresh()){
     wrap.classList.add('ok');
     if(guestMode){
       const gpsText={pl:'GPS aktywny',de:'GPS aktiv',en:'GPS active',fr:'GPS actif',it:'GPS attivo',es:'GPS activo'};
@@ -5597,6 +5628,8 @@ function requestVivaLocation({silent=false}={}){
       position=>{
         saveLocation(position.coords);
         localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
+        localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
+        vivaManualCoords=null;
         locationMode='gps';
         localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
         refreshCompanyDistances();
@@ -5618,7 +5651,7 @@ function requestVivaLocation({silent=false}={}){
         }
         resolve(false);
       },
-      {enableHighAccuracy:true,timeout:10000,maximumAge:300000}
+      {enableHighAccuracy:true,timeout:12000,maximumAge:0}
     );
   });
 }
@@ -5637,24 +5670,69 @@ function saveManualLocation(value){
     localStorage.setItem(VIVA_MANUAL_LOCATION_KEY,clean);
   }else{
     localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
+    localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
+    vivaManualCoords=null;
   }
 }
 
-function activateManualLocation(){
+async function geocodeManualLocation(value){
+  const clean=String(value||'').trim();
+  if(!clean) return false;
+  const wrap=document.querySelector('#locationStatus');
+  const text=document.querySelector('#locationStatusText');
+  if(wrap && text){
+    wrap.classList.remove('ok','warn');
+    text.textContent='Manueller Standort wird ermittelt…';
+  }
+  const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q='+encodeURIComponent(clean);
+  try{
+    const res=await fetch(url,{headers:{'Accept':'application/json'}});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const rows=await res.json();
+    const hit=Array.isArray(rows)?rows[0]:null;
+    if(!hit || !Number.isFinite(Number(hit.lat)) || !Number.isFinite(Number(hit.lon))){
+      if(wrap && text){
+        wrap.classList.add('warn');
+        text.textContent='Manueller Standort wurde nicht gefunden.';
+      }
+      return false;
+    }
+    vivaManualCoords={lat:Number(hit.lat),lng:Number(hit.lon),label:clean,savedAt:Date.now()};
+    localStorage.setItem(VIVA_MANUAL_COORDS_KEY,JSON.stringify(vivaManualCoords));
+    return true;
+  }catch(err){
+    console.warn('Manual location geocoding error',err);
+    if(wrap && text){
+      wrap.classList.add('warn');
+      text.textContent='Manueller Standort konnte nicht ermittelt werden.';
+    }
+    return false;
+  }
+}
+
+async function activateManualLocation(){
   const value=els.loc.value.trim();
   if(!value) return false;
+
+  const savedValue=loadManualLocation();
+  const sameValue=savedValue && savedValue.toLowerCase()===value.toLowerCase() && loadManualCoords();
+  if(!sameValue){
+    const ok=await geocodeManualLocation(value);
+    if(!ok) return false;
+  }
 
   saveManualLocation(value);
   locationMode='manual';
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'manual');
   updateLocationModeButtons();
+  refreshCompanyDistances();
 
   const wrap=document.querySelector('#locationStatus');
   const text=document.querySelector('#locationStatusText');
   if(wrap && text){
-    wrap.classList.remove('ok','warn');
+    wrap.classList.remove('warn');
     wrap.classList.add('ok');
-    text.textContent=`Lokalizacja ręczna: ${value}`;
+    text.textContent=`Manuell: ${value}`;
   }
   return true;
 }
@@ -6484,15 +6562,14 @@ function haversineKm(lat1,lng1,lat2,lng2){
 }
 
 function refreshCompanyDistances(){
-  if(!vivaLocation) return;
-  let changed=false;
+  const origin=getActiveSearchCoordinates();
+  companies.forEach(c=>{c.distance=null;});
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))) return;
   companies.forEach(c=>{
     if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
-      c.distance=Number(haversineKm(vivaLocation.lat,vivaLocation.lng,c.lat,c.lng).toFixed(2));
-      changed=true;
+      c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
     }
   });
-  if(changed) saveCompanies();
 }
 
 
@@ -6809,6 +6886,43 @@ async function geocodeCompanyAddress({silent=false}={}){
   }
 }
 
+async function revalidateStoredCompanyCoordinates(){
+  const migrationKey='vivaGpsCompanyCoordinatesV1';
+  if(localStorage.getItem(migrationKey)==='1') return;
+  let attempted=0, updated=0, failed=0;
+  for(const c of companies){
+    if(!c?.ownerEmail || !c?.address || !c?.city || !c?.country) continue;
+    attempted++;
+    const q=[c.address,c.postal,c.city,c.country].filter(Boolean).join(', ');
+    const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q='+encodeURIComponent(q);
+    try{
+      const res=await fetch(url,{headers:{'Accept':'application/json'}});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const rows=await res.json();
+      const hit=Array.isArray(rows)?rows[0]:null;
+      if(hit && Number.isFinite(Number(hit.lat)) && Number.isFinite(Number(hit.lon))){
+        c.lat=Number(hit.lat);
+        c.lng=Number(hit.lon);
+        c.geocodeKey=normalizeGeocodeKey([c.address,c.postal,c.city,c.country]);
+        c.distance=null;
+        localStorage.removeItem('vivaGeocode:'+c.geocodeKey);
+        localStorage.setItem('vivaGeocode:'+c.geocodeKey,JSON.stringify({lat:c.lat,lng:c.lng,displayName:hit.display_name||'',ts:Date.now()}));
+        updated++;
+      }else{
+        failed++;
+      }
+    }catch(err){
+      console.warn('Company coordinate migration error',err);
+      failed++;
+    }
+    await new Promise(r=>setTimeout(r,120));
+  }
+  if(updated) saveCompanies();
+  if(attempted===0 || failed===0) localStorage.setItem(migrationKey,'1');
+  refreshCompanyDistances();
+  render(companies);
+}
+
 async function captureLocationGPS({auto=false}={}){
   const status=document.querySelector('#locationGpsStatus');
   const latInput=document.querySelector('#fLat');
@@ -6932,16 +7046,22 @@ function applyGuestRadiusOptions(){
   }
 }
 
-function search(){
-  refreshCompanyDistances();
+async function search(){
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
 
-  if(locationMode==='manual' && rawLocation){
-    activateManualLocation();
+  if(locationMode==='gps'){
+    if(!isVivaLocationFresh()){
+      const ok=await requestVivaLocation({silent:true});
+      if(!ok) return;
+    }
+  }else if(rawLocation){
+    const ok=await activateManualLocation();
+    if(!ok) return;
   }
 
+  refreshCompanyDistances();
+
   const q=els.query.value.trim().toLowerCase();
-  const l=rawLocation.toLowerCase();
   const radiusSelect=document.querySelector('#radiusSelect');
   const requestedRadius=Number(radiusSelect?.value||5);
   const sort=document.querySelector('#sortSelect')?.value||'distance';
@@ -6952,9 +7072,8 @@ function search(){
     c.moderationStatus!=='blocked' &&
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
-    (!l||`${c.city} ${c.address} ${c.postal||''} ${c.country||''}`.toLowerCase().includes(l)) &&
     guestCategoryMatchesCompany(c,selectedCategoryFilter) &&
-    Number(c.distance||0)<=radius &&
+    c.distance!==null && Number.isFinite(Number(c.distance)) && Number(c.distance)<=radius &&
     (openFilter!=='open' || isOpenNow(c))
   );
 
@@ -7644,6 +7763,8 @@ els.query.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 els.loc.addEventListener('input',()=>{
   if(locationMode!=='manual') return;
   const value=els.loc.value.trim();
+  vivaManualCoords=null;
+  localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
   const wrap=document.querySelector('#locationStatus');
   const text=document.querySelector('#locationStatusText');
   if(wrap && text){
@@ -7657,7 +7778,7 @@ els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 
 document.querySelector('#locationModeGps').onclick=()=>{
   localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
-  setLocationMode('gps',{requestGps:!vivaLocation});
+  setLocationMode('gps',{requestGps:true});
 };
 document.querySelector('#locationModeManual').onclick=()=>setLocationMode('manual');
 
@@ -8210,7 +8331,6 @@ document.querySelector('#companyForm').onsubmit=async e=>{
   if(existing){
     data.rating=Number(existing.rating||0);
     data.reviews=Number(existing.reviews||0);
-    data.distance=Number.isFinite(Number(existing.distance))?Number(existing.distance):null;
   }
   const addressChanged=!existing || existing.geocodeKey!==data.geocodeKey;
   if(addressChanged || !Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
@@ -8650,13 +8770,13 @@ async function ensureClientGPS(){
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   setLocationMode('gps');
 
-  if(!vivaLocation){
+  if(!isVivaLocationFresh()){
     await requestVivaLocation({silent:true});
   }else{
     refreshCompanyDistances();
   }
 
-  if(vivaLocation){
+  if(isVivaLocationFresh()){
     refreshCompanyDistances();
     render(companies);
     return true;
@@ -8825,7 +8945,7 @@ function initSplash(){
     restoreLoggedView();
     if(getAccountRole()==='user'){
       ensureClientGPS();
-    }else if(locationMode==='gps' && !vivaLocation){
+    }else if(locationMode==='gps' && !isVivaLocationFresh()){
       requestVivaLocation({silent:true}).then(()=>refreshCompanyDistances());
     }else{
       refreshCompanyDistances();
@@ -8882,11 +9002,28 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   setLocationMode('gps');
   setView('home');
-  if(!vivaLocation) await requestVivaLocation({silent:true});
+  await requestVivaLocation({silent:true});
   refreshCompanyDistances();
   render(companies);
 };
 
+
+async function refreshGpsWhenReturningToApp(){
+  if(locationMode!=='gps') return;
+  if(document.visibilityState && document.visibilityState!=='visible') return;
+  if(isVivaLocationFresh()) return;
+  const active=document.querySelector('.view.active');
+  const name=active?.id?.replace('View','')||'';
+  if(name!=='home') return;
+  const ok=await requestVivaLocation({silent:true});
+  if(ok){
+    refreshCompanyDistances();
+    render(companies);
+  }
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') refreshGpsWhenReturningToApp();});
+window.addEventListener('pageshow',()=>{refreshGpsWhenReturningToApp();});
 
 window.addEventListener('resize',()=>{
   const active=document.querySelector('.view.active');
@@ -8924,6 +9061,7 @@ renderCategoryFilters();
 setResultsMode(resultsMode);
 
 loadSavedLocation();
+loadManualCoords();
 if(loadManualLocation() && !localStorage.getItem(VIVA_LOCATION_MODE_KEY)){
   locationMode='manual';
 }
@@ -8952,6 +9090,7 @@ updateNewPasswordSubmitState();
 
   renderQuickCats();
   render(companies);
+  setTimeout(()=>{revalidateStoredCompanyCoordinates();},250);
 })();
 
 window.setTimeout(()=>{
