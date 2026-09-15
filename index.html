@@ -4653,6 +4653,7 @@ function normalizeCompanyIdentity(account){
 
   const name=String(account.companyName||'').trim().toLowerCase();
   const isFounder=
+    account.customerNumber==='DE-000000000001' ||
     account.accountTier==='founder' ||
     account.unlimited===true ||
     name==='polmax' ||
@@ -4698,8 +4699,28 @@ function companyHasUnlimitedAccess(){
   return isFounderCompanyAccount();
 }
 
+// Konto 001 jest kontem technicznym/founder do pełnych testów aplikacji.
+// Nie może być blokowane przez limity pakietów — obecne ani dodane później.
+function companyResourceLimit(resource, standardLimit=Infinity){
+  if(companyHasUnlimitedAccess()) return Infinity;
+  if(resource==='photos') return 5;
+  return standardLimit;
+}
+
 function companyPhotoLimit(){
-  return companyHasUnlimitedAccess() ? Infinity : 5;
+  return companyResourceLimit('photos',5);
+}
+
+function companyActivityLimit(){
+  return companyResourceLimit('activities',Infinity);
+}
+
+function companyLocationLimit(){
+  return companyResourceLimit('locations',Infinity);
+}
+
+function companyListingLimit(){
+  return companyResourceLimit('listings',Infinity);
 }
 
 function getActiveProfile(){
