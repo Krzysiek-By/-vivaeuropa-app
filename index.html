@@ -3443,7 +3443,10 @@ textarea::-webkit-input-placeholder{
 }
 .guest-category-group summary{
   cursor:pointer!important;list-style:none!important;padding:13px 14px!important;color:#fff!important;font-weight:800!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
 }
+.guest-category-group-title{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important}
+.guest-category-group-icon{width:34px!important;height:34px!important;object-fit:contain!important;flex:0 0 34px!important}
 .guest-category-group summary::-webkit-details-marker{display:none!important}
 .guest-category-items{
   display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;padding:0 10px 10px!important;
@@ -4866,7 +4869,7 @@ function populateCompanyCategorySelect(selectedValue=''){
     const groupLabel=VIVA_CATEGORY_GROUP_DE[group]||group;
     rows.push(`<optgroup label="${escapeHtmlAttr(groupLabel)}">`);
     for(const type of types){
-      rows.push(`<option value="${escapeHtmlAttr(type)}">${escapeHtml(vivaCategoryLabel(type))}</option>`);
+      rows.push(`<option value="${escapeHtmlAttr(type)}">${escapeHtml(groupLabel)} → ${escapeHtml(vivaCategoryLabel(type))}</option>`);
     }
     rows.push('</optgroup>');
   }
@@ -5302,38 +5305,45 @@ function restoreTreePrefs(){
   selectedCategoryFilter=prefs.selectedCategoryFilter||'';
   resultsMode=prefs.resultsMode||'list';
 }
-const VIVA_CATEGORY_ICON_MAP={
-  bakery:'assets/category-icons/bakery.png',
-  pharmacy:'assets/category-icons/pharmacy.png',
-  drugstore:'assets/category-icons/pharmacy.png',
-  hair_salon:'assets/category-icons/hairdresser.png',
-  hair_care:'assets/category-icons/hairdresser.png',
-  barber_shop:'assets/category-icons/hairdresser.png',
-  ice_cream_shop:'assets/category-icons/ice-cream.png',
-  bicycle_store:'assets/category-icons/bicycle.png',
-  bike_sharing_station:'assets/category-icons/bicycle.png',
-  taxi_service:'assets/category-icons/taxi.png',
-  taxi_stand:'assets/category-icons/taxi.png',
-  restaurant:'assets/category-icons/restaurant.png',
-  shoe_repair:'assets/category-icons/shoemaker.png',
-  shoemaker:'assets/category-icons/shoemaker.png'
+const VIVA_MAIN_CATEGORY_ICON_MAP={
+  "01 MOTORYZACJA":"assets/category-icons/01-motoryzacja.png",
+  "02 BIZNES":"assets/category-icons/02-biznes.png",
+  "03 KULTURA":"assets/category-icons/03-kultura.png",
+  "04 EDUKACJA":"assets/category-icons/04-edukacja.png",
+  "05 ROZRYWKA I REKREACJA":"assets/category-icons/05-rozrywka-rekreacja.png",
+  "06 OBIEKTY PUBLICZNE":"assets/category-icons/06-obiekty-publiczne.png",
+  "07 FINANSE":"assets/category-icons/07-finanse.png",
+  "08 JEDZENIE I NAPOJE":"assets/category-icons/08-jedzenie-napoje.png",
+  "09 ADMINISTRACJA I URZĘDY":"assets/category-icons/09-administracja-urzedy.png",
+  "10 ZDROWIE I WELLNESS":"assets/category-icons/10-zdrowie-wellness.png",
+  "11 MIESZKANIE":"assets/category-icons/11-mieszkanie.png",
+  "12 NOCLEGI":"assets/category-icons/12-noclegi.png",
+  "13 NATURA":"assets/category-icons/13-natura.png",
+  "14 MIEJSCA KULTU RELIGIJNEGO":"assets/category-icons/14-religia.png",
+  "15 USŁUGI":"assets/category-icons/15-uslugi.png",
+  "16 HANDEL I SKLEPY":"assets/category-icons/16-handel-sklepy.png",
+  "17 SPORT":"assets/category-icons/17-sport.png",
+  "18 TRANSPORT":"assets/category-icons/18-transport.png"
 };
+const VIVA_CATEGORY_GROUP_BY_TYPE=(()=>{
+  const out={};
+  Object.entries(VIVA_CATEGORY_MASTER).forEach(([group,types])=>types.forEach(type=>{out[type]=group;}));
+  return out;
+})();
 function vivaCategoryIcon(category){
-  const id=String(category||'');
-  if(VIVA_CATEGORY_ICON_MAP[id]) return VIVA_CATEGORY_ICON_MAP[id];
-  if(id.endsWith('_restaurant')) return VIVA_CATEGORY_ICON_MAP.restaurant;
-  return '';
+  const id=String(category||'').trim();
+  const group=VIVA_MAIN_CATEGORY_ICON_MAP[id] ? id : VIVA_CATEGORY_GROUP_BY_TYPE[id];
+  return group ? (VIVA_MAIN_CATEGORY_ICON_MAP[group]||'') : '';
 }
-
 const VIVA_GUEST_QUICK_CATEGORIES=[
   {id:'',label:'Alle',icon:'◎'},
   {id:'__categories__',label:'Kategorien',icon:'▦'},
-  {id:'public_bathroom',label:'WC',icon:'WC'},
-  {id:'__pannenhilfe__',label:'Pannenhilfe',icon:'🔧'},
-  {id:'taxi_service',label:'Taxi',image:'assets/category-icons/taxi.png'},
-  {id:'pharmacy',label:'Apotheke',image:'assets/category-icons/pharmacy.png'},
-  {id:'gas_station',label:'Tankstelle',icon:'⛽'},
-  {id:'electric_vehicle_charging_station',label:'Ladestation',icon:'⚡'}
+  {id:'public_bathroom',label:'WC',image:VIVA_MAIN_CATEGORY_ICON_MAP['06 OBIEKTY PUBLICZNE']},
+  {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']},
+  {id:'taxi_service',label:'Taxi',image:VIVA_MAIN_CATEGORY_ICON_MAP['18 TRANSPORT']},
+  {id:'pharmacy',label:'Apotheke',image:VIVA_MAIN_CATEGORY_ICON_MAP['10 ZDROWIE I WELLNESS']},
+  {id:'gas_station',label:'Tankstelle',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']},
+  {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_MAIN_CATEGORY_ICON_MAP['01 MOTORYZACJA']}
 ];
 
 const VIVA_GUEST_CATEGORY_ALIASES={
@@ -5411,7 +5421,7 @@ function buildGuestCategoryTree(query=''){
 
     groups.push(`
       <details class="guest-category-group" ${q?'open':''}>
-        <summary>${escapeHtml(groupLabel)} <span>(${filtered.length})</span></summary>
+        <summary><span class="guest-category-group-title"><img class="guest-category-group-icon" src="${escapeHtmlAttr(VIVA_MAIN_CATEGORY_ICON_MAP[group]||'')}" alt=""><span>${escapeHtml(groupLabel)}</span></span> <span>(${filtered.length})</span></summary>
         <div class="guest-category-items">
           ${filtered.map(type=>`
             <button type="button" class="guest-category-item" data-master-cat="${escapeHtmlAttr(type)}">
