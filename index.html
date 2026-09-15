@@ -4088,8 +4088,9 @@ textarea::-webkit-input-placeholder{
 
           <div class="admin-actions" style="margin-top:16px">
             <button type="button" class="ghost" id="editorCancelBtn">Anuluj</button>
-            <button type="submit" class="primary">Zapisz placówkę</button>
+            <button type="submit" class="primary" id="companySaveBtn">Zapisz placówkę</button>
           </div>
+          <div id="companySaveStatus" class="editor-status" aria-live="polite"></div>
 </form>
           <aside class="editor-preview" aria-label="Podgląd karty firmy">
             <div class="editor-preview-head">
@@ -6874,8 +6875,10 @@ async function geocodeCompanyAddress({silent=false}={}){
   const q=[parts.address,parts.postal,parts.city,parts.country].filter(Boolean).join(', ');
   const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q='+encodeURIComponent(q);
 
+  const controller=typeof AbortController!=='undefined'?new AbortController():null;
+  const timeoutId=controller?setTimeout(()=>controller.abort(),10000):null;
   try{
-    const res=await fetch(url,{headers:{'Accept':'application/json'}});
+    const res=await fetch(url,{headers:{'Accept':'application/json'},...(controller?{signal:controller.signal}:{})});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const rows=await res.json();
     const hit=Array.isArray(rows)?rows[0]:null;
@@ -6904,6 +6907,8 @@ async function geocodeCompanyAddress({silent=false}={}){
       status.className='location-gps-status warn';
     }
     return false;
+  }finally{
+    if(timeoutId) clearTimeout(timeoutId);
   }
 }
 
@@ -7640,6 +7645,20 @@ function clearCompanyEditorStatus(){
   box.className='editor-status';
 }
 
+function showCompanySaveStatus(message,type='error'){
+  const box=document.querySelector('#companySaveStatus');
+  if(!box) return;
+  box.textContent=message;
+  box.className=`editor-status ${type}`;
+}
+
+function clearCompanySaveStatus(){
+  const box=document.querySelector('#companySaveStatus');
+  if(!box) return;
+  box.textContent='';
+  box.className='editor-status';
+}
+
 function openNewCompany(){
   editingId=null;
   localStorage.removeItem('vivaLastEditingId');
@@ -8308,118 +8327,157 @@ document.querySelector('#editorCancelBtn').onclick=renderCurrentPanel;
 document.querySelector('#companyForm').onsubmit=async e=>{
   e.preventDefault();
 
-  const data={
-    name:document.querySelector('#fName').value.trim(),
-    cat:document.querySelector('#fCat').value.trim(),
-    emoji:document.querySelector('#fEmoji').value.trim()||'📍',
-    city:document.querySelector('#fCity').value.trim(),
-    address:document.querySelector('#fAddress').value.trim(),
-    country:document.querySelector('#fCountry').value.trim(),
-    postal:document.querySelector('#fPostal').value.trim(),
-    phonePrefix:document.querySelector('#fPhonePrefix').value.trim(),
-    phone:normalizeLocalPhone(document.querySelector('#fPhone').value,document.querySelector('#fPhonePrefix')?.value),
-    email:document.querySelector('#fEmail').value.trim(),
-    messengers:collectMessengers(),
-    whatsapp:(collectMessengers().find(m=>m.type==='WhatsApp')?.value||''),
-    telegram:(collectMessengers().find(m=>m.type==='Telegram')?.value||''),
-    signal:(collectMessengers().find(m=>m.type==='Signal')?.value||''),
-    viber:(collectMessengers().find(m=>m.type==='Viber')?.value||''),
-    messenger:(collectMessengers().find(m=>m.type==='Facebook Messenger')?.value||''),
-    www:normalizeWebsiteUrl(document.querySelector('#fWww').value),
-    instagram:document.querySelector('#fInstagram').value.trim(),
-    facebook:document.querySelector('#fFacebook').value.trim(),
-    tiktok:document.querySelector('#fTiktok').value.trim(),
-    weeklyHours:readWeeklyHoursEditor(),
-    hours:weeklyHoursSummary(readWeeklyHoursEditor()),
-    photos:(companyPhotoLimit()===Infinity?pendingCompanyPhotos:pendingCompanyPhotos.slice(0,companyPhotoLimit())).map(p=>({...p})),
-    rating:0,
-    reviews:0,
-    distance:null,
-    desc:document.querySelector('#fDesc').value.trim(),
-    locationRole:document.querySelector('#fLocationRole')?.value||'branch',
-    lat:document.querySelector('#fLat')?.value ? Number(document.querySelector('#fLat').value) : null,
-    lng:document.querySelector('#fLng')?.value ? Number(document.querySelector('#fLng').value) : null,
-    geocodeKey:normalizeGeocodeKey([
-      document.querySelector('#fAddress')?.value,
-      document.querySelector('#fPostal')?.value,
-      document.querySelector('#fCity')?.value,
-      document.querySelector('#fCountry')?.value
-    ])
-  };
-
-
-  clearCompanyEditorStatus();
-
-  // v0.78: GPS placówki pochodzi z ADRESU placówki, nie z miejsca, w którym jest telefon właściciela.
-  // Geokodujemy przy pierwszym zapisie albo po każdej zmianie adresu.
-  const existing=editingId===null?null:companies.find(x=>x.id===editingId);
-  if(existing){
-    data.rating=Number(existing.rating||0);
-    data.reviews=Number(existing.reviews||0);
+  const saveBtn=document.querySelector('#companySaveBtn');
+  if(saveBtn?.dataset.saving==='1') return;
+  const originalSaveText=saveBtn?.textContent||'Zapisz placówkę';
+  if(saveBtn){
+    saveBtn.dataset.saving='1';
+    saveBtn.disabled=true;
+    saveBtn.textContent='Wird gespeichert…';
   }
-  const addressChanged=!existing || existing.geocodeKey!==data.geocodeKey;
-  if(addressChanged || !Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
-    const gpsOk=await geocodeCompanyAddress({silent:false});
-    if(gpsOk){
-      data.lat=Number(document.querySelector('#fLat')?.value);
-      data.lng=Number(document.querySelector('#fLng')?.value);
+  clearCompanySaveStatus();
+  showCompanySaveStatus('Wird gespeichert…','warn');
+
+  try{
+    const data={
+      name:document.querySelector('#fName').value.trim(),
+      cat:document.querySelector('#fCat').value.trim(),
+      emoji:document.querySelector('#fEmoji').value.trim()||'📍',
+      city:document.querySelector('#fCity').value.trim(),
+      address:document.querySelector('#fAddress').value.trim(),
+      country:document.querySelector('#fCountry').value.trim(),
+      postal:document.querySelector('#fPostal').value.trim(),
+      phonePrefix:document.querySelector('#fPhonePrefix').value.trim(),
+      phone:normalizeLocalPhone(document.querySelector('#fPhone').value,document.querySelector('#fPhonePrefix')?.value),
+      email:document.querySelector('#fEmail').value.trim(),
+      messengers:collectMessengers(),
+      whatsapp:(collectMessengers().find(m=>m.type==='WhatsApp')?.value||''),
+      telegram:(collectMessengers().find(m=>m.type==='Telegram')?.value||''),
+      signal:(collectMessengers().find(m=>m.type==='Signal')?.value||''),
+      viber:(collectMessengers().find(m=>m.type==='Viber')?.value||''),
+      messenger:(collectMessengers().find(m=>m.type==='Facebook Messenger')?.value||''),
+      www:normalizeWebsiteUrl(document.querySelector('#fWww').value),
+      instagram:document.querySelector('#fInstagram').value.trim(),
+      facebook:document.querySelector('#fFacebook').value.trim(),
+      tiktok:document.querySelector('#fTiktok').value.trim(),
+      weeklyHours:readWeeklyHoursEditor(),
+      hours:weeklyHoursSummary(readWeeklyHoursEditor()),
+      photos:(companyPhotoLimit()===Infinity?pendingCompanyPhotos:pendingCompanyPhotos.slice(0,companyPhotoLimit())).map(p=>({...p})),
+      rating:0,
+      reviews:0,
+      distance:null,
+      desc:document.querySelector('#fDesc').value.trim(),
+      locationRole:document.querySelector('#fLocationRole')?.value||'branch',
+      lat:document.querySelector('#fLat')?.value ? Number(document.querySelector('#fLat').value) : null,
+      lng:document.querySelector('#fLng')?.value ? Number(document.querySelector('#fLng').value) : null,
+      geocodeKey:normalizeGeocodeKey([
+        document.querySelector('#fAddress')?.value,
+        document.querySelector('#fPostal')?.value,
+        document.querySelector('#fCity')?.value,
+        document.querySelector('#fCountry')?.value
+      ])
+    };
+
+    clearCompanyEditorStatus();
+
+    // GPS placówki pochodzi z adresu placówki, nie z miejsca, w którym jest telefon właściciela.
+    // Geokodujemy przy pierwszym zapisie albo po każdej zmianie adresu.
+    const existing=editingId===null?null:companies.find(x=>x.id===editingId);
+    if(existing){
+      data.rating=Number(existing.rating||0);
+      data.reviews=Number(existing.reviews||0);
+    }
+    const addressChanged=!existing || existing.geocodeKey!==data.geocodeKey;
+    if(addressChanged || !Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
+      showCompanySaveStatus('Adresse wird geprüft und GPS ermittelt…','warn');
+      const gpsOk=await geocodeCompanyAddress({silent:false});
+      if(gpsOk){
+        data.lat=Number(document.querySelector('#fLat')?.value);
+        data.lng=Number(document.querySelector('#fLng')?.value);
+      }
+    }
+
+    if(!Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
+      const msg='Die Adresse konnte nicht eindeutig gefunden werden. Bitte Straße, Hausnummer, PLZ und Ort prüfen.';
+      showCompanyEditorStatus(msg);
+      showCompanySaveStatus(msg);
+      return;
+    }
+
+    const requiredValues=[
+      ['Name des Geschäftsbereichs',data.name],
+      ['Kategorie',data.cat],
+      ['Land',data.country],
+      ['Postleitzahl',data.postal],
+      ['Ort',data.city],
+      ['Straße und Hausnummer',data.address],
+      ['Vorwahl',data.phonePrefix],
+      ['Telefon',data.phone]
+    ];
+
+    const missing=requiredValues.find(([,value])=>!String(value||'').trim());
+    if(missing){
+      const msg=`Bitte Feld ausfüllen: ${missing[0]}.`;
+      showCompanyEditorStatus(msg);
+      showCompanySaveStatus(msg);
+      return;
+    }
+
+    if(data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)){
+      const msg='Bitte die Firmen-E-Mail prüfen.';
+      showCompanyEditorStatus(msg);
+      showCompanySaveStatus(msg);
+      return;
+    }
+
+    if(data.www && !/^https?:\/\//i.test(data.www)){
+      const msg='Die Website-Adresse muss mit http:// oder https:// beginnen.';
+      showCompanyEditorStatus(msg);
+      showCompanySaveStatus(msg);
+      return;
+    }
+
+    if(editingId===null){
+      const nextId=companies.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1;
+      const account=getCompanyAccount();
+      companies.push({
+        id:nextId,
+        ...data,
+        seed:false,
+        moderationStatus:(VIVA_TEST_AUTO_APPROVE_COMPANIES?'approved':(isCompanyAccount()?'pending':'approved')),
+        ownerEmail:isCompanyAccount()?account?.email||null:null
+      });
+    }else{
+      const c=companies.find(x=>x.id===editingId);
+      if(!c || !canEditCompany(c)){
+        const msg='Dieser Geschäftsbereich kann mit diesem Konto nicht bearbeitet werden.';
+        showCompanyEditorStatus(msg);
+        showCompanySaveStatus(msg);
+        return;
+      }
+      Object.assign(c,data);
+    }
+
+    saveCompanies();
+    localStorage.removeItem('vivaEditorMode');
+    localStorage.removeItem('vivaLastEditingId');
+    render(companies);
+    showCompanySaveStatus('Gespeichert.','ok');
+    showToast(vivaTranslateString('Działalność została zapisana.',getVivaAppLanguage()));
+    renderCurrentPanel();
+  }catch(err){
+    console.error('Company save error',err);
+    const msg='Speichern fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.';
+    showCompanyEditorStatus(msg);
+    showCompanySaveStatus(msg);
+  }finally{
+    const currentBtn=document.querySelector('#companySaveBtn');
+    if(currentBtn){
+      currentBtn.disabled=false;
+      currentBtn.dataset.saving='0';
+      currentBtn.textContent=originalSaveText;
     }
   }
-
-  if(!Number.isFinite(Number(data.lat)) || !Number.isFinite(Number(data.lng))){
-    showCompanyEditorStatus(vivaTranslateString('Nie można zapisać placówki bez poprawnej lokalizacji adresu.',getVivaAppLanguage()));
-    return;
-  }
-
-  const requiredValues=[
-    ['Nazwa firmy',data.name],
-    ['Kategoria',data.cat],
-    ['Kraj',data.country],
-    ['Kod pocztowy',data.postal],
-    ['Miejscowość',data.city],
-    ['Ulica i numer',data.address],
-    ['Prefiks telefonu',data.phonePrefix],
-    ['Telefon',data.phone]
-  ];
-
-  const missing=requiredValues.find(([,value])=>!String(value||'').trim());
-  if(missing){
-    showCompanyEditorStatus(`Uzupełnij pole: ${missing[0]}.`);
-    return;
-  }
-
-  if(data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)){
-    showCompanyEditorStatus('Sprawdź adres e-mail firmy.');
-    return;
-  }
-
-  if(data.www && !/^https?:\/\//i.test(data.www)){
-    showCompanyEditorStatus('Adres WWW powinien zaczynać się od http:// albo https://');
-    return;
-  }
-
-  if(editingId===null){
-    const nextId=companies.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1;
-    const account=getCompanyAccount();
-    companies.push({
-      id:nextId,
-      ...data,
-      seed:false,
-      moderationStatus:(VIVA_TEST_AUTO_APPROVE_COMPANIES?'approved':(isCompanyAccount()?'pending':'approved')),
-      ownerEmail:isCompanyAccount()?account?.email||null:null
-    });
-  }else{
-    const c=companies.find(x=>x.id===editingId);
-    if(!c || !canEditCompany(c)) return;
-    Object.assign(c,data);
-  }
-
-  saveCompanies();
-  localStorage.removeItem('vivaEditorMode');
-  localStorage.removeItem('vivaLastEditingId');
-  render(companies);
-  showToast(vivaTranslateString('Działalność została zapisana.',getVivaAppLanguage()));
-  renderCurrentPanel();
 };
 
 const splashTranslations = {
