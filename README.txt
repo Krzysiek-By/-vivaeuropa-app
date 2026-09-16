@@ -1,4 +1,4 @@
-VivaEuropa v0.90.37-R1-FOOTER-FLOW-FIX
+VivaEuropa v0.90.38-R1-FOOTER-IN-VIEW-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -104,6 +104,14 @@ CHANGES IN v0.90.37-R1:
 - Normalized bottom spacing of panels, company cards, guest results and the VE-002 welcome wrapper.
 - Legal footer now follows page content with a small consistent gap while retaining bottom clearance for mobile navigation.
 - The German-only refresh paint guard from v0.90.36 remains unchanged.
+- No other functional changes.
+
+
+CHANGES IN v0.90.38-R1:
+- Fixed the legal-footer spacing at the structural level.
+- Root cause: the legal footer lived outside <main>, while the active app view/main could reserve viewport height, creating a large empty gap that margin tweaks could not reliably remove.
+- The single legal footer is now moved into the currently active view, directly after that view's content.
+- Footer spacing is now small and consistent across VE-002, VE-003 and the other app views, with mobile bottom-navigation clearance preserved.
 - No other functional changes.
 
 IMPORTANT:

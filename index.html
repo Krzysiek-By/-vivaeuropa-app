@@ -3212,6 +3212,17 @@ body:not(.splash-active) .legal-footer a{
 
 
 
+/* ===== v0.90.38 footer follows active view content ===== */
+body:not(.splash-active) .view.active > .legal-footer-live{
+  margin:10px auto 24px!important;
+  padding:10px 12px!important;
+}
+@media(max-width:800px){
+  body:not(.splash-active) .view.active > .legal-footer-live{
+    margin:8px auto 88px!important;
+  }
+}
+
 /* ===== v0.90.37 global footer flow normalization ===== */
 body:not(.splash-active) main{
   min-height:0!important;
@@ -6066,6 +6077,7 @@ function setView(name, options={}){
   const showNav=(name==='home'||name==='company');
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
   document.body.classList.toggle('onboarding', ['welcome','account','reset','newPassword','admin','editor'].includes(name));
+  placeLegalFooterInActiveView();
   updateBackButtons();
   window.scrollTo({top:0,behavior:'smooth'});
 }
