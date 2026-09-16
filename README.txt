@@ -1,73 +1,95 @@
-VivaEuropa v0.90.5 — FULL SNAPSHOT CHECKED
-Base: v0.90.4 FULL SNAPSHOT
+VivaEuropa v0.90.33-R2-CLEAN-CORRECTED
+
+FULL CLEAN SNAPSHOT
+Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
 
 STATUS:
-- Full project snapshot.
-- Folder api preserved.
-- manifest.webmanifest preserved and verified against the 13.09.2026 copy.
-- legal folder preserved with DE draft legal documents.
-- all project images/assets preserved.
-- current index.html preserved from v0.90.4.
+- Project cleaned and verified after repository cleanup.
+- No functional app changes intended.
+- Current index.html application logic preserved.
+- VE-001 background image ve001-de-bg.jpg preserved.
+- GPS / guest radius logic preserved.
+- Account 001 unlimited-photo behavior preserved.
+- IndexedDB photo storage/migration preserved.
+- Company save flow preserved.
+- 18 main category icons preserved.
+- 9 quick icons preserved.
+- API, legal folder, manifest and category MASTER files preserved.
 
-IMPORTANT:
-Every future update must be created from the latest FULL SNAPSHOT.
-Before creating a new ZIP, compare the complete file/folder inventory with the previous FULL SNAPSHOT.
-Do not remove api, manifest.webmanifest, README.txt, legal, images or auxiliary files unless the user explicitly approves it.
+CLEANUP COMPLETED:
+- Removed obsolete demo-*.jpg files.
+- Removed old demo fallback references from index.html.
+- Removed obsolete taxi-category-icon.png.
+- Removed old Polish duplicate category icon files.
+- Removed old individual category icons:
+  bakery.png
+  bicycle.png
+  hairdresser.png
+  ice-cream.png
+  pharmacy.png
+  restaurant.png
+  shoemaker.png
+  taxi.png
+- Removed wrongly nested assets/category-icons/quick-icons/ folder.
+- Removed duplicate legal DOCX/PDF files from repository root.
+- Canonical legal documents remain in legal/.
+- 17-sport.png and 18-transport.png are active current category icons and are preserved.
 
-CURRENT CORE FILES/FOLDERS:
-- index.html
-- manifest.webmanifest
-- README.txt
-- api/ai-company.js
+CURRENT ROOT:
+- api/
+- assets/
 - legal/
+- README.txt
+- VivaEuropa-KATEGORIE-MASTER-v1.json
+- VivaEuropa-KATEGORIE-MASTER-v1.txt
 - apple-touch-icon.png
 - icon-192.png
 - icon-512.png
-- taxi-category-icon.png
+- index.html
+- manifest.webmanifest
 - ve001-de-bg.jpg
 - vivaeuropa-logo-full.png
-- demo-*.jpg
 
-HISTORICAL NOTE — v0.88.5:
-- VE-004 company card German-language cleanup
-- Adresse / Öffnungszeiten / Über das Unternehmen / Bewertungen / Favoriten
-- Messenger-Dienste separated from Social Media; empty rows hidden
-- full phone display with country prefix when available
-- Webseite button instead of WWW in DE
-- German coupon placeholder and guest-card text
-- existing functions and data structures preserved
+ASSETS / CATEGORY ICONS:
+- 01-automotive.png
+- 02-business.png
+- 03-culture.png
+- 04-education.png
+- 05-leisure.png
+- 06-public.png
+- 07-finance.png
+- 08-food-drink.png
+- 09-government.png
+- 10-health-wellness.png
+- 11-housing.png
+- 12-lodging.png
+- 13-nature.png
+- 14-religion.png
+- 15-services.png
+- 16-shopping.png
+- 17-sport.png
+- 18-transport.png
 
-NOTE:
-This README is informational. The application behavior is defined by the current project files.
+ASSETS / QUICK ICONS:
+- city-hall.png
+- ev-charging.png
+- gas-station.png
+- hospital.png
+- pharmacy.png
+- police.png
+- roadside-assistance.png
+- taxi.png
+- wc.png
 
+IMPORTANT:
+Every future update must be created from the latest confirmed FULL snapshot.
 
-v0.90.6 — LEGAL IN-APP VIEWER FIX
-- Legal documents are now embedded in index.html for reliable viewing.
-- Footer links and registration legal links open inside VivaEuropa.
-- No critical app flow depends on /legal/*.pdf existing on the deployed server.
-- A visible Zurück flow is preserved through the normal module screen.
-- Internal legal documents include a Drucken button.
-- /legal/ PDF and DOCX files remain in the FULL SNAPSHOT for lawyer review/archive.
+Before creating a new ZIP:
+1. Compare the complete file/folder inventory with the latest confirmed full snapshot.
+2. Do not remove api/, legal/, manifest.webmanifest, category MASTER files, PWA icons, VE-001 background or active assets unless explicitly verified.
+3. Change only what was requested.
+4. Create a complete ZIP snapshot.
+5. Verify the ZIP inventory after creation.
+6. Test the live Vercel deployment before promoting the new ZIP as the safe rollback base.
 
-
-v0.90.7 — LEGAL FOOTER BUTTONS FIX
-- Bottom legal links changed from anchors to real buttons.
-- Explicit touch/click handlers added.
-- Footer forced above overlays with z-index and pointer-events.
-- Footer legal buttons use brighter visible styling.
-- Registration legal links remain unchanged and continue to open in-app documents.
-
-
-v0.90.8 — VERIFIED LEGAL FOOTER REAL FIX
-- Replaced bottom legal anchors with direct buttons using inline openLegalDocument(...) handlers.
-- Footer gets explicit position/z-index/pointer-events so transparent views cannot intercept taps.
-- Legal footer text forced to bright blue.
-- Verified inside the generated ZIP after creation.
-
-VivaEuropa v0.90.23-R1 — Icon Batch 1
-- Added first curated category icon pack under assets/category-icons/.
-- Mapped icons to bakery, pharmacy/drugstore, hair salon/hair care/barber, ice cream, bicycle/bike sharing, taxi, restaurant categories.
-- Shoemaker icon included and reserved for shoe_repair/shoemaker category IDs; current master does not yet contain a dedicated shoemaker ID.
-- Existing guest quick category Apotheke and Taxi now use the curated image icons.
-- Company profile category chip uses mapped icon when available.
-
+This README is the reference inventory for the cleaned v0.90.33-R2 project.
