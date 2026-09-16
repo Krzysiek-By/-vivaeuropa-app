@@ -193,3 +193,9 @@ v0.90.47 – GUEST PLUS PROMO TEST
 - Added inline CTA buttons in guest search results area.
 - Added guest promo reminder modal, limited to at most once every 2 days for guest users.
 - CTA currently routes to account/register flow as placeholder for later subscription/payment implementation.
+
+VivaEuropa v0.90.47-R2 – STARTUP HOTFIX
+- Fixed a JavaScript syntax error inherited from the DE text audit in the laterRoadmap module.
+- The broken line is restored as a valid intro property.
+- Guest Plus promo from v0.90.47-R1 is preserved unchanged.
+- No other functional changes.
