@@ -1,3 +1,17 @@
+VivaEuropa v0.90.54-R1-POLICE-ENDPOINT-RELIABILITY-FIX
+
+FULL SNAPSHOT / CURRENT TEST BUILD
+Base: v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
+
+CHANGES IN v0.90.54-R1:
+- Fixes police endpoint reliability after live test returned "Polizeidienststellen konnten gerade nicht geladen werden".
+- Police Overpass requests now use the same proven sequential fallback pattern as the working WC endpoint.
+- Replaced nwr shorthand with explicit node/way/relation clauses for broader Overpass compatibility.
+- Keeps the ordinary public police-station filter and exclusion of specialist/administrative police units.
+- No UI/layout changes outside the police data endpoint.
+
+PREVIOUS CHANGE NOTES FOLLOW:
+
 VivaEuropa v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
 
 FULL SNAPSHOT / CURRENT TEST BUILD
