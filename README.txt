@@ -1,4 +1,4 @@
-VivaEuropa v0.90.33-R2-CLEAN-CORRECTED
+VivaEuropa v0.90.35-R1-SMALL-UI-POLISH
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -81,6 +81,16 @@ ASSETS / QUICK ICONS:
 - taxi.png
 - wc.png
 
+LOGIN ROUTE FIX:
+- From the account registration screen, the link "Du hast bereits ein Konto? Anmelden" now returns to VE-002 account-type selection.
+- This prevents a company account from being sent into the Nutzer login flow by mistake.
+- Direct company login from VE-002 remains unchanged.
+
+CHANGES IN v0.90.35-R1:
+- Added a visible Abmelden button in the top-right area of VE-006 for company accounts.
+- Reduced excessive vertical spacing before the legal footer on VE-002 and VE-003/home results.
+- No other functional changes.
+
 IMPORTANT:
 Every future update must be created from the latest confirmed FULL snapshot.
 
@@ -92,4 +102,4 @@ Before creating a new ZIP:
 5. Verify the ZIP inventory after creation.
 6. Test the live Vercel deployment before promoting the new ZIP as the safe rollback base.
 
-This README is the reference inventory for the cleaned v0.90.33-R2 project.
+This README is the reference inventory for v0.90.34-R1 after the login-route fix.
