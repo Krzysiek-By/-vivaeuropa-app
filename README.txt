@@ -186,3 +186,10 @@ Before creating a new ZIP:
 6. Test the live Vercel deployment before promoting the new ZIP as the safe rollback base.
 
 This README is the reference inventory for v0.90.36-R1 after the footer-spacing and DE-only refresh-language fixes.
+
+v0.90.47 – GUEST PLUS PROMO TEST
+- VE-003 guest notice replaced with a premium-style VivaEuropa Plus promo block.
+- Test price displayed as 2 € / Monat.
+- Added inline CTA buttons in guest search results area.
+- Added guest promo reminder modal, limited to at most once every 2 days for guest users.
+- CTA currently routes to account/register flow as placeholder for later subscription/payment implementation.

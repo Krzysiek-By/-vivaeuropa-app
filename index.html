@@ -3677,6 +3677,173 @@ textarea::-webkit-input-placeholder{
   letter-spacing:0!important;
 }
 
+
+
+/* ===== v0.90.47 guest plus promo ===== */
+body:not(.splash-active) #homeView .guest-plus-card{
+  margin:0 0 18px!important;
+  padding:18px!important;
+  border-radius:22px!important;
+  background:linear-gradient(180deg, rgba(15,40,84,.96), rgba(10,28,59,.94))!important;
+  border:1px solid rgba(86,146,255,.34)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.28)!important;
+  color:#eef4ff!important;
+}
+body:not(.splash-active) #homeView .guest-plus-top{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  margin-bottom:14px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-kicker{
+  color:#f1c84a!important;
+  font-weight:800!important;
+  letter-spacing:.16em!important;
+  text-transform:uppercase!important;
+  font-size:12px!important;
+  margin-bottom:6px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-card h3{
+  margin:0 0 8px!important;
+  color:#fff!important;
+  font-size:28px!important;
+  line-height:1.08!important;
+}
+body:not(.splash-active) #homeView .guest-plus-card p{
+  margin:0!important;
+  color:rgba(231,240,255,.90)!important;
+  font-size:15px!important;
+  line-height:1.55!important;
+}
+body:not(.splash-active) #homeView .guest-plus-price{
+  flex:0 0 auto!important;
+  min-width:118px!important;
+  padding:12px 14px!important;
+  border-radius:18px!important;
+  border:1px solid rgba(255,214,89,.44)!important;
+  background:linear-gradient(180deg, rgba(255,216,96,.18), rgba(255,190,55,.10))!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)!important;
+  text-align:center!important;
+}
+body:not(.splash-active) #homeView .guest-plus-price span,
+body:not(.splash-active) #homeView .guest-plus-price small{
+  display:block!important;
+}
+body:not(.splash-active) #homeView .guest-plus-price span{
+  color:#ffe58a!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  margin-bottom:4px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-price strong{
+  display:block!important;
+  color:#fff5c6!important;
+  font-size:32px!important;
+  line-height:1!important;
+  font-weight:900!important;
+}
+body:not(.splash-active) #homeView .guest-plus-price small{
+  color:#ffe8a1!important;
+  font-size:12px!important;
+  margin-top:4px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-list{
+  list-style:none!important;
+  padding:0!important;
+  margin:0 0 16px!important;
+  display:grid!important;
+  gap:8px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-list li{
+  position:relative!important;
+  padding-left:22px!important;
+  color:#edf3ff!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+}
+body:not(.splash-active) #homeView .guest-plus-list li::before{
+  content:'★'!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  color:#f4c54a!important;
+  font-size:13px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:10px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-actions button{
+  min-height:48px!important;
+}
+body:not(.splash-active) #homeView .guest-plus-note{
+  margin-top:10px!important;
+  color:rgba(214,225,243,.76)!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+
+.guest-plus-modal.hidden{display:none!important}
+.guest-plus-modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:10090!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+}
+.guest-plus-modal-backdrop{
+  position:absolute!important;
+  inset:0!important;
+  background:rgba(3,10,24,.72)!important;
+  backdrop-filter:blur(3px)!important;
+}
+.guest-plus-modal-card{
+  position:relative!important;
+  width:min(100%, 460px)!important;
+  max-height:min(86vh, 780px)!important;
+  overflow:auto!important;
+  border-radius:26px!important;
+  padding:22px!important;
+  background:linear-gradient(180deg, rgba(12,38,80,.98), rgba(9,28,60,.97))!important;
+  border:1px solid rgba(84,144,255,.34)!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.46)!important;
+  color:#eef5ff!important;
+}
+.guest-plus-modal-close{
+  position:absolute!important;
+  top:12px!important;
+  right:12px!important;
+  width:38px!important;
+  height:38px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(124,170,255,.32)!important;
+  background:rgba(8,24,52,.88)!important;
+  color:#fff!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+.guest-plus-modal-card .guest-plus-kicker{margin-top:2px!important}
+.guest-plus-modal-card h3{margin:0 0 8px!important;color:#fff!important;font-size:30px!important;line-height:1.08!important}
+.guest-plus-modal-card p{margin:0 0 14px!important;color:rgba(231,240,255,.90)!important;line-height:1.56!important}
+.guest-plus-modal-card .guest-plus-price{margin:0 0 14px auto!important}
+.guest-plus-modal-card .guest-plus-list{margin-bottom:18px!important}
+.guest-plus-modal-card .guest-plus-actions{display:flex!important;flex-wrap:wrap!important;gap:10px!important}
+.guest-plus-modal-card .guest-plus-actions button{flex:1 1 180px!important;min-height:50px!important}
+.guest-plus-modal-footnote{margin-top:10px!important;color:rgba(214,225,243,.76)!important;font-size:12px!important;line-height:1.45!important}
+@media(max-width:800px){
+  body:not(.splash-active) #homeView .guest-plus-top{flex-direction:column!important}
+  body:not(.splash-active) #homeView .guest-plus-price{width:100%!important;min-width:0!important}
+  body:not(.splash-active) #homeView .guest-plus-card h3{font-size:24px!important}
+  .guest-plus-modal-card{padding:20px 18px!important;border-radius:22px!important}
+  .guest-plus-modal-card h3{font-size:26px!important}
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3696,6 +3863,27 @@ textarea::-webkit-input-placeholder{
     <div class="pull-refresh-box">
       <span id="pullRefreshIcon" class="pull-refresh-icon">↓</span>
       <span id="pullRefreshText">Pociągnij, aby odświeżyć</span>
+    </div>
+  </div>
+
+  <div id="guestPlusModal" class="guest-plus-modal hidden" aria-hidden="true">
+    <div class="guest-plus-modal-backdrop" data-guest-plus-close></div>
+    <div class="guest-plus-modal-card" role="dialog" aria-modal="true" aria-labelledby="guestPlusModalTitle">
+      <button type="button" class="guest-plus-modal-close" data-guest-plus-close aria-label="Schließen">×</button>
+      <div class="guest-plus-kicker">VivaEuropa Plus</div>
+      <h3 id="guestPlusModalTitle">Mehr entdecken. Mehr sparen.</h3>
+      <div class="guest-plus-price"><span>nur testweise</span><strong>2 €</strong><small>/ Monat</small></div>
+      <p>Als Gast nutzt du VivaEuropa bereits sinnvoll – mit VivaEuropa Plus bekommst du aber deutlich mehr Ergebnisse, Rabattcodes und zusätzliche KI-Hilfe für unterwegs.</p>
+      <ul class="guest-plus-list">
+        <li>mehr Ergebnisse und ein größerer Suchradius</li>
+        <li>Rabattcodes und exklusive Vorteile</li>
+        <li>KI-Hilfe für unterwegs und einfache Tagesplanung</li>
+      </ul>
+      <div class="guest-plus-actions">
+        <button type="button" class="primary" id="guestPlusModalActivate">Jetzt freischalten</button>
+        <button type="button" class="ghost" data-guest-plus-close>Später</button>
+      </div>
+      <div class="guest-plus-modal-footnote">Erinnerung höchstens alle 2 Tage. Preis aktuell als Testwert hinterlegt und später anpassbar.</div>
     </div>
   </div>
 
@@ -4314,6 +4502,40 @@ function setGuestMode(on){
   applyGuestRadiusOptions();
 }
 
+const GUEST_PLUS_MODAL_LAST_KEY='vivaGuestPlusLastShownAt';
+const GUEST_PLUS_MODAL_INTERVAL_MS=2*24*60*60*1000;
+
+function closeGuestPlusModal(){
+  const modal=document.querySelector('#guestPlusModal');
+  if(!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function openGuestPlusOffer(){
+  localStorage.setItem(GUEST_PLUS_MODAL_LAST_KEY,String(Date.now()));
+  closeGuestPlusModal();
+  setGuestMode(false);
+  showAccount('register');
+}
+
+function shouldShowGuestPlusReminder(){
+  if(!guestMode) return false;
+  if(localStorage.getItem('vivaLoggedIn')==='1') return false;
+  const last=Number(localStorage.getItem(GUEST_PLUS_MODAL_LAST_KEY)||'0');
+  return !last || (Date.now()-last)>=GUEST_PLUS_MODAL_INTERVAL_MS;
+}
+
+function maybeShowGuestPlusReminder(){
+  if(currentView!=='home') return;
+  if(!shouldShowGuestPlusReminder()) return;
+  const modal=document.querySelector('#guestPlusModal');
+  if(!modal) return;
+  localStorage.setItem(GUEST_PLUS_MODAL_LAST_KEY,String(Date.now()));
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden','false');
+}
+
 applyGuestRadiusOptions();
 
 function showToast(message){
@@ -4330,6 +4552,15 @@ function showToast(message){
 
 
 
+
+
+(function initGuestPlusModal(){
+  const modal=document.querySelector('#guestPlusModal');
+  if(!modal) return;
+  modal.querySelectorAll('[data-guest-plus-close]').forEach(btn=>btn.addEventListener('click',closeGuestPlusModal));
+  const activate=document.querySelector('#guestPlusModalActivate');
+  if(activate) activate.addEventListener('click',openGuestPlusOffer);
+})();
 
 function rememberRecoveryMode(){
   try{
@@ -6184,6 +6415,8 @@ function setView(name, options={}){
   document.body.classList.toggle('onboarding', ['welcome','account','reset','newPassword','admin','editor'].includes(name));
   placeLegalFooterInActiveView();
   updateBackButtons();
+  if(name==='home') setTimeout(maybeShowGuestPlusReminder, 450);
+  else closeGuestPlusModal();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -6256,10 +6489,33 @@ function render(list=companies){
   if(guestMode){
     const banner=document.createElement('div');
     banner.id='guestModeBanner';
-    banner.className='guest-mode-banner';
-    banner.textContent='Gastmodus: Du siehst nur einen Teil der Ergebnisse und eingeschränkte Unternehmensdaten.';
+    banner.className='guest-mode-banner guest-plus-card';
+    banner.innerHTML=`
+      <div class="guest-plus-top">
+        <div>
+          <div class="guest-plus-kicker">VivaEuropa Plus</div>
+          <h3>Mehr entdecken. Mehr sparen.</h3>
+          <p>Als Gast siehst du nur einen Teil der Ergebnisse und eingeschränkte Unternehmensdaten. Mit VivaEuropa Plus bekommst du mehr Reichweite, Rabattcodes und KI-Hilfe unterwegs.</p>
+        </div>
+        <div class="guest-plus-price"><span>nur testweise</span><strong>2 €</strong><small>/ Monat</small></div>
+      </div>
+      <ul class="guest-plus-list">
+        <li>mehr Ergebnisse und ein größerer Suchradius</li>
+        <li>Rabattcodes und exklusive Vorteile</li>
+        <li>KI-Hilfe für unterwegs und einfache Tagesplanung</li>
+      </ul>
+      <div class="guest-plus-actions">
+        <button type="button" class="primary" id="guestPlusActivateInline">Jetzt freischalten</button>
+        <button type="button" class="ghost" id="guestPlusLaterInline">Später</button>
+      </div>
+      <div class="guest-plus-note">Hinweis: Das ist ein Testpreis. Die finale Preisgestaltung kann später angepasst werden.</div>
+    `;
     const results=document.querySelector('#results');
     results.parentNode.insertBefore(banner, results);
+    const activateBtn=banner.querySelector('#guestPlusActivateInline');
+    if(activateBtn) activateBtn.onclick=()=>openGuestPlusOffer();
+    const laterBtn=banner.querySelector('#guestPlusLaterInline');
+    if(laterBtn) laterBtn.onclick=()=>showToast('Du kannst VivaEuropa erst einmal weiter als Gast nutzen.');
   }
 }
 function openCompany(id){
