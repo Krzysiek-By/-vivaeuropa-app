@@ -7986,7 +7986,13 @@ document.querySelector('#navAccount').onclick=()=>{
   if(localStorage.getItem('vivaLoggedIn')==='1'){document.querySelector('#loginBtn').click();}
   else{showAccount('login');}
 };
-document.querySelector('#switchModeBtn').onclick=()=>showAccount(accountMode==='login'?'register':'login');
+document.querySelector('#switchModeBtn').onclick=()=>{
+  if(accountMode==='register'){
+    setView('welcome');
+    return;
+  }
+  showAccount('register');
+};
 
 
 ['emailInput','passwordInput','nameInput','surnameInput','companyNameInput','confirmPasswordInput','termsInput'].forEach(id=>{
