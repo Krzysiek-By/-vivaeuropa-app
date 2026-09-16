@@ -1,4 +1,4 @@
-VivaEuropa v0.90.40-R1-FOOTER-HELPER-FIX
+VivaEuropa v0.90.41-R1-VE003-FOOTER-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -128,6 +128,15 @@ CHANGES IN v0.90.40-R1:
 - Fixed the actual missing JavaScript helper for legal-footer placement.
 - setView() already called placeLegalFooterInActiveView(), but the helper function itself was absent, so the footer was never moved into the active view.
 - The helper now moves the single legal footer directly after the content of the active view; existing footer spacing rules can finally take effect.
+- No other functional changes.
+
+
+CHANGES IN v0.90.41-R1:
+- VE-002 footer spacing from v0.90.40 is preserved.
+- Added a separate definitive fix for VE-003, whose results section has its own layout and bottom spacing.
+- VE-003 results wrapper can no longer reserve extra bottom height/padding before the legal footer.
+- Footer helper now also clears the bottom margin/padding/min-height of the content block directly before the footer on every active view.
+- Checked all app views: VE-002 welcome, VE-003 home/results, VE-004 company, VE-005 account, VE-006 admin, VE-007 editor, VE-008 reset/new-password and module/legal view.
 - No other functional changes.
 
 IMPORTANT:

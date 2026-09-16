@@ -3617,6 +3617,27 @@ body:not(.splash-active) .view.active > .legal-footer-live{
   }
 }
 
+
+/* ===== v0.90.41 VE-003 footer spacing — definitive view-specific fix ===== */
+body:not(.splash-active) #homeView.active{
+  min-height:0!important;
+  padding-bottom:0!important;
+}
+body:not(.splash-active) #homeView.active > .results-wrap{
+  min-height:0!important;
+  height:auto!important;
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+body:not(.splash-active) #homeView.active .results,
+body:not(.splash-active) #homeView.active #resultsMap,
+body:not(.splash-active) #homeView.active #radiusExpandNote{
+  min-height:0!important;
+}
+body:not(.splash-active) #homeView.active > .legal-footer-live{
+  margin-top:10px!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -6068,8 +6089,26 @@ function placeLegalFooterInActiveView(){
   const footer=document.querySelector('.legal-footer-live');
   const activeView=document.querySelector('.view.active');
   if(!footer || !activeView) return;
+
   if(footer.parentElement!==activeView){
     activeView.appendChild(footer);
+  }
+
+  const previous=footer.previousElementSibling;
+  if(previous){
+    previous.style.setProperty('margin-bottom','0','important');
+    previous.style.setProperty('padding-bottom','0','important');
+    previous.style.setProperty('min-height','0','important');
+  }
+
+  if(activeView.id==='homeView'){
+    const resultsWrap=activeView.querySelector(':scope > .results-wrap');
+    if(resultsWrap){
+      resultsWrap.style.setProperty('margin-bottom','0','important');
+      resultsWrap.style.setProperty('padding-bottom','0','important');
+      resultsWrap.style.setProperty('min-height','0','important');
+      resultsWrap.style.setProperty('height','auto','important');
+    }
   }
 }
 
