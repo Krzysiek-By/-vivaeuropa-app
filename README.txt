@@ -1,4 +1,4 @@
-VivaEuropa v0.90.38-R1-FOOTER-IN-VIEW-FIX
+VivaEuropa v0.90.39-R1-FOOTER-FINAL-CASCADE-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -112,6 +112,15 @@ CHANGES IN v0.90.38-R1:
 - Root cause: the legal footer lived outside <main>, while the active app view/main could reserve viewport height, creating a large empty gap that margin tweaks could not reliably remove.
 - The single legal footer is now moved into the currently active view, directly after that view's content.
 - Footer spacing is now small and consistent across VE-002, VE-003 and the other app views, with mobile bottom-navigation clearance preserved.
+- No other functional changes.
+
+
+CHANGES IN v0.90.39-R1:
+- Fixed the actual CSS cascade problem that kept overriding the previous footer-spacing fixes.
+- Older legal-footer rules later in the stylesheet used the same selector with !important, so earlier fixes were being overwritten.
+- Added one definitive footer rule at the very end of the stylesheet, where it wins the cascade.
+- The content block directly before the footer now has its bottom margin/padding removed, so the footer follows the page content closely on all active views.
+- Mobile bottom-navigation clearance is preserved.
 - No other functional changes.
 
 IMPORTANT:

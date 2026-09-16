@@ -3599,6 +3599,24 @@ textarea::-webkit-input-placeholder{
     margin-bottom:28px!important;
   }
 }
+
+/* ===== v0.90.39 FINAL legal footer cascade fix =====
+   Must stay at the END of the stylesheet so older !important footer rules cannot override it. */
+body:not(.splash-active) .view.active > *:has(+ .legal-footer-live){
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+body:not(.splash-active) .view.active > .legal-footer-live{
+  margin:8px auto 20px!important;
+  padding:6px 12px!important;
+}
+@media(max-width:800px){
+  body:not(.splash-active) .view.active > .legal-footer-live{
+    margin:8px auto 84px!important;
+    padding:6px 10px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
