@@ -199,3 +199,9 @@ VivaEuropa v0.90.47-R2 – STARTUP HOTFIX
 - The broken line is restored as a valid intro property.
 - Guest Plus promo from v0.90.47-R1 is preserved unchanged.
 - No other functional changes.
+
+v0.90.48-R1 – GUEST PLUS WOW VARIANT 1
+- Based on confirmed v0.90.47-R2 startup-hotfix base.
+- Only the guest Plus promo visual presentation was redesigned to match approved Variant 1.
+- Existing 2-day guest reminder logic and registration CTA flow are preserved.
+- Uses existing ve001-de-bg.jpg; no new asset files added.
