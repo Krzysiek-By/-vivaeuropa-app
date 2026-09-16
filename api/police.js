@@ -1,16 +1,12 @@
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter',
-  'https://overpass.private.coffee/api/interpreter'
+  'https://overpass.kumi.systems/api/interpreter'
 ];
 
 function norm(v=''){
   return String(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 
-// VivaEuropa should show ordinary, public-facing police stations only.
-// amenity=police is intended by OSM for public first-contact stations, but
-// obvious specialist / administrative units are filtered out as extra safety.
 function isOrdinaryPublicStation(tags={}){
   const access=norm(tags.access);
   if(access==='private' || access==='no') return false;
@@ -48,14 +44,14 @@ function isOrdinaryPublicStation(tags={}){
 
 async function fetchOverpass(url,q){
   const ctrl=new AbortController();
-  const timer=setTimeout(()=>ctrl.abort(),8500);
+  const timer=setTimeout(()=>ctrl.abort(),10000);
   try{
     const r=await fetch(url,{
       method:'POST',
       headers:{
         'content-type':'application/x-www-form-urlencoded;charset=UTF-8',
         'accept':'application/json',
-        'user-agent':'VivaEuropa/0.90.52 (public police station search)'
+        'user-agent':'VivaEuropa/0.90.54 (public police station search)'
       },
       body:'data='+encodeURIComponent(q),
       signal:ctrl.signal
@@ -74,34 +70,43 @@ export default async function handler(req,res){
   if(!Number.isFinite(lat)||!Number.isFinite(lng)) return res.status(400).json({error:'invalid_coordinates'});
 
   const radius=Math.round(radiusKm*1000);
-  const q=`[out:json][timeout:12];nwr["amenity"="police"](around:${radius},${lat},${lng});out center tags 100;`;
+  // Keep this query deliberately simple and aligned with the WC endpoint.
+  // Explicit node/way/relation clauses are more portable across Overpass instances than nwr shorthand.
+  const q=`[out:json][timeout:18];(node["amenity"="police"](around:${radius},${lat},${lng});way["amenity"="police"](around:${radius},${lat},${lng});relation["amenity"="police"](around:${radius},${lat},${lng}););out center tags 120;`;
 
-  try{
-    const data=await Promise.any(OVERPASS_ENDPOINTS.map(url=>fetchOverpass(url,q)));
-    const seen=new Set();
-    const items=(data.elements||[])
-      .map(el=>({
-        id:`${el.type}/${el.id}`,
-        lat:Number(el.lat??el.center?.lat),
-        lng:Number(el.lon??el.center?.lon),
-        tags:el.tags||{}
-      }))
-      .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng))
-      .filter(x=>isOrdinaryPublicStation(x.tags))
-      .filter(x=>{
-        const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}:${norm(x.tags.name||'police')}`;
-        if(seen.has(key)) return false;
-        seen.add(key); return true;
+  let lastError;
+  for(const url of OVERPASS_ENDPOINTS){
+    try{
+      const data=await fetchOverpass(url,q);
+      const seen=new Set();
+      const items=(data.elements||[])
+        .map(el=>({
+          id:`${el.type}/${el.id}`,
+          lat:Number(el.lat??el.center?.lat),
+          lng:Number(el.lon??el.center?.lon),
+          tags:el.tags||{}
+        }))
+        .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng))
+        .filter(x=>isOrdinaryPublicStation(x.tags))
+        .filter(x=>{
+          const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}:${norm(x.tags.name||'police')}`;
+          if(seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+      return res.status(200).json({
+        source:'OpenStreetMap/Overpass',
+        license:'ODbL',
+        filter:'ordinary_public_police_stations',
+        items
       });
-
-    return res.status(200).json({
-      source:'OpenStreetMap/Overpass',
-      license:'ODbL',
-      filter:'ordinary_public_police_stations',
-      items
-    });
-  }catch(err){
-    console.error('Police Overpass unavailable',err);
-    return res.status(502).json({error:'police_source_unavailable'});
+    }catch(err){
+      lastError=err;
+      console.error('Police Overpass endpoint failed',url,err?.message||err);
+    }
   }
+
+  console.error('Police Overpass unavailable',lastError);
+  return res.status(502).json({error:'police_source_unavailable'});
 }
