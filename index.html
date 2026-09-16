@@ -4897,15 +4897,7 @@ function companyDemoImage(c){
     if(main?.data) return main.data;
   }
   if(c && c.image) return c.image;
-  const demoByCategory={
-    'Piekarnia':'demo-bakery.jpg',
-    'Fryzjer':'demo-salon.jpg',
-    'Apteka':'demo-pharmacy.jpg',
-    'Lodziarnia':'demo-icecream.jpg',
-    'Szewc':'demo-shoemaker.jpg',
-    'Rowery':'demo-bikes.jpg'
-  };
-  return demoByCategory[c?.cat]||'';
+  return '';
 }
 
 const VIVA_WEEK_DAYS=[
