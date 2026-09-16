@@ -3638,6 +3638,33 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
   margin-top:10px!important;
 }
 
+
+/* ===== v0.90.42 hint readability + guest notice spacing ===== */
+body:not(.splash-active) #homeView #radiusExpandNote.show{
+  margin-bottom:14px!important;
+}
+body:not(.splash-active) #homeView #guestModeBanner{
+  margin-top:0!important;
+}
+
+body:not(.splash-active) input::placeholder,
+body:not(.splash-active) textarea::placeholder,
+input::placeholder,
+textarea::placeholder,
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder{
+  color:rgba(228,234,241,.84)!important;
+  opacity:1!important;
+  font-weight:400!important;
+}
+
+body:not(.splash-active) .company-register-help,
+body:not(.splash-active) .form-section-hint,
+body:not(.splash-active) .field-help,
+body:not(.splash-active) #accountView small{
+  color:rgba(226,233,241,.80)!important;
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -3763,7 +3790,7 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
         <div class="search-card">
           <label>
             <span>Czego szukasz?</span>
-            <input id="queryInput" placeholder="np. piekarnia, fryzjer, apteka" autocomplete="off" />
+            <input id="queryInput" placeholder="z. B. Bäckerei, Friseur, Apotheke" autocomplete="off" />
           </label>
           <label>
             <span>Gdzie?</span>
@@ -3772,7 +3799,7 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
               <button type="button" class="location-mode-btn" id="locationModeManual">⌨ Manuell</button>
             </div>
             <div class="location-row hidden" id="manualLocationRow">
-              <input id="locationInput" placeholder="z. B. Bad Tölz, 83646 oder Adresse" autocomplete="off" />
+              <input id="locationInput" placeholder="z. B. München, 80331 oder Adresse" autocomplete="off" />
             </div>
           </label>
           <div class="search-advanced">
@@ -4015,7 +4042,7 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
             <div class="editor-field">
               <label for="fName">Nazwa działalności <span class="req">*</span></label>
-              <input id="fName" autocomplete="organization" placeholder="np. Autohaus Muster – Bad Tölz" required>
+              <input id="fName" autocomplete="organization" placeholder="z. B. Autohaus Muster – München" required>
             </div>
 
             <div class="editor-field">
@@ -4029,7 +4056,7 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
             <div class="editor-field">
               <label for="fDesc">Krótki opis</label>
-              <textarea id="fDesc" rows="4" placeholder="Napisz krótko, czym zajmuje się firma i co oferuje."></textarea>
+              <textarea id="fDesc" rows="4" placeholder="Beschreibe kurz, was das Unternehmen macht und anbietet."></textarea>
             </div>
             <div class="full ai-company-box">
               <h4>Asystent AI firmy</h4>
@@ -4062,18 +4089,18 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
               <div class="editor-field">
                 <label for="fPostal">Kod pocztowy <span class="req">*</span></label>
-                <input id="fPostal" inputmode="text" placeholder="np. 83646" required>
+                <input id="fPostal" inputmode="text" placeholder="z. B. 10115" required>
               </div>
             </div>
 
             <div class="editor-field">
               <label for="fCity">Miejscowość <span class="req">*</span></label>
-              <input id="fCity" autocomplete="address-level2" placeholder="np. Bad Tölz" required>
+              <input id="fCity" autocomplete="address-level2" placeholder="z. B. Berlin" required>
             </div>
 
             <div class="editor-field">
               <label for="fAddress">Ulica i numer <span class="req">*</span></label>
-              <input id="fAddress" autocomplete="street-address" placeholder="np. Marktstraße 12" required>
+              <input id="fAddress" autocomplete="street-address" placeholder="z. B. Friedrichstraße 100" required>
             </div>
 
             <input id="fLocationRole" type="hidden" value="branch">
@@ -4103,12 +4130,12 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
             <div class="contact-field">
               <label for="fPhone">Telefon <span class="req">*</span></label>
-              <input id="fPhone" type="tel" inputmode="tel" placeholder="z. B. 8041 123456" required>
+              <input id="fPhone" type="tel" inputmode="tel" placeholder="z. B. 30 12345678" required>
             </div>
 
             <div class="contact-field">
               <label for="fEmail">Firmen-E-Mail</label>
-              <input id="fEmail" type="email" autocomplete="email" placeholder="z. B. kontakt@firma.de">
+              <input id="fEmail" type="email" autocomplete="email" placeholder="z. B. kontakt@musterfirma.de">
             </div>
 
             <div class="messenger-box">
@@ -4124,7 +4151,7 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
             <div class="contact-field">
               <label for="fWww">Webseite</label>
-              <input id="fWww" type="text" inputmode="url" placeholder="z. B. www.taxi-much.de">
+              <input id="fWww" type="text" inputmode="url" placeholder="z. B. www.musterfirma.de">
             </div>
           </div>
 
@@ -4134,15 +4161,15 @@ body:not(.splash-active) #homeView.active > .legal-footer-live{
 
             <div class="editor-field">
               <label for="fInstagram">Instagram</label>
-              <input id="fInstagram" placeholder="@nazwa lub link">
+              <input id="fInstagram" placeholder="z. B. @musterfirma oder Link">
             </div>
 
             <label>Facebook
-              <input id="fFacebook" placeholder="Nazwa profilu lub link">
+              <input id="fFacebook" placeholder="z. B. Musterfirma oder Link">
             </label>
             <div class="editor-field">
               <label for="fTiktok">TikTok</label>
-              <input id="fTiktok" placeholder="@nazwa lub link">
+              <input id="fTiktok" placeholder="z. B. @musterfirma oder Link">
             </div>
           </div>
 
@@ -5724,7 +5751,7 @@ function setLocationMode(mode,{requestGps=false}={}){
 
   if(els?.loc){
     els.loc.disabled=false;
-    els.loc.placeholder='z. B. Bad Tölz, 83646 oder Adresse';
+    els.loc.placeholder='z. B. München, 80331 oder Adresse';
     const saved=loadManualLocation();
     els.loc.value=saved||'';
   }

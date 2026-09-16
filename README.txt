@@ -1,4 +1,4 @@
-VivaEuropa v0.90.41-R1-VE003-FOOTER-FIX
+VivaEuropa v0.90.42-R1-HINTS-SPACING-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -137,6 +137,13 @@ CHANGES IN v0.90.41-R1:
 - VE-003 results wrapper can no longer reserve extra bottom height/padding before the legal footer.
 - Footer helper now also clears the bottom margin/padding/min-height of the content block directly before the footer on every active view.
 - Checked all app views: VE-002 welcome, VE-003 home/results, VE-004 company, VE-005 account, VE-006 admin, VE-007 editor, VE-008 reset/new-password and module/legal view.
+- No other functional changes.
+
+
+CHANGES IN v0.90.42-R1:
+- Added a clear 14 px gap between the two yellow guest-mode notices on VE-003.
+- Replaced local/personal-looking placeholder examples with neutral German examples (München, Berlin, generic company/contact data).
+- Made placeholder and helper text very light gray while keeping it clearly readable on the dark background.
 - No other functional changes.
 
 IMPORTANT:
