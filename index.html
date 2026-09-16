@@ -6064,6 +6064,15 @@ function showRefreshConfirmation(){
   window.setTimeout(()=>box.classList.remove('show'),1800);
 }
 
+function placeLegalFooterInActiveView(){
+  const footer=document.querySelector('.legal-footer-live');
+  const activeView=document.querySelector('.view.active');
+  if(!footer || !activeView) return;
+  if(footer.parentElement!==activeView){
+    activeView.appendChild(footer);
+  }
+}
+
 function setView(name, options={}){
   const {replace=false, skipHistory=false}=options;
   if(!skipHistory && currentView && currentView!==name){

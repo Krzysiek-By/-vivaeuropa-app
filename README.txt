@@ -1,4 +1,4 @@
-VivaEuropa v0.90.39-R1-FOOTER-FINAL-CASCADE-FIX
+VivaEuropa v0.90.40-R1-FOOTER-HELPER-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -121,6 +121,13 @@ CHANGES IN v0.90.39-R1:
 - Added one definitive footer rule at the very end of the stylesheet, where it wins the cascade.
 - The content block directly before the footer now has its bottom margin/padding removed, so the footer follows the page content closely on all active views.
 - Mobile bottom-navigation clearance is preserved.
+- No other functional changes.
+
+
+CHANGES IN v0.90.40-R1:
+- Fixed the actual missing JavaScript helper for legal-footer placement.
+- setView() already called placeLegalFooterInActiveView(), but the helper function itself was absent, so the footer was never moved into the active view.
+- The helper now moves the single legal footer directly after the content of the active view; existing footer spacing rules can finally take effect.
 - No other functional changes.
 
 IMPORTANT:
