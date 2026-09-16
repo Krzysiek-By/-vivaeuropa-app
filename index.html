@@ -3943,7 +3943,7 @@ body:not(.splash-active) #homeView .guest-plus-note{
       <div class="guest-plus-kicker">VivaEuropa Plus</div>
       <h3 id="guestPlusModalTitle">Mehr entdecken.<br><span style="color:#f4cf67">Mehr sparen.</span></h3>
       <div class="guest-plus-price"><span>nur testweise</span><strong>2 €</strong><small>/ Monat</small></div>
-      <p>Als Gast nutzt du VivaEuropa bereits sinnvoll – mit VivaEuropa Plus bekommst du aber deutlich mehr Ergebnisse, Rabattcodes und zusätzliche KI-Hilfe für unterwegs.</p>
+      <p>Mit der kostenlosen Nutzung bekommst du bereits die wichtigsten Basisfunktionen – VivaEuropa Plus schaltet mehr Ergebnisse, größere Reichweite, Rabattcodes und zusätzliche KI-Hilfe für unterwegs frei.</p>
       <ul class="guest-plus-list">
         <li>mehr Ergebnisse und ein größerer Suchradius</li>
         <li>Rabattcodes und exklusive Vorteile</li>
@@ -4572,6 +4572,88 @@ function setGuestMode(on){
   applyGuestRadiusOptions();
 }
 
+/* ===== v0.90.49 client access architecture =====
+   Three private-user levels are prepared now:
+   GUEST = no account, FREE = registered without subscription, PLUS = paid.
+   Future modules should use clientHasFeature()/getClientAccessRules() instead of
+   adding new ad-hoc guestMode checks. Company/admin accounts bypass private limits. */
+const VIVA_CLIENT_PLAN_KEY='vivaClientPlan';
+const VIVA_CLIENT_ACCESS_RULES=Object.freeze({
+  guest:Object.freeze({
+    resultLimit:10,
+    radiusValues:['1','5','10'],
+    photoLimit:3,
+    favoritesLimit:0,
+    phone:true, website:true, email:false, messengers:false, social:false,
+    savedPlaces:false, profiles:false, needsProfile:false, discounts:false,
+    aiSearch:false, aiDayPlan:false, aiReviewSummary:false, comparePlaces:false,
+    backupPlan:false, translatedMessaging:false, translatedEmail:false,
+    smartContactTemplates:false, aiCallAssist:false, saveImportantAnswer:false,
+    aiDemoMonthly:2
+  }),
+  free:Object.freeze({
+    resultLimit:10,
+    radiusValues:['1','5','10'],
+    photoLimit:3,
+    favoritesLimit:10,
+    phone:true, website:true, email:false, messengers:false, social:false,
+    savedPlaces:false, profiles:false, needsProfile:false, discounts:false,
+    aiSearch:false, aiDayPlan:false, aiReviewSummary:false, comparePlaces:false,
+    backupPlan:false, translatedMessaging:false, translatedEmail:false,
+    smartContactTemplates:false, aiCallAssist:false, saveImportantAnswer:false,
+    aiDemoMonthly:2
+  }),
+  plus:Object.freeze({
+    resultLimit:Infinity,
+    radiusValues:null,
+    photoLimit:Infinity,
+    favoritesLimit:Infinity,
+    phone:true, website:true, email:true, messengers:true, social:true,
+    savedPlaces:true, profiles:true, needsProfile:true, discounts:true,
+    aiSearch:true, aiDayPlan:true, aiReviewSummary:true, comparePlaces:true,
+    backupPlan:true, translatedMessaging:true, translatedEmail:true,
+    smartContactTemplates:true, aiCallAssist:true, saveImportantAnswer:true,
+    aiDemoMonthly:Infinity
+  })
+});
+
+function getClientAccessTier(){
+  const logged=localStorage.getItem('vivaLoggedIn')==='1';
+  const role=localStorage.getItem('vivaAccountRole')||'user';
+  if(role==='company' || role==='admin' || localStorage.getItem('vivaAdmin')==='1') return 'plus';
+  if(logged && role==='user') return localStorage.getItem(VIVA_CLIENT_PLAN_KEY)==='plus' ? 'plus' : 'free';
+  return 'guest';
+}
+function getClientAccessRules(){
+  return VIVA_CLIENT_ACCESS_RULES[getClientAccessTier()] || VIVA_CLIENT_ACCESS_RULES.guest;
+}
+function clientHasFeature(feature){
+  return !!getClientAccessRules()[feature];
+}
+function ensureClientSubscriptionPlan(){
+  if(localStorage.getItem('vivaLoggedIn')==='1' && (localStorage.getItem('vivaAccountRole')||'user')==='user'){
+    const current=localStorage.getItem(VIVA_CLIENT_PLAN_KEY);
+    if(current!=='plus') localStorage.setItem(VIVA_CLIENT_PLAN_KEY,'free');
+  }
+}
+function setClientSubscriptionPlan(plan){
+  const next=plan==='plus'?'plus':'free';
+  localStorage.setItem(VIVA_CLIENT_PLAN_KEY,next);
+  applyGuestRadiusOptions();
+  if(typeof renderQuickCats==='function') renderQuickCats();
+  if(typeof search==='function' && currentView==='home') search();
+  return next;
+}
+function isNonPayingPrivateClient(){
+  const tier=getClientAccessTier();
+  return tier==='guest' || tier==='free';
+}
+function shouldUsePrivateClientSearchFlow(){
+  const logged=localStorage.getItem('vivaLoggedIn')==='1';
+  const role=localStorage.getItem('vivaAccountRole')||'user';
+  return guestMode || (logged && role==='user');
+}
+
 const GUEST_PLUS_MODAL_LAST_KEY='vivaGuestPlusLastShownAt';
 const GUEST_PLUS_MODAL_INTERVAL_MS=2*24*60*60*1000;
 
@@ -4582,16 +4664,29 @@ function closeGuestPlusModal(){
   modal.setAttribute('aria-hidden','true');
 }
 
+function showGuestPlusModalNow(){
+  const modal=document.querySelector('#guestPlusModal');
+  if(!modal) return;
+  localStorage.setItem(GUEST_PLUS_MODAL_LAST_KEY,String(Date.now()));
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden','false');
+}
+
 function openGuestPlusOffer(){
   localStorage.setItem(GUEST_PLUS_MODAL_LAST_KEY,String(Date.now()));
   closeGuestPlusModal();
-  setGuestMode(false);
-  showAccount('register');
+  if(getClientAccessTier()==='guest'){
+    setGuestMode(false);
+    selectedRole='user';
+    document.querySelectorAll('.role-chip').forEach(b=>b.classList.toggle('active',b.dataset.role==='user'));
+    showAccount('register');
+    return;
+  }
+  showToast('VivaEuropa Plus ist vorbereitet. Die Bezahlung wird später angebunden.');
 }
 
 function shouldShowGuestPlusReminder(){
-  if(!guestMode) return false;
-  if(localStorage.getItem('vivaLoggedIn')==='1') return false;
+  if(!isNonPayingPrivateClient()) return false;
   const last=Number(localStorage.getItem(GUEST_PLUS_MODAL_LAST_KEY)||'0');
   return !last || (Date.now()-last)>=GUEST_PLUS_MODAL_INTERVAL_MS;
 }
@@ -4599,11 +4694,7 @@ function shouldShowGuestPlusReminder(){
 function maybeShowGuestPlusReminder(){
   if(currentView!=='home') return;
   if(!shouldShowGuestPlusReminder()) return;
-  const modal=document.querySelector('#guestPlusModal');
-  if(!modal) return;
-  localStorage.setItem(GUEST_PLUS_MODAL_LAST_KEY,String(Date.now()));
-  modal.classList.remove('hidden');
-  modal.setAttribute('aria-hidden','false');
+  showGuestPlusModalNow();
 }
 
 applyGuestRadiusOptions();
@@ -6537,7 +6628,9 @@ function renderQuickCats(){
   });
 }
 function render(list=companies){
-  const visibleList = guestMode ? list.slice(0,3) : list;
+  const access=getClientAccessRules();
+  const limit=Number(access.resultLimit);
+  const visibleList = Number.isFinite(limit) ? list.slice(0,limit) : list;
   els.results.innerHTML=visibleList.map(c=>{
     const photo=companyDemoImage(c);
     return `<article class="result-card" data-id="${c.id}">
@@ -6556,7 +6649,7 @@ function render(list=companies){
   document.querySelectorAll('.result-card').forEach(card=>card.onclick=()=>openCompany(Number(card.dataset.id)));
   const oldBanner=document.querySelector('#guestModeBanner');
   if(oldBanner) oldBanner.remove();
-  if(guestMode){
+  if(isNonPayingPrivateClient()){
     const banner=document.createElement('div');
     banner.id='guestModeBanner';
     banner.className='guest-mode-banner guest-plus-card';
@@ -6565,7 +6658,7 @@ function render(list=companies){
         <div>
           <div class="guest-plus-kicker">VivaEuropa Plus</div>
           <h3>Mehr entdecken.<br><span class="guest-plus-gold">Mehr sparen.</span></h3>
-          <p>Als Gast siehst du nur einen Teil der Ergebnisse und eingeschränkte Unternehmensdaten. Mit VivaEuropa Plus bekommst du mehr Reichweite, Rabattcodes und KI-Hilfe unterwegs.</p>
+          <p>${getClientAccessTier()==='guest'?'Du nutzt VivaEuropa ohne Konto mit den wichtigsten Basisfunktionen.':'Dein kostenloses Konto enthält die wichtigsten Basisfunktionen.'} Mit VivaEuropa Plus bekommst du mehr Reichweite, alle Komfortfunktionen, Rabattcodes und KI-Hilfe unterwegs.</p>
         </div>
         <div class="guest-plus-price"><span>nur testweise</span><strong>2 €</strong><small>/ Monat</small></div>
       </div>
@@ -6616,23 +6709,33 @@ function openCompany(id){
   const previewPhotos=orderedPhotos.slice(0,3);
   const fallbackPhoto=companyDemoImage(c) || '';
   const categoryIsTaxi=String(c.cat||'').toLowerCase().includes('taxi');
-  document.querySelector('#companyCard').innerHTML = guestMode
+  const clientTier=getClientAccessTier();
+  const clientAccess=getClientAccessRules();
+  const basicPrivateClient=(clientTier==='guest'||clientTier==='free');
+  const basicContactHtml=[
+    clientAccess.phone && fullPhone ? escapeHtml(fullPhone) : '',
+    clientAccess.website && safeWww ? escapeHtml(safeWww.replace(/^https?:\/\//,'')) : ''
+  ].filter(Boolean).join('<br>') || '—';
+  const favoriteLimit=clientAccess.favoritesLimit;
+  document.querySelector('#companyCard').innerHTML = basicPrivateClient
     ? `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div>${translateCategory(c.cat)} • <strong>★ ${Number(c.rating||0).toFixed(1)}</strong> (${c.reviews||0})</div></div>
        <div class="company-content">
          <div class="company-grid">
            <div class="info-box"><h4>${t('Adres','Adresse')}</h4><p>${escapeHtml(c.address||'—')}<br>${distanceText||'—'}</p></div>
            <div class="info-box"><h4>${t('Godziny otwarcia','Öffnungszeiten')}</h4><p>${escapeHtml(c.hours||'—')}</p></div>
-           <div class="info-box"><h4>${t('Kontakt','Kontakt')}</h4><p>${de?'Nach der Anmeldung verfügbar':'Nach der Anmeldung verfügbar'}</p></div>
+           <div class="info-box"><h4>${t('Kontakt','Kontakt')}</h4><p>${basicContactHtml}</p></div>
            <div class="info-box"><h4>${de?'Über das Unternehmen':'O firmie'}</h4><p>${escapeHtml(c.desc||'—')}</p></div>
          </div>
 <div class="route-choice">
            <a class="primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}">${vivaTranslateString('Google Maps',lang)}</a>
            <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',lang)}</a>
          </div>
-         <div class="locked-note">🔒 ${de?'Melde dich an oder erstelle ein kostenloses Konto, um vollständige Kontaktdaten zu sehen, mehr Ergebnisse zu erhalten und Orte zu speichern.':'Zaloguj się lub załóż bezpłatne konto, aby zobaczyć pełne dane kontaktowe, więcej wyników i zapisywać miejsca.'}</div>
+         <div class="locked-note">🔒 Mit VivaEuropa Plus erhältst du E-Mail, Messenger, Social Media, mehr Fotos, mehr Ergebnisse, größere Reichweite, Rabattcodes und KI-Funktionen.</div>
          <div class="company-actions">
-           <button class="primary" onclick="setGuestMode(false);showAccount('login')">${de?'Anmelden':'Anmelden'}</button>
-           <button class="ghost" onclick="setGuestMode(false);showAccount('register')">${de?'Konto erstellen':'Konto erstellen'}</button>
+           ${telPhone?`<a class="primary" href="tel:${telPhone}">${de?'Anrufen':'Anrufen'}</a>`:''}
+           ${safeWwwHref?`<a class="ghost" href="${safeWwwHref}" target="_blank" rel="noopener">${de?'Webseite':'WWW'}</a>`:''}
+           ${Number(favoriteLimit)>0?`<button class="ghost" onclick="toggleFavorite(${c.id})">♡ ${de?'Favoriten':'Favoriten'}</button>`:''}
+           ${clientTier==='guest'?`<button class="ghost" onclick="setGuestMode(false);showAccount('register')">Kostenloses Konto</button>`:`<button class="ghost" onclick="showGuestPlusModalNow()">VivaEuropa Plus ansehen</button>`}
          </div>
        </div>`
     : `<div class="company-hero">${companyDemoImage(c)?`<img src="${companyDemoImage(c)}" alt="${escapeHtmlAttr(c.name)}" style="width:100%;max-height:300px;object-fit:cover;border-radius:18px;margin-bottom:16px">`:`<div class="emoji">${c.emoji||'📍'}</div>`}<h1>${escapeHtml(c.name)}</h1><div class="company-hero-meta"><span class="hero-category-chip">${vivaCategoryIcon(c.cat)?`<img src="${escapeHtmlAttr(vivaCategoryIcon(c.cat))}" alt="">`:''}<span>${escapeHtml(translateCategory(c.cat))}</span></span><span class="hero-meta-stat">★ ${Number(c.rating||0).toFixed(1)} (${c.reviews||0})</span>${distanceText?`<span class="hero-meta-stat">${distanceText}</span>`:''}</div><div class="${isOpenNow(c)?'status-open':'status-closed'}">${statusText}</div></div>
@@ -6669,10 +6772,24 @@ function toggleFavorite(id){
   let list=[];
   try{list=JSON.parse(localStorage.getItem(key)||'[]')||[]}catch{}
   list=list.map(Number);
-  if(list.includes(Number(id))) list=list.filter(x=>x!==Number(id));
-  else list.push(Number(id));
+  const numericId=Number(id);
+  const already=list.includes(numericId);
+  const limit=Number(getClientAccessRules().favoritesLimit);
+  if(!already){
+    if(limit===0){
+      showToast('Favoriten sind mit einem kostenlosen Nutzerkonto verfügbar.');
+      return;
+    }
+    if(Number.isFinite(limit) && list.length>=limit){
+      showToast(`Im kostenlosen Konto kannst du bis zu ${limit} Favoriten speichern. Mit VivaEuropa Plus ohne Limit.`);
+      return;
+    }
+    list.push(numericId);
+  }else{
+    list=list.filter(x=>x!==numericId);
+  }
   localStorage.setItem(key,JSON.stringify(list));
-  showToast(list.includes(Number(id))?'Zu Favoriten hinzugefügt.':'Aus Favoriten entfernt.');
+  showToast(list.includes(numericId)?'Zu Favoriten hinzugefügt.':'Aus Favoriten entfernt.');
 }
 
 const moduleData={
@@ -6680,19 +6797,20 @@ const moduleData={
     eyebrow:'NUTZER',
     title:'Mein Konto',
     intro:'Grundstruktur des Nutzerbereichs.',
-    html:()=>`<div class="user-hub">
-      <div class="module-section"><h3>Moje tryby</h3><div class="user-mode-row">
+    html:()=>{const tier=getClientAccessTier();const plus=tier==='plus';const favLimit=getClientAccessRules().favoritesLimit;return `<div class="user-hub">
+      <div class="placeholder-note"><strong>${plus?'VivaEuropa Plus':'Kostenloses Nutzerkonto'}</strong> · ${plus?'voller Funktionsumfang':'Basisfunktionen aktiv – Plus-Funktionen sind vorbereitet und gesperrt.'}</div>
+      <div class="module-section"><h3>Meine Modi ${plus?'':'🔒 Plus'}</h3><div class="user-mode-row">
         <div class="user-mode">🏖 Urlaub</div><div class="user-mode">💼 Arbeit</div>
         <div class="user-mode">☕ Freizeit</div><div class="user-mode">🎯 Hobby</div>
-      </div><div class="placeholder-note">Eigene Modi – später.</div></div>
+      </div><div class="placeholder-note">${plus?'Eigene Modi – später.':'Urlaub / Arbeit / Freizeit / Hobby gehören zu VivaEuropa Plus.'}</div></div>
       <div class="module-grid">
-        <div class="module-card"><h3>Gespeicherte Orte</h3><p>Grundstruktur der Liste gespeicherter Orte.</p></div>
-        <div class="module-card"><h3>Favorisierte Unternehmen</h3><p>${getFavoriteCompanies().length} gespeicherte Unternehmen.</p><button class="ghost" onclick="openModule('favorites')">Anzeigen</button></div>
+        <div class="module-card"><h3>Gespeicherte Orte ${plus?'':'🔒 Plus'}</h3><p>${plus?'Grundstruktur der Liste gespeicherter Orte.':'Gespeicherte Orte werden mit VivaEuropa Plus freigeschaltet.'}</p></div>
+        <div class="module-card"><h3>Favorisierte Unternehmen</h3><p>${getFavoriteCompanies().length} gespeichert${Number.isFinite(Number(favLimit))?` · Limit ${favLimit}`:' · ohne Limit'}.</p><button class="ghost" onclick="openModule('favorites')">Anzeigen</button></div>
         <div class="module-card"><h3>Standorteinstellungen</h3><p>GPS / manuell und gespeicherter Modus.</p></div>
         <div class="module-card"><h3>Profildaten</h3><p>Vollständige Bearbeitung der Daten wird später ergänzt.</p></div>
         <div class="module-card"><h3>Rechtliches & Dokumente</h3><p>Nutzungsbedingungen, Datenschutz, Impressum und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
       </div>
-    </div>`
+    </div>`}
   },
   legalDocuments:{
     eyebrow:'RECHTLICHES',
@@ -7547,7 +7665,7 @@ async function revalidateStoredCompanyCoordinates(){
   if(updated) saveCompanies();
   if(attempted===0 || failed===0) localStorage.setItem(migrationKey,'1');
   refreshCompanyDistances();
-  if(guestMode){
+  if(shouldUsePrivateClientSearchFlow()){
     await search();
   }else{
     render(companies);
@@ -7663,13 +7781,12 @@ function applyGuestRadiusOptions(){
   }
 
   const current=String(sel.value||'5');
+  const allowed=getClientAccessRules().radiusValues;
 
-  if(guestMode){
-    sel.innerHTML=`
-      <option value="1">bis 1 km</option>
-      <option value="5">5 km</option>
-      <option value="10">10 km</option>`;
-    sel.value=['1','5','10'].includes(current)?current:'5';
+  if(Array.isArray(allowed)){
+    const labelByValue={1:'bis 1 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
+    sel.innerHTML=allowed.map(v=>`<option value="${v}">${labelByValue[v]||`${v} km`}</option>`).join('');
+    sel.value=allowed.includes(current)?current:(allowed.includes('5')?'5':allowed[0]);
   }else{
     sel.innerHTML=sel.dataset.fullOptions;
     const values=[...sel.options].map(o=>o.value);
@@ -7711,7 +7828,7 @@ async function search(){
   let effectiveRadius=requestedRadius;
   let list=baseFilter(effectiveRadius);
 
-  if(!guestMode && !list.length){
+  if(getClientAccessTier()==='plus' && !list.length){
     const larger=radiusSteps.filter(r=>r>requestedRadius);
     for(const candidate of larger){
       const candidateList=baseFilter(candidate);
@@ -7725,7 +7842,7 @@ async function search(){
 
   const note=document.querySelector('#radiusExpandNote');
   if(note){
-    if(guestMode && !list.length){
+    if(isNonPayingPrivateClient() && !list.length){
       note.textContent=vivaTemplate(
         'Im gewählten Umkreis von {from} km wurden keine Ergebnisse gefunden.',
         {from:requestedRadius}
@@ -8621,6 +8738,7 @@ document.querySelector('#accountForm').onsubmit=async e=>{
     localStorage.setItem('vivaUser',JSON.stringify(user));
     localStorage.setItem('vivaLoggedIn','1');
     localStorage.setItem('vivaAccountRole','user');
+    ensureClientSubscriptionPlan();
     setGuestMode(false);
 
     status.textContent=`Konto testowe utworzone. Witaj, ${name}!`;
@@ -8673,6 +8791,7 @@ document.querySelector('#accountForm').onsubmit=async e=>{
 
   localStorage.setItem('vivaLoggedIn','1');
   localStorage.setItem('vivaAccountRole','user');
+  ensureClientSubscriptionPlan();
   setGuestMode(false);
   status.textContent=`Zalogowano jako ${displayName} ${displaySurname}`.trim()+'.';
   status.style.background='#eef8f0';
@@ -9332,7 +9451,7 @@ function setVivaAppLanguage(code){
   renderCategoryFilters();
   renderQuickCats();
   setLocationMode(locationMode);
-  if(guestMode){
+  if(shouldUsePrivateClientSearchFlow()){
     search();
   }else{
     render(companies);
@@ -9669,6 +9788,7 @@ function initSplash(){
   const logged=localStorage.getItem('vivaLoggedIn')==='1';
   const profile=getActiveProfile();
   if(logged && profile){
+    ensureClientSubscriptionPlan();
     splash.classList.add('hidden');
     document.documentElement.classList.remove('splash-active');
     document.body.classList.remove('splash-active');
@@ -9824,7 +9944,7 @@ updateNewPasswordSubmitState();
   await ensureVivaPhotoStorage();
 
   renderQuickCats();
-  if(guestMode){
+  if(shouldUsePrivateClientSearchFlow()){
     await search();
   }else{
     render(companies);

@@ -1,7 +1,7 @@
-VivaEuropa v0.90.46-R1-DE-TEXT-AUDIT
+VivaEuropa v0.90.49-R1-CLIENT-ACCESS-ARCHITECTURE
 
 FULL CLEAN SNAPSHOT
-Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
+Base: v0.90.48-R1-GUEST-PLUS-WOW-V1
 
 STATUS:
 - Project cleaned and verified after repository cleanup.
@@ -205,3 +205,13 @@ v0.90.48-R1 – GUEST PLUS WOW VARIANT 1
 - Only the guest Plus promo visual presentation was redesigned to match approved Variant 1.
 - Existing 2-day guest reminder logic and registration CTA flow are preserved.
 - Uses existing ve001-de-bg.jpg; no new asset files added.
+
+v0.90.49 – CLIENT ACCESS ARCHITECTURE
+- Added a central 3-level private-client access model: GUEST / FREE / PLUS.
+- New private-user features should use the central access matrix instead of ad-hoc guestMode checks.
+- GUEST and FREE: core search, GPS/manual location, distance, open/closed status, address/hours, phone, website, maps/navigation, basic filters, up to 10 search results and radius up to 10 km.
+- FREE: up to 10 favorites. GUEST: favorites require a free account.
+- PLUS: prepared gates for unlimited results/radius/favorites, full contact channels, saved places, user modes, discounts, AI search/day plan/review summary, comparisons, backup plan, translated messaging/e-mail, smart contact templates, AI call assistance and saving important answers.
+- Non-paying users continue seeing the existing VivaEuropa Plus WOW promotion; the reminder remains limited to once every 2 days.
+- Existing GPS and company/admin logic preserved; company/admin accounts bypass private-user limits.
+- Payment is not connected yet. Registered private users default to FREE; future billing can switch the plan centrally with setClientSubscriptionPlan('plus').
