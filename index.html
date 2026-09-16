@@ -3914,6 +3914,13 @@ body:not(.splash-active) #homeView .guest-plus-note{
   body:not(.splash-active) #homeView .guest-plus-actions{grid-template-columns:1fr!important}
 }
 
+
+/* ===== v0.90.50 VE-003 SIMPLE ROUTE RESULTS / NO INTERNAL MAP ===== */
+.results-guide{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:13px 14px;border:1px solid rgba(45,134,255,.42);border-radius:16px;background:rgba(7,26,49,.72);color:#DCE9FA}
+.results-guide-icon{width:36px;height:36px;display:grid;place-items:center;flex:0 0 36px;border-radius:50%;background:#0D2D50;border:1px solid rgba(83,167,255,.62);color:#64A9FF;font-size:20px;font-weight:900}
+.results-guide strong{display:block;color:#fff;font-size:.96rem}.results-guide span{display:block;margin-top:3px;color:#A9C4E8;font-size:.86rem;line-height:1.35}
+.place-card{cursor:default!important}.place-card .result-cover{height:116px!important;display:grid!important;place-items:center!important;background:linear-gradient(135deg,#0A2340,#0D3158)!important}.place-card .result-cover img{width:68px!important;height:68px!important;object-fit:contain!important}.place-distance{font-size:1.35rem;font-weight:900;color:#fff;margin:4px 0 8px}.place-meta{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 13px}.place-chip{padding:6px 9px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.78rem;font-weight:700}.place-route{width:100%;min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;cursor:pointer}.osm-credit{grid-column:1/-1;text-align:center;color:#8199B8;font-size:.74rem;margin-top:2px}
+@media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4131,13 +4138,12 @@ body:not(.splash-active) #homeView .guest-plus-note{
           <div><p class="eyebrow">ERGEBNISSE</p><h2 id="resultsTitle">Suchergebnisse</h2></div>
           <span class="pill" id="resultCount">0</span>
         </div>
-        <div class="results-mode">
-          <button id="resultsListBtn" class="active">☷ Lista</button>
-          <button id="resultsMapBtn">⌖ Mapa</button>
+        <div class="results-guide" id="resultsGuide">
+          <div class="results-guide-icon">◎</div>
+          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC öffnet „Route anzeigen“ direkt Apple Maps oder Google Maps.</span></div>
         </div>
         <div id="radiusExpandNote" class="radius-expand-note"></div>
         <div class="results" id="results"></div>
-        <div id="resultsMap" aria-label="Mapa wyników"></div>
       </section>
     </section>
 
@@ -5997,16 +6003,10 @@ document.querySelector('#guestCategorySearch')?.addEventListener('input',e=>{
   buildGuestCategoryTree(e.target.value);
 });
 function setResultsMode(mode){
-  resultsMode=mode==='map'?'map':'list';
-  document.querySelector('#resultsListBtn')?.classList.toggle('active',resultsMode==='list');
-  document.querySelector('#resultsMapBtn')?.classList.toggle('active',resultsMode==='map');
-  document.querySelector('#results')?.classList.toggle('hidden',resultsMode==='map');
-  document.querySelector('#mapSkeleton')?.classList.toggle('active',resultsMode==='map');
+  resultsMode='list';
+  document.querySelector('#results')?.classList.remove('hidden');
   saveTreePrefs();
 }
-let vivaResultsMap=null;
-let vivaResultsLayer=null;
-let vivaCurrentResults=[];
 
 function vivaTemplate(text,vars={}){
   let out=vivaTranslateString(text,getVivaAppLanguage());
@@ -6014,61 +6014,8 @@ function vivaTemplate(text,vars={}){
   return out;
 }
 
-function getDemoCoords(c){
-  if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
-    return [Number(c.lat),Number(c.lng)];
-  }
-  const centers={
-    'Kraków':[50.06143,19.93658],
-    'Warszawa':[52.22977,21.01178],
-    'Gdańsk':[54.35203,18.64664],
-    'Wrocław':[51.10788,17.03854],
-    'Poznań':[52.40637,16.92517]
-  };
-  const center=centers[c.city]||[52.0693,19.4803];
-  const i=Number(c.id||1);
-  const a=((i%7)-3)*0.0042;
-  const b=(((i*3)%7)-3)*0.0052;
-  return [center[0]+a,center[1]+b];
-}
+function renderMapPins(){ /* v0.90.50: internal map intentionally disabled */ }
 
-function renderMapPins(list){
-  vivaCurrentResults=[...list];
-  const mapEl=document.querySelector('#resultsMap');
-  if(!mapEl || typeof L==='undefined') return;
-
-  if(!vivaResultsMap){
-    vivaResultsMap=L.map(mapEl,{zoomControl:true});
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      maxZoom:19,
-      attribution:'&copy; OpenStreetMap contributors'
-    }).addTo(vivaResultsMap);
-    vivaResultsLayer=L.layerGroup().addTo(vivaResultsMap);
-  }
-
-  vivaResultsLayer.clearLayers();
-  const bounds=[];
-
-  list.slice(0,50).forEach(c=>{
-    const [lat,lng]=getDemoCoords(c);
-    bounds.push([lat,lng]);
-    const marker=L.marker([lat,lng]).addTo(vivaResultsLayer);
-    const openLabel=vivaTranslateString('Otwórz profil',getVivaAppLanguage());
-    marker.bindPopup(
-      `<div class="viva-map-popup"><strong>${c.name}</strong><br>`+
-      `${translateCategory(c.cat)} • ${Number(c.distance||0).toFixed(1)} km`+
-      `<button type="button" onclick="openCompany(${Number(c.id)})">${openLabel}</button></div>`
-    );
-  });
-
-  if(bounds.length===1) vivaResultsMap.setView(bounds[0],14);
-  else if(bounds.length) vivaResultsMap.fitBounds(bounds,{padding:[30,30],maxZoom:14});
-  else if(vivaLocation) vivaResultsMap.setView([vivaLocation.lat,vivaLocation.lng],12);
-  else vivaResultsMap.setView([52.0693,19.4803],6);
-
-  setTimeout(()=>vivaResultsMap.invalidateSize(true),50);
-  setTimeout(()=>vivaResultsMap.invalidateSize(true),250);
-}
 function getOpenState(c){
   const schedule=normalizeWeeklyHours(c);
   const key=['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
@@ -7794,6 +7741,59 @@ function applyGuestRadiusOptions(){
   }
 }
 
+function vivaDistanceKm(lat1,lng1,lat2,lng2){
+  const R=6371;
+  const toRad=x=>x*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function vivaRouteUrl(lat,lng){
+  const apple=/iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent||'');
+  return apple
+    ? `https://maps.apple.com/?daddr=${encodeURIComponent(lat+','+lng)}&dirflg=w`
+    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}&travelmode=walking`;
+}
+function toiletLabel(tags={}){
+  return tags.name || tags.operator || 'Öffentliche Toilette';
+}
+async function searchNearbyToilets(){
+  const origin=getActiveSearchCoordinates();
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
+    els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um Toiletten in deiner Nähe zu finden.</div>';
+    els.count.textContent='0';
+    return;
+  }
+  const radiusKm=Math.min(20,Math.max(1,Number(document.querySelector('#radiusSelect')?.value||5)));
+  els.title.textContent='WC in deiner Nähe';
+  els.results.innerHTML='<div class="status">Öffentliche Toiletten werden gesucht…</div>';
+  try{
+    const r=await fetch(`/api/toilets?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const list=(Array.isArray(data.items)?data.items:[]).map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
+    els.count.textContent=String(list.length);
+    if(!list.length){
+      els.results.innerHTML='<div class="status">Im gewählten Umkreis wurden keine öffentlichen Toiletten gefunden.</div>';
+      return;
+    }
+    els.results.innerHTML=list.map(x=>{
+      const tags=x.tags||{};
+      const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
+      const fee=tags.fee==='yes'||tags['toilets:fee']==='yes'?'möglicherweise kostenpflichtig':(tags.fee==='no'||tags['toilets:fee']==='no'?'kostenlos':'Preis unbekannt');
+      const wheel=tags.wheelchair==='yes'||tags['toilets:wheelchair']==='yes'?'rollstuhlgerecht':(tags.wheelchair==='no'||tags['toilets:wheelchair']==='no'?'nicht rollstuhlgerecht':'Barrierefreiheit unbekannt');
+      const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
+      const url=vivaRouteUrl(Number(x.lat),Number(x.lng));
+      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route="${escapeHtmlAttr(url)}">Route anzeigen</button></div></article>`;
+    }).join('')+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+    els.results.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>window.open(b.dataset.route,'_blank','noopener'));
+  }catch(e){
+    console.error('WC search error',e);
+    els.count.textContent='0';
+    els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht geladen werden. Bitte später erneut versuchen.</div>';
+  }
+}
+
 async function search(){
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
 
@@ -7805,6 +7805,12 @@ async function search(){
   }else if(rawLocation){
     const ok=await activateManualLocation();
     if(!ok) return;
+  }
+
+  if(selectedCategoryFilter==='public_bathroom'){
+    await searchNearbyToilets();
+    saveTreePrefs();
+    return;
   }
 
   refreshCompanyDistances();
@@ -8495,27 +8501,6 @@ document.querySelector('#searchBtn').onclick=search;
 document.querySelector('#radiusSelect').onchange=()=>{saveTreePrefs();search();};
 document.querySelector('#sortSelect').onchange=()=>{saveTreePrefs();search();};
 document.querySelector('#openFilterSelect').onchange=()=>{saveTreePrefs();search();};
-document.querySelector('#resultsListBtn').onclick=()=>{
-  document.querySelector('#resultsListBtn').classList.add('active');
-  document.querySelector('#resultsMapBtn').classList.remove('active');
-  document.querySelector('#results').classList.remove('hidden');
-  document.querySelector('#resultsMap').classList.remove('show');
-};
-document.querySelector('#resultsMapBtn').onclick=()=>{
-  document.querySelector('#resultsMapBtn').classList.add('active');
-  document.querySelector('#resultsListBtn').classList.remove('active');
-  document.querySelector('#results').classList.add('hidden');
-  const mapEl=document.querySelector('#resultsMap');
-  mapEl.classList.add('show');
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      renderMapPins(vivaCurrentResults);
-      if(vivaResultsMap) vivaResultsMap.invalidateSize(true);
-      setTimeout(()=>vivaResultsMap?.invalidateSize(true),180);
-      setTimeout(()=>vivaResultsMap?.invalidateSize(true),500);
-    });
-  });
-};
 els.query.addEventListener('input',()=>{
   if(!selectedCategoryFilter) return;
   const expected=translateCategory(selectedCategoryFilter).trim().toLowerCase();

@@ -1,3 +1,5 @@
+VivaEuropa v0.90.50-R1-WC-ROUTE-PROTOTYPE
+
 VivaEuropa v0.90.49-R1-CLIENT-ACCESS-ARCHITECTURE
 
 FULL CLEAN SNAPSHOT
@@ -215,3 +217,12 @@ v0.90.49 – CLIENT ACCESS ARCHITECTURE
 - Non-paying users continue seeing the existing VivaEuropa Plus WOW promotion; the reminder remains limited to once every 2 days.
 - Existing GPS and company/admin logic preserved; company/admin accounts bypass private-user limits.
 - Payment is not connected yet. Registered private users default to FREE; future billing can switch the plan centrally with setClientSubscriptionPlan('plus').
+
+
+UPDATE v0.90.50:
+- VE-003: wewnetrzna mapa Leaflet/OSM zostala wylaczona i usunieta z interfejsu.
+- VE-003: dodano prosty blok informacyjny o odleglosci i nawigacji zewnetrznej.
+- WC: Quick Icon pobiera publiczne toalety z OpenStreetMap/Overpass wedlug aktualnego GPS/promienia.
+- WC: specjalne karty miejsca z odlegloscia, godzinami/oplata/dostepnoscia gdy dane sa dostepne.
+- WC: Route anzeigen otwiera Apple Maps na urzadzeniach Apple, Google Maps na pozostalych; tryb pieszy.
+- Zrodlo WC ma atrybucje OpenStreetMap/ODbL. Publiczny Overpass jest rozwiazaniem testowym; produkcyjnie nalezy przejsc na wlasny import/hostowane zrodlo.
