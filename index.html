@@ -3947,7 +3947,7 @@ body:not(.splash-active) #accountView small{
         <form id="resetForm">
           <label class="full">
             E-mail
-            <input id="resetEmailInput" type="email" autocomplete="email" placeholder="z. B. name@beispiel.de" required>
+            <input id="resetEmailInput" type="email" autocomplete="email" placeholder="z. B. kontakt@beispiel.de" required>
           </label>
 
           <div class="reset-actions">
@@ -4746,11 +4746,11 @@ function companyTaxIdLabel(country){
 function companyTaxIdPlaceholder(country){
   return isGermanyCountry(country)
     ? 'z. B. DE123456789-00001 oder 123/456/78901'
-    : 'np. DE123456789';
+    : 'z. B. DE123456789';
 }
 
 function companyRegistryPlaceholder(country,legalForm){
-  if(!isGermanyCountry(country)) return 'np. HRB / KRS';
+  if(!isGermanyCountry(country)) return 'z. B. HRB 12345 / Registernummer';
   const rule=germanyRegisterRule(legalForm);
   return rule.prefix?`z. B. ${rule.prefix} 12345`:'z. B. HRB 12345';
 }
@@ -6462,7 +6462,7 @@ const moduleData={
               <input id="cmBillingEmail" type="email" value="${escapeHtmlAttr(a.billingEmail||a.email||'')}">
             </label>
             <label class="full">Strona WWW firmy
-              <input id="cmWebsite" type="text" inputmode="url" autocomplete="url" value="${escapeHtmlAttr(a.website||'')}" placeholder="np. www.firma.de">
+              <input id="cmWebsite" type="text" inputmode="url" autocomplete="url" value="${escapeHtmlAttr(a.website||'')}" placeholder="z. B. www.musterfirma.de">
             </label>
           </div>
         </div>
@@ -7467,7 +7467,7 @@ function showAccount(mode, options={}){
   }
   if(emailInput){
     emailInput.placeholder=(reg && company)
-      ? (de?'z. B. kontakt@musterfirma.de':'np. kontakt@firma.pl')
+      ? (de?'z. B. kontakt@musterfirma.de':'z. B. kontakt@beispiel.de')
       : '';
   }
   if(companyEmailHelp){

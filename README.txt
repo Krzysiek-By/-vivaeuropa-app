@@ -1,4 +1,4 @@
-VivaEuropa v0.90.42-R1-HINTS-SPACING-FIX
+VivaEuropa v0.90.43-R1-PLACEHOLDER-AUDIT
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -145,6 +145,14 @@ CHANGES IN v0.90.42-R1:
 - Replaced local/personal-looking placeholder examples with neutral German examples (München, Berlin, generic company/contact data).
 - Made placeholder and helper text very light gray while keeping it clearly readable on the dark background.
 - No other functional changes.
+
+
+CHANGES IN v0.90.43-R1:
+- Audited all actual input/textarea placeholders across the full app.
+- Removed remaining Polish-style placeholder examples such as "np." and Polish-domain examples from rendered/dynamic placeholders.
+- Replaced them with neutral German examples such as München, Berlin, Musterfirma, beispiel.de and generic German register/tax examples.
+- Global light-gray placeholder styling from v0.90.42 is preserved.
+- No functional logic changes.
 
 IMPORTANT:
 Every future update must be created from the latest confirmed FULL snapshot.
