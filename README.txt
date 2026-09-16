@@ -1,4 +1,4 @@
-VivaEuropa v0.90.43-R1-PLACEHOLDER-AUDIT
+VivaEuropa v0.90.44-R1-PLACEHOLDER-VISIBILITY
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -152,6 +152,13 @@ CHANGES IN v0.90.43-R1:
 - Removed remaining Polish-style placeholder examples such as "np." and Polish-domain examples from rendered/dynamic placeholders.
 - Replaced them with neutral German examples such as München, Berlin, Musterfirma, beispiel.de and generic German register/tax examples.
 - Global light-gray placeholder styling from v0.90.42 is preserved.
+- No functional logic changes.
+
+
+CHANGES IN v0.90.44-R1:
+- Increased placeholder visibility globally across the entire app.
+- Placeholder text is now a clearly visible light gray (#cbd5e1), fully opaque and semibold.
+- Entered user text remains visually distinct from placeholders.
 - No functional logic changes.
 
 IMPORTANT:
