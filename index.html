@@ -7829,7 +7829,7 @@ async function searchNearbyPolice(){
     return;
   }
   const radiusKm=Math.min(50,Math.max(1,Number(document.querySelector('#radiusSelect')?.value||5)));
-  els.title.textContent='Polizei in deiner Nähe';
+  els.title.textContent='Polizeidienststellen in deiner Nähe';
   els.results.innerHTML='<div class="status">Polizeidienststellen werden gesucht…</div>';
   try{
     const r=await fetch(`/api/police?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`);
@@ -7852,7 +7852,7 @@ async function searchNearbyPolice(){
   }catch(e){
     console.error('Police search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die Polizei-Daten konnten gerade nicht geladen werden. Bitte später erneut versuchen.</div>';
+    els.results.innerHTML='<div class="status">Die Polizeidienststellen konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
   }
 }
 

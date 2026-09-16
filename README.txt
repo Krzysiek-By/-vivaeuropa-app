@@ -1,3 +1,20 @@
+VivaEuropa v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
+
+FULL SNAPSHOT / CURRENT TEST BUILD
+Base: v0.90.49-R1-CLIENT-ACCESS-ARCHITECTURE
+
+CHANGES IN v0.90.53-R1:
+- Full project snapshot verified against v0.90.49 base: no base files missing.
+- Includes WC prototype via /api/toilets.js (OpenStreetMap/Overpass).
+- Includes Polizei prototype via /api/police.js.
+- Polizei results are filtered toward normal public police stations / first-contact locations; specialist units are excluded where identifiable.
+- WC and Polizei cards use distance-based results and external route handoff instead of an internal map.
+- Route chooser supports Google Maps or Apple Maps and walking or driving.
+- Polizei card uses EU emergency number 112 for emergency calling.
+- Internal VE-003 map remains intentionally disabled.
+
+PREVIOUS CHANGE NOTES FOLLOW:
+
 VivaEuropa v0.90.51-R1-WC-POLICE-ROUTE-CHOOSER
 
 Zmiany względem v0.90.50:
@@ -235,3 +252,9 @@ UPDATE v0.90.50:
 - WC: specjalne karty miejsca z odlegloscia, godzinami/oplata/dostepnoscia gdy dane sa dostepne.
 - WC: Route anzeigen otwiera Apple Maps na urzadzeniach Apple, Google Maps na pozostalych; tryb pieszy.
 - Zrodlo WC ma atrybucje OpenStreetMap/ODbL. Publiczny Overpass jest rozwiazaniem testowym; produkcyjnie nalezy przejsc na wlasny import/hostowane zrodlo.
+
+
+--- v0.90.52-R1-POLICE-STATIONS-FILTER-FIX ---
+- Police search hardened with parallel Overpass fallback endpoints.
+- Results restricted to ordinary public-facing police stations; obvious Bundespolizei, criminal police, headquarters and specialist units are excluded.
+- VE-003 heading changed to Polizeidienststellen in deiner Nähe.
