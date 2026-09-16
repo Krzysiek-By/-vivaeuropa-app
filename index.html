@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" class="viva-lang-pending">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -3211,6 +3211,16 @@ body:not(.splash-active) .legal-footer a{
 }
 
 
+
+/* ===== v0.90.36 DE-only paint guard + legal footer spacing fix ===== */
+html.viva-lang-pending body{visibility:hidden!important;}
+body:not(.splash-active):has(#welcomeView.active) main,
+body:not(.splash-active):has(#homeView.active) main{
+  min-height:0!important;
+}
+body:not(.splash-active) .legal-footer-live{
+  margin-top:6px!important;
+}
 
 /* ===== v0.90.35 small UI polish: company logout + tighter legal footer spacing ===== */
 body:not(.splash-active) #adminView .view-back-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
@@ -8826,6 +8836,7 @@ function applyGlobalLanguage(code){
   const lang=(code && (code==='pl'||VIVA_UI_TRANSLATIONS[code]))?code:'en';
   document.documentElement.lang=lang;
   vivaTranslateSubtree(document.body,lang);
+  document.documentElement.classList.remove('viva-lang-pending');
   if(vivaLanguageObserver) vivaLanguageObserver.disconnect();
   vivaLanguageObserver=new MutationObserver(mutations=>{
     for(const mutation of mutations){

@@ -1,4 +1,4 @@
-VivaEuropa v0.90.35-R1-SMALL-UI-POLISH
+VivaEuropa v0.90.36-R1-FOOTER-LANG-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -91,6 +91,12 @@ CHANGES IN v0.90.35-R1:
 - Reduced excessive vertical spacing before the legal footer on VE-002 and VE-003/home results.
 - No other functional changes.
 
+
+CHANGES IN v0.90.36-R1:
+- Reduced the excessive empty gap before the legal footer on VE-002 and VE-003 by removing the forced viewport minimum height only on those two active views.
+- Prevented the brief Polish-text flash during refresh in DE-only mode by keeping the page hidden until the German translation pass has completed.
+- No other functional changes.
+
 IMPORTANT:
 Every future update must be created from the latest confirmed FULL snapshot.
 
@@ -102,4 +108,4 @@ Before creating a new ZIP:
 5. Verify the ZIP inventory after creation.
 6. Test the live Vercel deployment before promoting the new ZIP as the safe rollback base.
 
-This README is the reference inventory for v0.90.34-R1 after the login-route fix.
+This README is the reference inventory for v0.90.36-R1 after the footer-spacing and DE-only refresh-language fixes.
