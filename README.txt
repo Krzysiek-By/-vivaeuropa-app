@@ -1,4 +1,4 @@
-VivaEuropa v0.90.45-R1-PLACEHOLDER-STYLE
+VivaEuropa v0.90.46-R1-DE-TEXT-AUDIT
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -165,6 +165,13 @@ CHANGES IN v0.90.44-R1:
 CHANGES IN v0.90.45-R1:
 - Adjusted placeholder appearance globally to match the approved reference.
 - Placeholders are now light gray, clearly visible, but regular-weight and visually lighter than real entered values.
+- No functional logic changes.
+
+
+CHANGES IN v0.90.46-R1:
+- Completed a full German-language audit of all user-facing dynamic views.
+- Replaced remaining hardcoded Polish text in registered-user, company, admin, location, refresh, guest and module flows with German.
+- Preserved internal translation dictionaries, technical category keys and code comments because they are not displayed and are needed for future multilingual support.
 - No functional logic changes.
 
 IMPORTANT:
