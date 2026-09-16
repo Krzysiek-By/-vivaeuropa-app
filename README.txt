@@ -1,4 +1,4 @@
-VivaEuropa v0.90.44-R1-PLACEHOLDER-VISIBILITY
+VivaEuropa v0.90.45-R1-PLACEHOLDER-STYLE
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -159,6 +159,12 @@ CHANGES IN v0.90.44-R1:
 - Increased placeholder visibility globally across the entire app.
 - Placeholder text is now a clearly visible light gray (#cbd5e1), fully opaque and semibold.
 - Entered user text remains visually distinct from placeholders.
+- No functional logic changes.
+
+
+CHANGES IN v0.90.45-R1:
+- Adjusted placeholder appearance globally to match the approved reference.
+- Placeholders are now light gray, clearly visible, but regular-weight and visually lighter than real entered values.
 - No functional logic changes.
 
 IMPORTANT:
