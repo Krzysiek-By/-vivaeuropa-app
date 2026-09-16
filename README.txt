@@ -1,4 +1,4 @@
-VivaEuropa v0.90.36-R1-FOOTER-LANG-FIX
+VivaEuropa v0.90.37-R1-FOOTER-FLOW-FIX
 
 FULL CLEAN SNAPSHOT
 Base: v0.90.32-R1-PREMIUM-ICONS-COMPLETE
@@ -95,6 +95,15 @@ CHANGES IN v0.90.35-R1:
 CHANGES IN v0.90.36-R1:
 - Reduced the excessive empty gap before the legal footer on VE-002 and VE-003 by removing the forced viewport minimum height only on those two active views.
 - Prevented the brief Polish-text flash during refresh in DE-only mode by keeping the page hidden until the German translation pass has completed.
+- No other functional changes.
+
+
+CHANGES IN v0.90.37-R1:
+- Fixed the root cause of the excessive legal-footer gap across views.
+- Removed the forced viewport minimum height from the main app content after VE-001.
+- Normalized bottom spacing of panels, company cards, guest results and the VE-002 welcome wrapper.
+- Legal footer now follows page content with a small consistent gap while retaining bottom clearance for mobile navigation.
+- The German-only refresh paint guard from v0.90.36 remains unchanged.
 - No other functional changes.
 
 IMPORTANT:

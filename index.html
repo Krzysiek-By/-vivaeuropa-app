@@ -3212,6 +3212,24 @@ body:not(.splash-active) .legal-footer a{
 
 
 
+/* ===== v0.90.37 global footer flow normalization ===== */
+body:not(.splash-active) main{
+  min-height:0!important;
+}
+body:not(.splash-active) .panel,
+body:not(.splash-active) .company-card{
+  margin-bottom:24px!important;
+}
+body:not(.splash-active) .results-wrap{
+  padding-bottom:24px!important;
+}
+body:not(.splash-active) #welcomeView .welcome-wrap{
+  padding-bottom:24px!important;
+}
+body:not(.splash-active) .legal-footer-live{
+  margin:8px auto 92px!important;
+}
+
 /* ===== v0.90.36 DE-only paint guard + legal footer spacing fix ===== */
 html.viva-lang-pending body{visibility:hidden!important;}
 body:not(.splash-active):has(#welcomeView.active) main,
