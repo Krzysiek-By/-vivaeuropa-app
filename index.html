@@ -3915,11 +3915,11 @@ body:not(.splash-active) #homeView .guest-plus-note{
 }
 
 
-/* ===== v0.90.50 VE-003 SIMPLE ROUTE RESULTS / NO INTERNAL MAP ===== */
+/* ===== v0.90.51 VE-003 SIMPLE ROUTE RESULTS / NO INTERNAL MAP ===== */
 .results-guide{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:13px 14px;border:1px solid rgba(45,134,255,.42);border-radius:16px;background:rgba(7,26,49,.72);color:#DCE9FA}
 .results-guide-icon{width:36px;height:36px;display:grid;place-items:center;flex:0 0 36px;border-radius:50%;background:#0D2D50;border:1px solid rgba(83,167,255,.62);color:#64A9FF;font-size:20px;font-weight:900}
 .results-guide strong{display:block;color:#fff;font-size:.96rem}.results-guide span{display:block;margin-top:3px;color:#A9C4E8;font-size:.86rem;line-height:1.35}
-.place-card{cursor:default!important}.place-card .result-cover{height:116px!important;display:grid!important;place-items:center!important;background:linear-gradient(135deg,#0A2340,#0D3158)!important}.place-card .result-cover img{width:68px!important;height:68px!important;object-fit:contain!important}.place-distance{font-size:1.35rem;font-weight:900;color:#fff;margin:4px 0 8px}.place-meta{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 13px}.place-chip{padding:6px 9px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.78rem;font-weight:700}.place-route{width:100%;min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;cursor:pointer}.osm-credit{grid-column:1/-1;text-align:center;color:#8199B8;font-size:.74rem;margin-top:2px}
+.place-card{cursor:default!important}.place-card .result-cover{height:116px!important;display:grid!important;place-items:center!important;background:linear-gradient(135deg,#0A2340,#0D3158)!important}.place-card .result-cover img{width:68px!important;height:68px!important;object-fit:contain!important}.place-distance{font-size:1.35rem;font-weight:900;color:#fff;margin:4px 0 8px}.place-meta{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 13px}.place-chip{padding:6px 9px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.78rem;font-weight:700}.place-route{width:100%;min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;cursor:pointer}.place-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.place-call{width:100%;min-height:44px;border:1px solid rgba(255,185,65,.7);border-radius:12px;background:#8A4E00;color:#fff;font-weight:900;cursor:pointer}.emergency-note{font-size:.72rem;color:#F3C983;margin-top:8px}.osm-credit{grid-column:1/-1;text-align:center;color:#8199B8;font-size:.74rem;margin-top:2px}.route-choice-backdrop{position:fixed;inset:0;z-index:99999;background:rgba(0,8,20,.72);display:grid;place-items:end center;padding:18px}.route-choice{width:min(560px,100%);background:#071A30;border:1px solid rgba(83,167,255,.38);border-radius:22px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.45)}.route-choice h3{margin:0 0 5px;color:#fff}.route-choice p{margin:0 0 14px;color:#AFC7E4;font-size:.9rem}.route-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.route-choice button{min-height:46px;border-radius:12px;border:1px solid rgba(83,167,255,.38);background:#0B2848;color:#fff;font-weight:800}.route-choice button.primary{background:#1768FF;border-color:#2D86FF}.route-choice .route-close{width:100%;margin-top:10px;background:transparent}
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -4140,7 +4140,7 @@ body:not(.splash-active) #homeView .guest-plus-note{
         </div>
         <div class="results-guide" id="resultsGuide">
           <div class="results-guide-icon">◎</div>
-          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC öffnet „Route anzeigen“ direkt Apple Maps oder Google Maps.</span></div>
+          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC oder Polizei wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
         </div>
         <div id="radiusExpandNote" class="radius-expand-note"></div>
         <div class="results" id="results"></div>
@@ -6014,7 +6014,7 @@ function vivaTemplate(text,vars={}){
   return out;
 }
 
-function renderMapPins(){ /* v0.90.50: internal map intentionally disabled */ }
+function renderMapPins(){ /* v0.90.51: internal map intentionally disabled */ }
 
 function getOpenState(c){
   const schedule=normalizeWeeklyHours(c);
@@ -7748,11 +7748,35 @@ function vivaDistanceKm(lat1,lng1,lat2,lng2){
   const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-function vivaRouteUrl(lat,lng){
-  const apple=/iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent||'');
-  return apple
-    ? `https://maps.apple.com/?daddr=${encodeURIComponent(lat+','+lng)}&dirflg=w`
-    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}&travelmode=walking`;
+function vivaRouteUrl(lat,lng,app='google',mode='walking'){
+  const destination=encodeURIComponent(lat+','+lng);
+  if(app==='apple'){
+    const dirflg=mode==='driving'?'d':'w';
+    return `https://maps.apple.com/?daddr=${destination}&dirflg=${dirflg}`;
+  }
+  return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=${mode}`;
+}
+function vivaOpenRouteChooser(lat,lng){
+  document.querySelector('.route-choice-backdrop')?.remove();
+  const wrap=document.createElement('div');
+  wrap.className='route-choice-backdrop';
+  wrap.innerHTML=`<div class="route-choice" role="dialog" aria-modal="true" aria-label="Route auswählen">
+    <h3>Route auswählen</h3><p>Wähle Karten-App und Anreiseart.</p>
+    <div class="route-choice-grid">
+      <button class="primary" data-map="google" data-mode="walking">Google Maps · Zu Fuß</button>
+      <button class="primary" data-map="google" data-mode="driving">Google Maps · Auto</button>
+      <button data-map="apple" data-mode="walking">Apple Maps · Zu Fuß</button>
+      <button data-map="apple" data-mode="driving">Apple Maps · Auto</button>
+    </div>
+    <button class="route-close" type="button">Abbrechen</button>
+  </div>`;
+  document.body.appendChild(wrap);
+  wrap.querySelectorAll('[data-map]').forEach(btn=>btn.onclick=()=>{
+    const url=vivaRouteUrl(lat,lng,btn.dataset.map,btn.dataset.mode);
+    wrap.remove(); window.open(url,'_blank','noopener');
+  });
+  wrap.querySelector('.route-close').onclick=()=>wrap.remove();
+  wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
 }
 function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
@@ -7783,14 +7807,52 @@ async function searchNearbyToilets(){
       const fee=tags.fee==='yes'||tags['toilets:fee']==='yes'?'möglicherweise kostenpflichtig':(tags.fee==='no'||tags['toilets:fee']==='no'?'kostenlos':'Preis unbekannt');
       const wheel=tags.wheelchair==='yes'||tags['toilets:wheelchair']==='yes'?'rollstuhlgerecht':(tags.wheelchair==='no'||tags['toilets:wheelchair']==='no'?'nicht rollstuhlgerecht':'Barrierefreiheit unbekannt');
       const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
-      const url=vivaRouteUrl(Number(x.lat),Number(x.lng));
-      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route="${escapeHtmlAttr(url)}">Route anzeigen</button></div></article>`;
+      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button></div></article>`;
     }).join('')+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
-    els.results.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>window.open(b.dataset.route,'_blank','noopener'));
+    els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
   }catch(e){
     console.error('WC search error',e);
     els.count.textContent='0';
     els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht geladen werden. Bitte später erneut versuchen.</div>';
+  }
+}
+
+
+function policeLabel(tags={}){
+  return tags.name || tags.operator || 'Polizeidienststelle';
+}
+async function searchNearbyPolice(){
+  const origin=getActiveSearchCoordinates();
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
+    els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um Polizeidienststellen in deiner Nähe zu finden.</div>';
+    els.count.textContent='0';
+    return;
+  }
+  const radiusKm=Math.min(50,Math.max(1,Number(document.querySelector('#radiusSelect')?.value||5)));
+  els.title.textContent='Polizei in deiner Nähe';
+  els.results.innerHTML='<div class="status">Polizeidienststellen werden gesucht…</div>';
+  try{
+    const r=await fetch(`/api/police?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const list=(Array.isArray(data.items)?data.items:[]).map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
+    els.count.textContent=String(list.length);
+    if(!list.length){
+      els.results.innerHTML='<div class="status">Im gewählten Umkreis wurden keine Polizeidienststellen gefunden.</div>';
+      return;
+    }
+    els.results.innerHTML=list.map(x=>{
+      const tags=x.tags||{};
+      const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
+      const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
+      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/police.png" alt="Polizei"></div><div class="result-body"><div class="result-category">Polizei</div><h3>${escapeHtml(policeLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span></div><div class="place-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button><button type="button" class="place-call" data-emergency-call="112">Notruf 112</button></div><div class="emergency-note">112 ist der europaweite Notruf und nur für echte Notfälle bestimmt.</div></div></article>`;
+    }).join('')+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+    els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
+    els.results.querySelectorAll('[data-emergency-call]').forEach(b=>b.onclick=()=>{ window.location.href='tel:112'; });
+  }catch(e){
+    console.error('Police search error',e);
+    els.count.textContent='0';
+    els.results.innerHTML='<div class="status">Die Polizei-Daten konnten gerade nicht geladen werden. Bitte später erneut versuchen.</div>';
   }
 }
 
@@ -7809,6 +7871,12 @@ async function search(){
 
   if(selectedCategoryFilter==='public_bathroom'){
     await searchNearbyToilets();
+    saveTreePrefs();
+    return;
+  }
+
+  if(selectedCategoryFilter==='police'){
+    await searchNearbyPolice();
     saveTreePrefs();
     return;
   }

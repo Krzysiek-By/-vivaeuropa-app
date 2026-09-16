@@ -1,3 +1,12 @@
+VivaEuropa v0.90.51-R1-WC-POLICE-ROUTE-CHOOSER
+
+Zmiany względem v0.90.50:
+- Quick Icon „Polizei” pobiera najbliższe publiczne posterunki/komisariaty z OpenStreetMap przez /api/police.js.
+- Karty policji pokazują odległość i przycisk „Route anzeigen”.
+- „Route anzeigen” pozwala wybrać Google Maps albo Apple Maps oraz tryb „Zu Fuß” lub „Auto”.
+- Ten sam wybór mapy działa teraz również dla WC.
+- Przycisk „Notruf 112” uruchamia połączenie tel:112. 112 działa w całej UE i łączy z odpowiednią służbą alarmową; używać tylko w nagłych przypadkach.
+
 VivaEuropa v0.90.50-R1-WC-ROUTE-PROTOTYPE
 
 VivaEuropa v0.90.49-R1-CLIENT-ACCESS-ARCHITECTURE
