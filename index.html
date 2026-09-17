@@ -1703,6 +1703,14 @@ body:not(.splash-active) .link-btn{
   color:#62AEFF!important;
 }
 
+/* ===== v0.90.67 login card spacing after cleanup ===== */
+body:not(.splash-active) #accountView .panel.login-mode #accountForm{
+  margin-bottom:18px!important;
+}
+body:not(.splash-active) #accountView .panel.login-mode{
+  padding-bottom:34px!important;
+}
+
 /* ===== VE-006 panel / admin / firma ===== */
 body:not(.splash-active) #adminView .panel{
   max-width:1100px!important;
@@ -8260,6 +8268,8 @@ function showAccount(mode, options={}){
   document.querySelector('#switchModeBtn').classList.remove('hidden');
 
   const reg=mode==='register';
+  const accountPanel=document.querySelector('#accountView .panel');
+  if(accountPanel) accountPanel.classList.toggle('login-mode', !reg);
   const company=selectedRole==='company';
   const de=getVivaAppLanguage()==='de';
 

@@ -1,4 +1,4 @@
-VivaEuropa v0.90.66-R1-LOGIN-CLEANUP
+VivaEuropa v0.90.67-R1-LOGIN-SPACING-FIX
 
 Zmiany:
 - dolny pasek nawigacyjny: fixed do viewportu, auto-hide przy scroll w dół, powrót przy scroll w górę / zatrzymaniu;
