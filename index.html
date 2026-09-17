@@ -8326,7 +8326,9 @@ function showAccount(mode, options={}){
 
   const switchModeBtn=document.querySelector('#switchModeBtn');
   switchModeBtn.textContent = de?'Du hast bereits ein Konto? Anmelden':'Du hast bereits ein Konto? Anmelden';
-  switchModeBtn.classList.toggle('hidden', !reg);
+  // v0.90.68: on registration screens the extra footer link is intentionally removed.
+  // Users can go back with the top "Zurück" button, so this secondary action stays hidden.
+  switchModeBtn.classList.add('hidden');
 
   document.querySelector('#accountStatus').classList.add('hidden');
   updateAccountSubmitState();
