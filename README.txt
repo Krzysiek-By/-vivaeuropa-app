@@ -1,4 +1,4 @@
-VivaEuropa v0.90.63-R1-POLICE-QUICKHELP-EMERGENCY
+VivaEuropa v0.90.64-R1-SCHNELLHILFE-PLACEHOLDER
 Datum: 2026-09-17
 
 - Schnellhilfe → Polizei no longer loads nearby police stations.
