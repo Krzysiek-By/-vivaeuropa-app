@@ -1,4 +1,4 @@
-VivaEuropa v0.90.54-R1-POLICE-ENDPOINT-RELIABILITY-FIX
+VivaEuropa v0.90.55-R1-NEARBY-SPEED-COMPACT-CARDS
 
 FULL SNAPSHOT / CURRENT TEST BUILD
 Base: v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
@@ -272,3 +272,8 @@ UPDATE v0.90.50:
 - Police search hardened with parallel Overpass fallback endpoints.
 - Results restricted to ordinary public-facing police stations; obvious Bundespolizei, criminal police, headquarters and specialist units are excluded.
 - VE-003 heading changed to Polizeidienststellen in deiner Nähe.
+
+Update v0.90.55:
+- WC i Polizei: lokalny cache 15 min + awaryjne dane do 60 min
+- krótsze timeouty endpointów i dłuższy cache HTTP
+- kompaktowe karty punktów, szczególnie na telefonie

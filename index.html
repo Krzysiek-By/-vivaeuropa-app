@@ -3920,6 +3920,9 @@ body:not(.splash-active) #homeView .guest-plus-note{
 .results-guide-icon{width:36px;height:36px;display:grid;place-items:center;flex:0 0 36px;border-radius:50%;background:#0D2D50;border:1px solid rgba(83,167,255,.62);color:#64A9FF;font-size:20px;font-weight:900}
 .results-guide strong{display:block;color:#fff;font-size:.96rem}.results-guide span{display:block;margin-top:3px;color:#A9C4E8;font-size:.86rem;line-height:1.35}
 .place-card{cursor:default!important}.place-card .result-cover{height:116px!important;display:grid!important;place-items:center!important;background:linear-gradient(135deg,#0A2340,#0D3158)!important}.place-card .result-cover img{width:68px!important;height:68px!important;object-fit:contain!important}.place-distance{font-size:1.35rem;font-weight:900;color:#fff;margin:4px 0 8px}.place-meta{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 13px}.place-chip{padding:6px 9px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.78rem;font-weight:700}.place-route{width:100%;min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;cursor:pointer}.place-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.place-call{width:100%;min-height:44px;border:1px solid rgba(255,185,65,.7);border-radius:12px;background:#8A4E00;color:#fff;font-weight:900;cursor:pointer}.emergency-note{font-size:.72rem;color:#F3C983;margin-top:8px}.osm-credit{grid-column:1/-1;text-align:center;color:#8199B8;font-size:.74rem;margin-top:2px}.route-choice-backdrop{position:fixed;inset:0;z-index:99999;background:rgba(0,8,20,.72);display:grid;place-items:end center;padding:18px}.route-choice{width:min(560px,100%);background:#071A30;border:1px solid rgba(83,167,255,.38);border-radius:22px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.45)}.route-choice h3{margin:0 0 5px;color:#fff}.route-choice p{margin:0 0 14px;color:#AFC7E4;font-size:.9rem}.route-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.route-choice button{min-height:46px;border-radius:12px;border:1px solid rgba(83,167,255,.38);background:#0B2848;color:#fff;font-weight:800}.route-choice button.primary{background:#1768FF;border-color:#2D86FF}.route-choice .route-close{width:100%;margin-top:10px;background:transparent}
+/* v0.90.55 compact nearby place cards */
+.results:has(.place-card.compact-place-card){grid-template-columns:repeat(2,minmax(0,1fr))!important}.compact-place-card{display:grid!important;grid-template-columns:82px 1fr!important;min-height:0!important}.compact-place-card .result-cover{height:auto!important;min-height:100%!important}.compact-place-card .result-cover img{width:52px!important;height:52px!important}.compact-place-card .result-body{padding:13px 14px!important}.compact-place-card .result-category{font-size:.72rem!important}.compact-place-card h3{font-size:1rem!important;margin:2px 0 2px!important}.compact-place-card .place-distance{font-size:1.18rem!important;margin:2px 0 6px!important}.compact-place-card .place-meta{margin:5px 0 9px!important;gap:5px!important}.compact-place-card .place-chip{font-size:.69rem!important;padding:4px 7px!important}.compact-place-card .place-route,.compact-place-card .place-call{min-height:38px!important;font-size:.82rem!important}.nearby-cache-note{grid-column:1/-1;text-align:center;color:#92A9C5;font-size:.72rem;margin:0 0 2px}.nearby-cache-note.stale{color:#F3C983}
+@media(max-width:800px){.results:has(.place-card.compact-place-card){grid-template-columns:1fr!important}.compact-place-card{grid-template-columns:74px 1fr!important}.compact-place-card .result-cover img{width:46px!important;height:46px!important}}
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -7778,6 +7781,48 @@ function vivaOpenRouteChooser(lat,lng){
   wrap.querySelector('.route-close').onclick=()=>wrap.remove();
   wrap.onclick=e=>{ if(e.target===wrap) wrap.remove(); };
 }
+const VIVA_NEARBY_CACHE_TTL=15*60*1000;
+const VIVA_NEARBY_CACHE_STALE=60*60*1000;
+function vivaNearbyCacheKey(kind,origin,radiusKm){
+  const lat=Number(origin.lat).toFixed(3), lng=Number(origin.lng).toFixed(3);
+  return `vivaNearby:${kind}:${lat}:${lng}:${Math.round(Number(radiusKm)||5)}`;
+}
+function vivaReadNearbyCache(kind,origin,radiusKm,maxAge=VIVA_NEARBY_CACHE_STALE){
+  try{
+    const raw=localStorage.getItem(vivaNearbyCacheKey(kind,origin,radiusKm));
+    const data=raw?JSON.parse(raw):null;
+    if(!data||!Array.isArray(data.items)||!Number.isFinite(Number(data.ts))) return null;
+    const age=Date.now()-Number(data.ts);
+    if(age>maxAge) return null;
+    return {...data,age};
+  }catch(_){ return null; }
+}
+function vivaWriteNearbyCache(kind,origin,radiusKm,items){
+  try{ localStorage.setItem(vivaNearbyCacheKey(kind,origin,radiusKm),JSON.stringify({ts:Date.now(),items})); }catch(_){}
+}
+async function vivaFetchNearby(kind,origin,radiusKm){
+  const fresh=vivaReadNearbyCache(kind,origin,radiusKm,VIVA_NEARBY_CACHE_TTL);
+  if(fresh) return {items:fresh.items,cache:'fresh'};
+  const stale=vivaReadNearbyCache(kind,origin,radiusKm,VIVA_NEARBY_CACHE_STALE);
+  const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  const timer=ctrl?setTimeout(()=>ctrl.abort(),8000):null;
+  try{
+    const r=await fetch(`/api/${kind}?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`,ctrl?{signal:ctrl.signal}:undefined);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const items=Array.isArray(data.items)?data.items:[];
+    vivaWriteNearbyCache(kind,origin,radiusKm,items);
+    return {items,cache:'network'};
+  }catch(err){
+    if(stale) return {items:stale.items,cache:'stale',error:err};
+    throw err;
+  }finally{ if(timer) clearTimeout(timer); }
+}
+function vivaNearbyCacheNote(mode){
+  if(mode==='fresh') return '<div class="nearby-cache-note">Schnell geladen – gespeicherte Daten aus deiner Umgebung.</div>';
+  if(mode==='stale') return '<div class="nearby-cache-note stale">Aktuelle Abfrage verzögert – zuletzt verfügbare Daten werden angezeigt.</div>';
+  return '';
+}
 function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
 }
@@ -7792,10 +7837,8 @@ async function searchNearbyToilets(){
   els.title.textContent='WC in deiner Nähe';
   els.results.innerHTML='<div class="status">Öffentliche Toiletten werden gesucht…</div>';
   try{
-    const r=await fetch(`/api/toilets?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    const list=(Array.isArray(data.items)?data.items:[]).map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
+    const nearby=await vivaFetchNearby('toilets',origin,radiusKm);
+    const list=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
     els.count.textContent=String(list.length);
     if(!list.length){
       els.results.innerHTML='<div class="status">Im gewählten Umkreis wurden keine öffentlichen Toiletten gefunden.</div>';
@@ -7807,8 +7850,8 @@ async function searchNearbyToilets(){
       const fee=tags.fee==='yes'||tags['toilets:fee']==='yes'?'möglicherweise kostenpflichtig':(tags.fee==='no'||tags['toilets:fee']==='no'?'kostenlos':'Preis unbekannt');
       const wheel=tags.wheelchair==='yes'||tags['toilets:wheelchair']==='yes'?'rollstuhlgerecht':(tags.wheelchair==='no'||tags['toilets:wheelchair']==='no'?'nicht rollstuhlgerecht':'Barrierefreiheit unbekannt');
       const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
-      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button></div></article>`;
-    }).join('')+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+      return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button></div></article>`;
+    }).join('')+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
     els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
   }catch(e){
     console.error('WC search error',e);
@@ -7832,10 +7875,8 @@ async function searchNearbyPolice(){
   els.title.textContent='Polizeidienststellen in deiner Nähe';
   els.results.innerHTML='<div class="status">Polizeidienststellen werden gesucht…</div>';
   try{
-    const r=await fetch(`/api/police?lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    const list=(Array.isArray(data.items)?data.items:[]).map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
+    const nearby=await vivaFetchNearby('police',origin,radiusKm);
+    const list=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
     els.count.textContent=String(list.length);
     if(!list.length){
       els.results.innerHTML='<div class="status">Im gewählten Umkreis wurden keine Polizeidienststellen gefunden.</div>';
@@ -7845,8 +7886,8 @@ async function searchNearbyPolice(){
       const tags=x.tags||{};
       const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
       const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
-      return `<article class="result-card place-card"><div class="result-cover"><img src="assets/quick-icons/police.png" alt="Polizei"></div><div class="result-body"><div class="result-category">Polizei</div><h3>${escapeHtml(policeLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span></div><div class="place-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button><button type="button" class="place-call" data-emergency-call="112">Notruf 112</button></div><div class="emergency-note">112 ist der europaweite Notruf und nur für echte Notfälle bestimmt.</div></div></article>`;
-    }).join('')+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+      return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/police.png" alt="Polizei"></div><div class="result-body"><div class="result-category">Polizei</div><h3>${escapeHtml(policeLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(hours)}</span></div><div class="place-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button><button type="button" class="place-call" data-emergency-call="112">Notruf 112</button></div></div></article>`;
+    }).join('')+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
     els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
     els.results.querySelectorAll('[data-emergency-call]').forEach(b=>b.onclick=()=>{ window.location.href='tel:112'; });
   }catch(e){
