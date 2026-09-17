@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Notarzt">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a315c"/><stop offset="1" stop-color="#07182c"/>
+    </linearGradient>
+    <linearGradient id="gold2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff2aa"/><stop offset="0.4" stop-color="#f3c04a"/><stop offset="1" stop-color="#a65c00"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="224" height="224" rx="54" fill="url(#bg2)" stroke="#2168aa" stroke-width="8"/>
+  <path d="M108 53h40v54h54v40h-54v56h-40v-56H54v-40h54z" fill="url(#gold2)" stroke="#ffe18a" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="80" fill="none" stroke="#f3c04a" stroke-width="4" opacity=".55"/>
+</svg>
