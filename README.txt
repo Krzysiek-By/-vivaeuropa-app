@@ -1,4 +1,4 @@
-VivaEuropa v0.90.55-R1-NEARBY-SPEED-COMPACT-CARDS
+VivaEuropa v0.90.56-R1-SCHNELLHILFE-HOME
 
 FULL SNAPSHOT / CURRENT TEST BUILD
 Base: v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
@@ -277,3 +277,8 @@ Update v0.90.55:
 - WC i Polizei: lokalny cache 15 min + awaryjne dane do 60 min
 - krótsze timeouty endpointów i dłuższy cache HTTP
 - kompaktowe karty punktów, szczególnie na telefonie
+
+Update v0.90.56:
+- stały blok Schnellhilfe na stronie głównej: WC, Polizei, Feuerwehr, Notarzt
+- Feuerwehr i Notarzt: prosta karta alarmowa z 112, bez mapy/remizy
+- WC i Polizei przeniesione z ogólnego rzędu kategorii do Schnellhilfe

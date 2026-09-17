@@ -3923,6 +3923,13 @@ body:not(.splash-active) #homeView .guest-plus-note{
 /* v0.90.55 compact nearby place cards */
 .results:has(.place-card.compact-place-card){grid-template-columns:repeat(2,minmax(0,1fr))!important}.compact-place-card{display:grid!important;grid-template-columns:82px 1fr!important;min-height:0!important}.compact-place-card .result-cover{height:auto!important;min-height:100%!important}.compact-place-card .result-cover img{width:52px!important;height:52px!important}.compact-place-card .result-body{padding:13px 14px!important}.compact-place-card .result-category{font-size:.72rem!important}.compact-place-card h3{font-size:1rem!important;margin:2px 0 2px!important}.compact-place-card .place-distance{font-size:1.18rem!important;margin:2px 0 6px!important}.compact-place-card .place-meta{margin:5px 0 9px!important;gap:5px!important}.compact-place-card .place-chip{font-size:.69rem!important;padding:4px 7px!important}.compact-place-card .place-route,.compact-place-card .place-call{min-height:38px!important;font-size:.82rem!important}.nearby-cache-note{grid-column:1/-1;text-align:center;color:#92A9C5;font-size:.72rem;margin:0 0 2px}.nearby-cache-note.stale{color:#F3C983}
 @media(max-width:800px){.results:has(.place-card.compact-place-card){grid-template-columns:1fr!important}.compact-place-card{grid-template-columns:74px 1fr!important}.compact-place-card .result-cover img{width:46px!important;height:46px!important}}
+/* v0.90.56 Schnellhilfe on VE-003 */
+.schnellhilfe{margin:18px 0 6px;padding:14px;border:1px solid rgba(83,167,255,.28);border-radius:18px;background:rgba(5,25,48,.72)}
+.schnellhilfe-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:10px}.schnellhilfe-head strong{font-size:.96rem;color:#fff}.schnellhilfe-head span{font-size:.74rem;color:#9CB4D1}
+.schnellhilfe-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.schnellhilfe-btn{min-height:86px;border:1px solid rgba(83,167,255,.35);border-radius:15px;background:#09233F;color:#fff;font-weight:850;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer}.schnellhilfe-btn:active{transform:scale(.98)}.schnellhilfe-btn img{width:44px;height:44px;object-fit:contain}.schnellhilfe-symbol{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#0B315A,#0A203A);border:1px solid rgba(255,194,60,.45);font-size:24px}.schnellhilfe-btn small{font-size:.73rem;color:#D8E7F8;font-weight:800}
+.emergency-card-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(0,8,20,.78);display:grid;place-items:end center;padding:18px}.emergency-card{width:min(520px,100%);background:#071A30;border:1px solid rgba(83,167,255,.4);border-radius:22px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.5)}.emergency-card-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:#0B2848;border:1px solid rgba(255,194,60,.5);font-size:30px;margin-bottom:10px}.emergency-card h3{margin:0 0 7px;color:#fff;font-size:1.35rem}.emergency-card p{margin:0 0 15px;color:#B7CEE8;line-height:1.45}.emergency-card .emergency-call-main{width:100%;min-height:50px;border:1px solid #FFBE3D;border-radius:13px;background:#9B5700;color:#fff;font-weight:900;font-size:1rem}.emergency-card .emergency-close{width:100%;min-height:44px;margin-top:8px;border:1px solid rgba(83,167,255,.3);border-radius:12px;background:transparent;color:#C9DCF1;font-weight:800}
+@media(max-width:640px){.schnellhilfe-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.schnellhilfe{padding:11px}.schnellhilfe-btn{min-height:76px;font-size:.78rem}.schnellhilfe-btn img,.schnellhilfe-symbol{width:38px;height:38px}.schnellhilfe-symbol{font-size:21px}.schnellhilfe-head span{display:none}}
+
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -4127,6 +4134,16 @@ body:not(.splash-active) #homeView .guest-plus-note{
           </div>
           <button class="primary big" id="searchBtn">Szukaj</button>
         </div>
+
+        <section class="schnellhilfe" aria-label="Schnellhilfe">
+          <div class="schnellhilfe-head"><strong>Schnellhilfe</strong><span>Schneller Zugriff unterwegs</span></div>
+          <div class="schnellhilfe-grid">
+            <button type="button" class="schnellhilfe-btn" data-schnellhilfe="wc"><img src="assets/quick-icons/wc.png" alt=""><small>WC</small></button>
+            <button type="button" class="schnellhilfe-btn" data-schnellhilfe="police"><img src="assets/quick-icons/police.png" alt=""><small>Polizei</small></button>
+            <button type="button" class="schnellhilfe-btn" data-schnellhilfe="fire"><span class="schnellhilfe-symbol" aria-hidden="true">🔥</span><small>Feuerwehr</small></button>
+            <button type="button" class="schnellhilfe-btn" data-schnellhilfe="notarzt"><span class="schnellhilfe-symbol" aria-hidden="true">✚</span><small>Notarzt</small></button>
+          </div>
+        </section>
 
         <div id="locationStatus" class="location-status">
           <span class="location-status-dot"></span>
@@ -5864,14 +5881,12 @@ const VIVA_QUICK_ICON_MAP={
 const VIVA_GUEST_QUICK_CATEGORIES=[
   {id:'',label:'Alle',icon:'◎'},
   {id:'__categories__',label:'Kategorien',icon:'▦'},
-  {id:'public_bathroom',label:'WC',image:VIVA_QUICK_ICON_MAP.wc},
   {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_QUICK_ICON_MAP.roadside},
   {id:'taxi_service',label:'Taxi',image:VIVA_QUICK_ICON_MAP.taxi},
   {id:'pharmacy',label:'Apotheke',image:VIVA_QUICK_ICON_MAP.pharmacy},
   {id:'gas_station',label:'Tankstelle',image:VIVA_QUICK_ICON_MAP.gas},
   {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_QUICK_ICON_MAP.ev},
   {id:'__hospital__',label:'Krankenhaus',image:VIVA_QUICK_ICON_MAP.hospital},
-  {id:'police',label:'Polizei',image:VIVA_QUICK_ICON_MAP.police},
   {id:'city_hall',label:'Rathaus',image:VIVA_QUICK_ICON_MAP.cityHall}
 ];
 
@@ -7744,6 +7759,42 @@ function applyGuestRadiusOptions(){
   }
 }
 
+function vivaOpenEmergencyCard(kind){
+  document.querySelector('.emergency-card-backdrop')?.remove();
+  const fire=kind==='fire';
+  const cfg=fire?{
+    icon:'🔥',title:'Feuerwehr',
+    text:'Bei Feuer, Rauchentwicklung oder akuter Gefahr: sofort 112 anrufen. Die Feuerwehr kommt zu dir – fahre bei einem Notfall nicht selbst zur Feuerwache.'
+  }:{
+    icon:'✚',title:'Notarzt',
+    text:'Bei einem medizinischen Notfall oder wenn dringend ein Notarzt benötigt wird: 112 anrufen. Die Leitstelle entscheidet, welche Hilfe erforderlich ist.'
+  };
+  const wrap=document.createElement('div');
+  wrap.className='emergency-card-backdrop';
+  wrap.innerHTML=`<div class="emergency-card" role="dialog" aria-modal="true" aria-label="${cfg.title}">
+    <div class="emergency-card-icon">${cfg.icon}</div><h3>${cfg.title}</h3><p>${cfg.text}</p>
+    <button type="button" class="emergency-call-main">112 anrufen</button>
+    <button type="button" class="emergency-close">Schließen</button>
+  </div>`;
+  document.body.appendChild(wrap);
+  wrap.querySelector('.emergency-call-main').onclick=()=>{ window.location.href='tel:112'; };
+  wrap.querySelector('.emergency-close').onclick=()=>wrap.remove();
+  wrap.onclick=e=>{if(e.target===wrap)wrap.remove();};
+}
+function vivaHandleSchnellhilfe(kind){
+  if(kind==='wc' || kind==='police'){
+    selectedCategoryFilter=kind==='wc'?'public_bathroom':'police';
+    renderCategoryFilters();
+    saveTreePrefs();
+    search().then(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}));
+    return;
+  }
+  if(kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
+}
+document.addEventListener('click',e=>{
+  const btn=e.target.closest?.('[data-schnellhilfe]');
+  if(btn) vivaHandleSchnellhilfe(btn.dataset.schnellhilfe||'');
+});
 function vivaDistanceKm(lat1,lng1,lat2,lng2){
   const R=6371;
   const toRad=x=>x*Math.PI/180;
