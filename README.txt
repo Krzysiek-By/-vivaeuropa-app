@@ -1,4 +1,4 @@
-VivaEuropa v0.90.65-R1-BOTTOM-NAV-ACCOUNT-LINK-FIX
+VivaEuropa v0.90.66-R1-LOGIN-CLEANUP
 
 Zmiany:
 - dolny pasek nawigacyjny: fixed do viewportu, auto-hide przy scroll w dół, powrót przy scroll w górę / zatrzymaniu;

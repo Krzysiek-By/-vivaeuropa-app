@@ -8314,9 +8314,9 @@ function showAccount(mode, options={}){
 
   document.querySelector('#passwordInput').autocomplete = reg ? 'new-password' : 'current-password';
 
-  document.querySelector('#switchModeBtn').textContent = reg
-    ? (de?'Du hast bereits ein Konto? Anmelden':'Du hast bereits ein Konto? Anmelden')
-    : (de?'Noch kein Konto? Konto erstellen':'Noch kein Konto? Konto erstellen');
+  const switchModeBtn=document.querySelector('#switchModeBtn');
+  switchModeBtn.textContent = de?'Du hast bereits ein Konto? Anmelden':'Du hast bereits ein Konto? Anmelden';
+  switchModeBtn.classList.toggle('hidden', !reg);
 
   document.querySelector('#accountStatus').classList.add('hidden');
   updateAccountSubmitState();
