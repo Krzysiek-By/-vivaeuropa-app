@@ -1,3 +1,15 @@
+VivaEuropa v0.90.58-R1-SCHNELLHILFE-SCHNELLZUGRIFF
+Datum: 2026-09-17
+
+ÄNDERUNGEN v0.90.58
+- Schnellhilfe auf Startseite: Polizei, Feuerwehr, Notarzt, Krankenhaus.
+- WC aus Schnellhilfe entfernt.
+- Neuer Block Schnellzugriff: WC, Ladestation, Apotheke, Tankstelle.
+- Schnellzugriff ist als Standardbelegung vorbereitet; spätere Anpassung nur für angemeldete Nutzer/Firmen vorgesehen.
+- Feuerwehr und Notarzt erhalten eigene VivaEuropa-Schnellhilfe-Icons.
+- Krankenhaus-Schnellhilfe startet die vorhandene Krankenhaus-Suche.
+- WC-Schnellzugriff nutzt weiterhin die schnelle OSM/Overpass-WC-Suche.
+
 VivaEuropa v0.90.57-R1-WC-COMMUNITY-PROTOTYPE
 
 FULL SNAPSHOT / CURRENT TEST BUILD
