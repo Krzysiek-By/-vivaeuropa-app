@@ -339,3 +339,7 @@ UPDATE v0.90.59
 
 v0.90.69-R1-REGISTER-SPACING-FIX
 - VE-005: restored balanced bottom spacing on both Nutzerkonto erstellen and Unternehmenskonto erstellen after removal of the secondary login link.
+
+
+v0.90.70-R1-RESET-SPACING-FIX
+- VE-008: corrected bottom spacing in Passwort vergessen card for Nutzer and Unternehmen.
