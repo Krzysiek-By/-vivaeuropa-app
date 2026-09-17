@@ -1,3 +1,6 @@
+VivaEuropa v0.90.62-R1-BRANDED-GUEST-ADS
+Test ads: VE-002 Thermomix, guest results Mercedes-Benz; guest-only; no ranking influence.
+
 VivaEuropa v0.90.61-R1-VE002-GUEST-AD
 - VE-002: one discreet test advertisement slot for non-logged-in guests only.
 - Registered/logged-in users remain ad-free.

@@ -3941,6 +3941,15 @@ body:not(.splash-active) #homeView .guest-plus-note{
 /* ===== v0.90.61 VE-002 guest-only sponsored slot ===== */
 .ve002-sponsored-ad{margin:16px 0 0;padding:13px 14px;border-radius:16px;border:1px solid rgba(244,176,0,.36);background:linear-gradient(135deg,#0E2845,#0A1F35);box-shadow:0 10px 24px rgba(0,0,0,.14)}
 .ve002-sponsored-ad.hidden{display:none!important}.ve002-sponsored-label{display:inline-flex;align-items:center;margin-bottom:7px;padding:4px 8px;border-radius:999px;background:rgba(244,176,0,.14);border:1px solid rgba(244,176,0,.28);color:#F4C54A;font-size:.66rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.ve002-sponsored-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.ve002-sponsored-copy strong{display:block;color:#fff;font-size:.96rem;margin-bottom:3px}.ve002-sponsored-copy span{display:block;color:#AFC4DE;font-size:.80rem;line-height:1.36}.ve002-sponsored-action{flex:0 0 auto;min-height:38px;border-radius:11px;border:1px solid rgba(83,167,255,.5);background:#0B5CFF;color:#fff;font-weight:850;padding:0 12px;cursor:pointer}.ve002-sponsored-note{margin-top:7px;color:#718DAA;font-size:.66rem}@media(max-width:560px){.ve002-sponsored-row{align-items:stretch;flex-direction:column}.ve002-sponsored-action{width:100%}}
+/* ===== v0.90.62 branded guest ad test creatives ===== */
+.ve-ad-creative{position:relative;overflow:hidden;border-radius:13px;border:1px solid rgba(255,255,255,.10);background:#07192c;cursor:pointer}
+.ve-ad-creative img{display:block;width:100%;height:auto;max-height:230px;object-fit:cover}
+.ve-ad-creative-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;background:rgba(4,18,33,.96)}
+.ve-ad-creative-footer span{color:#b9cde3;font-size:.72rem;line-height:1.3}
+.ve-ad-creative-footer button{border:1px solid rgba(83,167,255,.5);background:#0b5cff;color:#fff;border-radius:10px;min-height:36px;padding:0 11px;font-weight:850;cursor:pointer}
+.ve-ad-test-note{margin-top:7px;color:#718daa;font-size:.66rem}
+@media(max-width:560px){.ve-ad-creative img{max-height:190px}.ve-ad-creative-footer{align-items:stretch;flex-direction:column}.ve-ad-creative-footer button{width:100%}}
+
 
 
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
@@ -4077,11 +4086,11 @@ body:not(.splash-active) #homeView .guest-plus-note{
           </div>
           <div class="ve002-sponsored-ad hidden" id="ve002SponsoredAd" aria-label="Anzeige">
             <div class="ve002-sponsored-label">Anzeige · Test</div>
-            <div class="ve002-sponsored-row">
-              <div class="ve002-sponsored-copy"><strong>🥨 Notfall? Erst Brezn. Dann Welt retten.</strong><span>Bäckerei „Knusperpause“ – diese humorvolle Testanzeige markiert nur den späteren Werbeplatz auf VE-002.</span></div>
-              <button type="button" class="ve002-sponsored-action" id="ve002SponsoredAction">Anzeige ansehen</button>
+            <div class="ve-ad-creative" id="ve002SponsoredCreative" role="link" tabindex="0" aria-label="Thermomix Testanzeige öffnen">
+              <img src="assets/ads/thermomix-test.png" alt="Thermomix Testanzeige">
+              <div class="ve-ad-creative-footer"><span>Testmotiv · Klick führt zur offiziellen Thermomix-Seite.</span><button type="button" id="ve002SponsoredAction">Mehr erfahren</button></div>
             </div>
-            <div class="ve002-sponsored-note">Nur für nicht eingeloggte Gäste · registrierte Nutzer sehen hier keine Werbung.</div>
+            <div class="ve-ad-test-note">Nur für nicht eingeloggte Gäste · registrierte Nutzer sehen hier keine Werbung.</div>
           </div>
         </div>
       </div>
@@ -4196,11 +4205,11 @@ body:not(.splash-active) #homeView .guest-plus-note{
         </div>
         <div class="guest-sponsored-ad hidden" id="guestSponsoredAd" aria-label="Anzeige">
           <div class="guest-sponsored-label">Anzeige · Test</div>
-          <div class="guest-sponsored-row">
-            <div class="guest-sponsored-copy"><strong>☕ Kaffee ist auch eine kleine Pannenhilfe.</strong><span>Bäckerei Morgenmuffel: großer Kaffee, kleine Ausrede. Diese lustige Karte zeigt nur den späteren Werbeplatz.</span></div>
-            <button type="button" class="guest-sponsored-action" id="guestSponsoredAction">Anzeige ansehen</button>
+          <div class="ve-ad-creative" id="guestSponsoredCreative" role="link" tabindex="0" aria-label="Mercedes-Benz Testanzeige öffnen">
+            <img src="assets/ads/mercedes-test.png" alt="Mercedes-Benz Testanzeige">
+            <div class="ve-ad-creative-footer"><span>Testmotiv · Klick führt zur offiziellen Mercedes-Benz-Seite.</span><button type="button" id="guestSponsoredAction">Jetzt entdecken</button></div>
           </div>
-          <div class="guest-sponsored-note">Testanzeige nur für Gäste · kein Einfluss auf die Reihenfolge der Suchergebnisse.</div>
+          <div class="ve-ad-test-note">Testanzeige nur für Gäste · kein Einfluss auf die Reihenfolge der Suchergebnisse.</div>
         </div>
         <div id="radiusExpandNote" class="radius-expand-note"></div>
         <div class="results" id="results"></div>
@@ -8021,16 +8030,18 @@ function vivaUpdateGuestSponsoredAd(show=false){
   if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');
 }
 function vivaBindGuestSponsoredAd(){
-  const btn=document.querySelector('#guestSponsoredAction');
-  if(btn && !btn.dataset.bound){
-    btn.dataset.bound='1';
-    btn.addEventListener('click',()=>showToast('Testanzeige: Später kann dieser Platz zu einem klar gekennzeichneten Sponsor führen.'));
-  }
-  const welcomeBtn=document.querySelector('#ve002SponsoredAction');
-  if(welcomeBtn && !welcomeBtn.dataset.bound){
-    welcomeBtn.dataset.bound='1';
-    welcomeBtn.addEventListener('click',()=>showToast('Testanzeige auf VE-002: Hier kann später eine klar gekennzeichnete Werbung stehen.'));
-  }
+  const openExternal=(url)=>window.open(url,'_blank','noopener,noreferrer');
+  const bindCreative=(creative,button,url)=>{
+    const go=(ev)=>{ev?.preventDefault?.();ev?.stopPropagation?.();openExternal(url);};
+    if(button && !button.dataset.bound){button.dataset.bound='1';button.addEventListener('click',go);}
+    if(creative && !creative.dataset.bound){
+      creative.dataset.bound='1';
+      creative.addEventListener('click',(ev)=>{if(ev.target.closest('button'))return;go(ev);});
+      creative.addEventListener('keydown',(ev)=>{if(ev.key==='Enter'||ev.key===' '){go(ev);}});
+    }
+  };
+  bindCreative(document.querySelector('#guestSponsoredCreative'),document.querySelector('#guestSponsoredAction'),'https://www.mercedes-benz.de/');
+  bindCreative(document.querySelector('#ve002SponsoredCreative'),document.querySelector('#ve002SponsoredAction'),'https://www.vorwerk.com/de/de/produkte/thermomix');
 }
 function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
