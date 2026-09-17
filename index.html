@@ -2966,7 +2966,7 @@ body:not(.splash-active) #resetView .reset-card{
   align-self:center;
   width:min(620px,calc(100% - 32px));
   margin:28px auto 42px!important;
-  padding-bottom:42px!important;
+  padding-bottom:56px!important;
 }
 body:not(.splash-active) #resetView .reset-card .muted{
   margin-bottom:28px!important;
@@ -2984,7 +2984,7 @@ body:not(.splash-active) #resetView #resetForm > label{
   body:not(.splash-active) #resetView .reset-card{
     width:calc(100% - 28px);
     margin:24px auto 34px!important;
-    padding-bottom:40px!important;
+    padding-bottom:54px!important;
   }
   body:not(.splash-active) #resetView .reset-card .muted{margin-bottom:24px!important}
 }
@@ -3991,6 +3991,21 @@ body:not(.splash-active) #homeView .guest-plus-note{
     pointer-events:none;
   }
 }
+
+/* ===== v0.90.71 VE-008 strong bottom-spacing override ===== */
+body:not(.splash-active) #resetView .reset-card{
+  padding-bottom:56px!important;
+}
+body:not(.splash-active) #resetView .reset-actions{
+  margin-top:18px!important;
+  margin-bottom:0!important;
+}
+@media (max-width:800px){
+  body:not(.splash-active) #resetView .reset-card{
+    padding-bottom:54px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">

@@ -343,3 +343,7 @@ v0.90.69-R1-REGISTER-SPACING-FIX
 
 v0.90.70-R1-RESET-SPACING-FIX
 - VE-008: corrected bottom spacing in Passwort vergessen card for Nutzer and Unternehmen.
+
+
+v0.90.71-R1-RESET-CARD-SPACING-STRONG-FIX
+- VE-008: stronger bottom padding on Passwort vergessen card so Reset-Link senden no longer sits on the lower frame.
