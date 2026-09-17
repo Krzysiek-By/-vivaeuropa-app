@@ -335,3 +335,7 @@ UPDATE v0.90.59
 - Dynamic radius: 10 km -> 25 km -> 50 km; stops at first radius with results.
 - This logic applies only to Schnellhilfe Krankenhaus, not the normal hospital category.
 - Added api/hospitals.js.
+
+
+v0.90.69-R1-REGISTER-SPACING-FIX
+- VE-005: restored balanced bottom spacing on both Nutzerkonto erstellen and Unternehmenskonto erstellen after removal of the secondary login link.
