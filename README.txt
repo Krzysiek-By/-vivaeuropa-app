@@ -347,3 +347,7 @@ v0.90.70-R1-RESET-SPACING-FIX
 
 v0.90.71-R1-RESET-CARD-SPACING-STRONG-FIX
 - VE-008: stronger bottom padding on Passwort vergessen card so Reset-Link senden no longer sits on the lower frame.
+
+
+v0.90.72-R1-VE008-BOTTOM-SPACER-FIX
+- VE-008: added an explicit physical spacer below the reset form so the Reset-Link senden button cannot sit on the card border.

@@ -4006,6 +4006,23 @@ body:not(.splash-active) #resetView .reset-actions{
   }
 }
 
+
+/* ===== v0.90.72 VE-008 physical bottom spacer ===== */
+body:not(.splash-active) #resetView .reset-card-bottom-space{
+  display:block!important;
+  height:34px!important;
+  min-height:34px!important;
+  width:100%;
+  flex:0 0 34px;
+}
+@media (max-width:800px){
+  body:not(.splash-active) #resetView .reset-card-bottom-space{
+    height:32px!important;
+    min-height:32px!important;
+    flex-basis:32px;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4354,6 +4371,7 @@ body:not(.splash-active) #resetView .reset-actions{
 
           <div id="resetStatus" class="reset-status hidden"></div>
         </form>
+        <div class="reset-card-bottom-space" aria-hidden="true"></div>
       </div>
     </section>
 
