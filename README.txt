@@ -1,3 +1,9 @@
+VivaEuropa v0.90.61-R1-VE002-GUEST-AD
+- VE-002: one discreet test advertisement slot for non-logged-in guests only.
+- Registered/logged-in users remain ad-free.
+- Existing guest search-results advertisement remains separate and unchanged.
+- No changes to ranking, WC, Polizei or hospital search logic in this update.
+
 VivaEuropa v0.90.60-R1-HOSPITAL-DYNAMIC-QUICKHELP
 Datum: 2026-09-17
 

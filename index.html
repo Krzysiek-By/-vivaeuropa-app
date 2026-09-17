@@ -3938,6 +3938,9 @@ body:not(.splash-active) #homeView .guest-plus-note{
 /* v0.90.59 guest-only test sponsored card */
 .guest-sponsored-ad{margin:0 0 14px;padding:14px 15px;border-radius:16px;border:1px solid rgba(244,176,0,.42);background:linear-gradient(135deg,#102B4A,#0A2038);box-shadow:0 10px 26px rgba(0,0,0,.18)}
 .guest-sponsored-ad.hidden{display:none!important}.guest-sponsored-label{display:inline-flex;align-items:center;gap:6px;margin-bottom:7px;padding:4px 8px;border-radius:999px;background:rgba(244,176,0,.14);border:1px solid rgba(244,176,0,.28);color:#F4C54A;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.guest-sponsored-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.guest-sponsored-copy strong{display:block;color:#fff;font-size:1rem;margin-bottom:3px}.guest-sponsored-copy span{display:block;color:#AFC4DE;font-size:.82rem;line-height:1.38}.guest-sponsored-action{flex:0 0 auto;min-height:40px;border-radius:11px;border:1px solid rgba(83,167,255,.5);background:#0B5CFF;color:#fff;font-weight:850;padding:0 13px;cursor:pointer}.guest-sponsored-note{margin-top:7px;color:#718DAA;font-size:.68rem}@media(max-width:560px){.guest-sponsored-row{align-items:stretch;flex-direction:column}.guest-sponsored-action{width:100%}}
+/* ===== v0.90.61 VE-002 guest-only sponsored slot ===== */
+.ve002-sponsored-ad{margin:16px 0 0;padding:13px 14px;border-radius:16px;border:1px solid rgba(244,176,0,.36);background:linear-gradient(135deg,#0E2845,#0A1F35);box-shadow:0 10px 24px rgba(0,0,0,.14)}
+.ve002-sponsored-ad.hidden{display:none!important}.ve002-sponsored-label{display:inline-flex;align-items:center;margin-bottom:7px;padding:4px 8px;border-radius:999px;background:rgba(244,176,0,.14);border:1px solid rgba(244,176,0,.28);color:#F4C54A;font-size:.66rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.ve002-sponsored-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.ve002-sponsored-copy strong{display:block;color:#fff;font-size:.96rem;margin-bottom:3px}.ve002-sponsored-copy span{display:block;color:#AFC4DE;font-size:.80rem;line-height:1.36}.ve002-sponsored-action{flex:0 0 auto;min-height:38px;border-radius:11px;border:1px solid rgba(83,167,255,.5);background:#0B5CFF;color:#fff;font-weight:850;padding:0 12px;cursor:pointer}.ve002-sponsored-note{margin-top:7px;color:#718DAA;font-size:.66rem}@media(max-width:560px){.ve002-sponsored-row{align-items:stretch;flex-direction:column}.ve002-sponsored-action{width:100%}}
 
 
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
@@ -4071,6 +4074,14 @@ body:not(.splash-active) #homeView .guest-plus-note{
                 <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
               </div>
             </div>
+          </div>
+          <div class="ve002-sponsored-ad hidden" id="ve002SponsoredAd" aria-label="Anzeige">
+            <div class="ve002-sponsored-label">Anzeige · Test</div>
+            <div class="ve002-sponsored-row">
+              <div class="ve002-sponsored-copy"><strong>🥨 Notfall? Erst Brezn. Dann Welt retten.</strong><span>Bäckerei „Knusperpause“ – diese humorvolle Testanzeige markiert nur den späteren Werbeplatz auf VE-002.</span></div>
+              <button type="button" class="ve002-sponsored-action" id="ve002SponsoredAction">Anzeige ansehen</button>
+            </div>
+            <div class="ve002-sponsored-note">Nur für nicht eingeloggte Gäste · registrierte Nutzer sehen hier keine Werbung.</div>
           </div>
         </div>
       </div>
@@ -8003,16 +8014,22 @@ function vivaOpenWcReport(origin){
 }
 
 function vivaUpdateGuestSponsoredAd(show=false){
-  const ad=document.querySelector('#guestSponsoredAd');
-  if(!ad) return;
   const visible=!!show && getClientAccessTier()==='guest';
-  ad.classList.toggle('hidden',!visible);
+  const ad=document.querySelector('#guestSponsoredAd');
+  if(ad) ad.classList.toggle('hidden',!visible);
+  const welcomeAd=document.querySelector('#ve002SponsoredAd');
+  if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');
 }
 function vivaBindGuestSponsoredAd(){
   const btn=document.querySelector('#guestSponsoredAction');
   if(btn && !btn.dataset.bound){
     btn.dataset.bound='1';
     btn.addEventListener('click',()=>showToast('Testanzeige: Später kann dieser Platz zu einem klar gekennzeichneten Sponsor führen.'));
+  }
+  const welcomeBtn=document.querySelector('#ve002SponsoredAction');
+  if(welcomeBtn && !welcomeBtn.dataset.bound){
+    welcomeBtn.dataset.bound='1';
+    welcomeBtn.addEventListener('click',()=>showToast('Testanzeige auf VE-002: Hier kann später eine klar gekennzeichnete Werbung stehen.'));
   }
 }
 function toiletLabel(tags={}){
@@ -10107,6 +10124,8 @@ function initSplash(){
     document.body.classList.remove('splash-active');
     sessionStorage.setItem('vivaSplashSeen','1');
     setView('welcome',{skipHistory:true});
+    vivaBindGuestSponsoredAd();
+    vivaUpdateGuestSponsoredAd(false);
 
     if(locationMode==='gps'){
       if(!loadSavedLocation()){
@@ -10125,6 +10144,8 @@ function initSplash(){
     document.body.classList.remove('splash-active');
     if(!restoreExactView()){
       setView('welcome',{skipHistory:true});
+      vivaBindGuestSponsoredAd();
+      vivaUpdateGuestSponsoredAd(false);
     }
   }
 }
