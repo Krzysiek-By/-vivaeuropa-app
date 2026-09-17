@@ -1,3 +1,11 @@
+VivaEuropa v0.90.63-R1-POLICE-QUICKHELP-EMERGENCY
+Datum: 2026-09-17
+
+- Schnellhilfe → Polizei no longer loads nearby police stations.
+- Polizei quick help now opens a compact emergency card with Europa-Notruf 112.
+- Normal Polizei category/search remains available separately and keeps the existing police-station search logic.
+- WC, hospital quick help, guest ads and all other functions are unchanged.
+
 VivaEuropa v0.90.62-R1-BRANDED-GUEST-ADS
 Test ads: VE-002 Thermomix, guest results Mercedes-Benz; guest-only; no ranking influence.
 

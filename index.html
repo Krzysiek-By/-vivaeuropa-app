@@ -4201,7 +4201,7 @@ body:not(.splash-active) #homeView .guest-plus-note{
         </div>
         <div class="results-guide" id="resultsGuide">
           <div class="results-guide-icon">◎</div>
-          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC oder Polizei wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
+          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC oder Krankenhaus wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
         </div>
         <div class="guest-sponsored-ad hidden" id="guestSponsoredAd" aria-label="Anzeige">
           <div class="guest-sponsored-label">Anzeige · Test</div>
@@ -7812,14 +7812,21 @@ function applyGuestRadiusOptions(){
 
 function vivaOpenEmergencyCard(kind){
   document.querySelector('.emergency-card-backdrop')?.remove();
-  const fire=kind==='fire';
-  const cfg=fire?{
-    icon:'<img src="assets/quick-icons/fire-department.svg" alt="">',title:'Feuerwehr',
-    text:'Bei Feuer, Rauchentwicklung oder akuter Gefahr: sofort 112 anrufen. Die Feuerwehr kommt zu dir – fahre bei einem Notfall nicht selbst zur Feuerwache.'
-  }:{
-    icon:'<img src="assets/quick-icons/notarzt.svg" alt="">',title:'Notarzt',
-    text:'Bei einem medizinischen Notfall oder wenn dringend ein Notarzt benötigt wird: 112 anrufen. Die Leitstelle entscheidet, welche Hilfe erforderlich ist.'
+  const configs={
+    police:{
+      icon:'<img src="assets/quick-icons/police.png" alt="">',title:'Polizei',
+      text:'Bei akuter Gefahr oder wenn du sofort polizeiliche Hilfe brauchst: Europa-Notruf 112 anrufen. Die Leitstelle leitet den Notruf an die zuständige Hilfe weiter.'
+    },
+    fire:{
+      icon:'<img src="assets/quick-icons/fire-department.svg" alt="">',title:'Feuerwehr',
+      text:'Bei Feuer, Rauchentwicklung oder akuter Gefahr: sofort 112 anrufen. Die Feuerwehr kommt zu dir – fahre bei einem Notfall nicht selbst zur Feuerwache.'
+    },
+    notarzt:{
+      icon:'<img src="assets/quick-icons/notarzt.svg" alt="">',title:'Notarzt',
+      text:'Bei einem medizinischen Notfall oder wenn dringend ein Notarzt benötigt wird: 112 anrufen. Die Leitstelle entscheidet, welche Hilfe erforderlich ist.'
+    }
   };
+  const cfg=configs[kind]||configs.notarzt;
   const wrap=document.createElement('div');
   wrap.className='emergency-card-backdrop';
   wrap.innerHTML=`<div class="emergency-card" role="dialog" aria-modal="true" aria-label="${cfg.title}">
@@ -7839,9 +7846,8 @@ function vivaRunQuickSearch(filter){
   search().then(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}));
 }
 function vivaHandleSchnellhilfe(kind){
-  if(kind==='police'){ vivaRunQuickSearch('police'); return; }
   if(kind==='hospital'){ vivaRunQuickHospital(); return; }
-  if(kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
+  if(kind==='police' || kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
 }
 
 async function vivaRunQuickHospital(){
