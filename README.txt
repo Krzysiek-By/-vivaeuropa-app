@@ -1,3 +1,9 @@
+VivaEuropa v0.90.65-R1-BOTTOM-NAV-ACCOUNT-LINK-FIX
+
+Zmiany:
+- dolny pasek nawigacyjny: fixed do viewportu, auto-hide przy scroll w dół, powrót przy scroll w górę / zatrzymaniu;
+- przycisk Konto erstellen dla gościa prowadzi do istniejącego VE-002 (wybór Privatperson / Unternehmen), bez tworzenia nowego ekranu.
+
 VivaEuropa v0.90.64-R1-SCHNELLHILFE-PLACEHOLDER
 Datum: 2026-09-17
 
