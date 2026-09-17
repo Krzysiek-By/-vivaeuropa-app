@@ -3929,6 +3929,10 @@ body:not(.splash-active) #homeView .guest-plus-note{
 .schnellhilfe-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.schnellhilfe-btn{min-height:86px;border:1px solid rgba(83,167,255,.35);border-radius:15px;background:#09233F;color:#fff;font-weight:850;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer}.schnellhilfe-btn:active{transform:scale(.98)}.schnellhilfe-btn img{width:44px;height:44px;object-fit:contain}.schnellhilfe-symbol{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#0B315A,#0A203A);border:1px solid rgba(255,194,60,.45);font-size:24px}.schnellhilfe-btn small{font-size:.73rem;color:#D8E7F8;font-weight:800}
 .emergency-card-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(0,8,20,.78);display:grid;place-items:end center;padding:18px}.emergency-card{width:min(520px,100%);background:#071A30;border:1px solid rgba(83,167,255,.4);border-radius:22px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.5)}.emergency-card-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:#0B2848;border:1px solid rgba(255,194,60,.5);font-size:30px;margin-bottom:10px}.emergency-card h3{margin:0 0 7px;color:#fff;font-size:1.35rem}.emergency-card p{margin:0 0 15px;color:#B7CEE8;line-height:1.45}.emergency-card .emergency-call-main{width:100%;min-height:50px;border:1px solid #FFBE3D;border-radius:13px;background:#9B5700;color:#fff;font-weight:900;font-size:1rem}.emergency-card .emergency-close{width:100%;min-height:44px;margin-top:8px;border:1px solid rgba(83,167,255,.3);border-radius:12px;background:transparent;color:#C9DCF1;font-weight:800}
 @media(max-width:640px){.schnellhilfe-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.schnellhilfe{padding:11px}.schnellhilfe-btn{min-height:76px;font-size:.78rem}.schnellhilfe-btn img,.schnellhilfe-symbol{width:38px;height:38px}.schnellhilfe-symbol{font-size:21px}.schnellhilfe-head span{display:none}}
+/* v0.90.57 WC community prototype */
+.wc-community-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.wc-confirm-btn,.wc-add-btn{min-height:38px;border-radius:11px;font-weight:850;cursor:pointer}.wc-confirm-btn{border:1px solid rgba(68,207,137,.5);background:#0B3B31;color:#D8FFE9}.wc-confirm-btn.confirmed{background:#145A3F;border-color:#52D698}.wc-add-wrap{grid-column:1/-1;display:flex;justify-content:center;margin:8px 0 2px}.wc-add-btn{border:1px solid rgba(255,194,60,.55);background:#5B4200;color:#FFF2C7;padding:0 16px}.wc-report-status{grid-column:1/-1;text-align:center;color:#9FC8AF;font-size:.75rem;margin:2px 0 6px}.wc-report-card textarea{width:100%;min-height:82px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06172A;color:#fff;padding:11px;resize:vertical}.wc-report-card .wc-gps-preview{margin:10px 0;padding:10px;border-radius:12px;background:#0A2744;color:#CFE2FA;font-size:.82rem}.wc-report-save{width:100%;min-height:48px;border:1px solid #49CC86;border-radius:12px;background:#0E6A47;color:#fff;font-weight:900}.wc-report-note{font-size:.72rem!important;color:#8FA9C6!important;margin-top:10px!important}
+@media(max-width:520px){.wc-community-actions{grid-template-columns:1fr}}
+
 
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
@@ -7874,6 +7878,42 @@ function vivaNearbyCacheNote(mode){
   if(mode==='stale') return '<div class="nearby-cache-note stale">Aktuelle Abfrage verzögert – zuletzt verfügbare Daten werden angezeigt.</div>';
   return '';
 }
+function vivaWcConfirmationKey(id){ return `vivaWcConfirmed:${String(id||'')}`; }
+function vivaIsWcConfirmed(id){ try{return localStorage.getItem(vivaWcConfirmationKey(id))==='1';}catch(_){return false;} }
+function vivaConfirmWc(id,btn){
+  try{localStorage.setItem(vivaWcConfirmationKey(id),'1');}catch(_){}
+  if(btn){btn.classList.add('confirmed');btn.textContent='✓ Toilette bestätigt';btn.disabled=true;}
+}
+function vivaGetLocalWcReports(){
+  try{const x=JSON.parse(localStorage.getItem('vivaLocalWcReports')||'[]');return Array.isArray(x)?x:[];}catch(_){return [];}
+}
+function vivaOpenWcReport(origin){
+  document.querySelector('.emergency-card-backdrop')?.remove();
+  const lat=Number(origin?.lat),lng=Number(origin?.lng);
+  if(!Number.isFinite(lat)||!Number.isFinite(lng)) return;
+  const wrap=document.createElement('div');
+  wrap.className='emergency-card-backdrop';
+  wrap.innerHTML=`<div class="emergency-card wc-report-card" role="dialog" aria-modal="true" aria-label="Neue Toilette melden">
+    <div class="emergency-card-icon">🚻</div><h3>Neue Toilette melden</h3>
+    <p>Bitte nur melden, wenn sich die öffentlich zugängliche Toilette wirklich an deinem aktuellen Standort oder direkt daneben befindet.</p>
+    <div class="wc-gps-preview">GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+    <textarea maxlength="250" placeholder="Optional: kurzer Hinweis, z. B. Eingang am Parkplatz"></textarea>
+    <button type="button" class="wc-report-save">Toilette melden</button>
+    <button type="button" class="emergency-close">Abbrechen</button>
+    <p class="wc-report-note">Testphase: Die Meldung wird zunächst auf diesem Gerät gespeichert. Die zentrale VivaEuropa-Datenbank wird im nächsten Backend-Schritt angeschlossen.</p>
+  </div>`;
+  document.body.appendChild(wrap);
+  wrap.querySelector('.wc-report-save').onclick=()=>{
+    const note=wrap.querySelector('textarea')?.value.trim()||'';
+    const rows=vivaGetLocalWcReports();
+    rows.push({id:`local-${Date.now()}`,lat,lng,note,createdAt:new Date().toISOString(),status:'gemeldet'});
+    try{localStorage.setItem('vivaLocalWcReports',JSON.stringify(rows.slice(-100)));}catch(_){}
+    wrap.querySelector('.wc-report-card').innerHTML='<div class="emergency-card-icon">✓</div><h3>Danke!</h3><p>Die Toilette wurde als Testmeldung gespeichert. So bauen wir den späteren VivaEuropa-Datenbestand auf.</p><button type="button" class="emergency-close">Schließen</button>';
+    wrap.querySelector('.emergency-close').onclick=()=>wrap.remove();
+  };
+  wrap.querySelector('.emergency-close').onclick=()=>wrap.remove();
+  wrap.onclick=e=>{if(e.target===wrap)wrap.remove();};
+}
 function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
 }
@@ -7901,9 +7941,12 @@ async function searchNearbyToilets(){
       const fee=tags.fee==='yes'||tags['toilets:fee']==='yes'?'möglicherweise kostenpflichtig':(tags.fee==='no'||tags['toilets:fee']==='no'?'kostenlos':'Preis unbekannt');
       const wheel=tags.wheelchair==='yes'||tags['toilets:wheelchair']==='yes'?'rollstuhlgerecht':(tags.wheelchair==='no'||tags['toilets:wheelchair']==='no'?'nicht rollstuhlgerecht':'Barrierefreiheit unbekannt');
       const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
-      return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button></div></article>`;
-    }).join('')+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+      const confirmed=vivaIsWcConfirmed(x.id);
+      return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><div class="wc-community-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button><button type="button" class="wc-confirm-btn ${confirmed?'confirmed':''}" data-wc-confirm="${escapeHtmlAttr(x.id||'')}">${confirmed?'✓ Toilette bestätigt':'Toilette bestätigen'}</button></div></div></article>`;
+    }).join('')+`<div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>`+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
     els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
+    els.results.querySelectorAll('[data-wc-confirm]').forEach(b=>{if(vivaIsWcConfirmed(b.dataset.wcConfirm))b.disabled=true;b.onclick=()=>vivaConfirmWc(b.dataset.wcConfirm,b);});
+    els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
   }catch(e){
     console.error('WC search error',e);
     els.count.textContent='0';

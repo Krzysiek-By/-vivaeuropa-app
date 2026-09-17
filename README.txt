@@ -1,4 +1,4 @@
-VivaEuropa v0.90.56-R1-SCHNELLHILFE-HOME
+VivaEuropa v0.90.57-R1-WC-COMMUNITY-PROTOTYPE
 
 FULL SNAPSHOT / CURRENT TEST BUILD
 Base: v0.90.53-R1-WC-POLICE-FULL-SNAPSHOT
@@ -282,3 +282,8 @@ Update v0.90.56:
 - stały blok Schnellhilfe na stronie głównej: WC, Polizei, Feuerwehr, Notarzt
 - Feuerwehr i Notarzt: prosta karta alarmowa z 112, bez mapy/remizy
 - WC i Polizei przeniesione z ogólnego rzędu kategorii do Schnellhilfe
+
+Update v0.90.57:
+- WC: przycisk potwierdzenia istniejącej toalety
+- WC: przycisk zgłoszenia nowej toalety na podstawie aktualnego GPS
+- testowe zgłoszenia są zapisywane lokalnie; centralna baza wymaga osobnego backendu/tabeli
