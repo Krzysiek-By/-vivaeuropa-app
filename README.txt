@@ -1,4 +1,4 @@
-VivaEuropa v0.90.58-R1-SCHNELLHILFE-SCHNELLZUGRIFF
+VivaEuropa v0.90.60-R1-HOSPITAL-DYNAMIC-QUICKHELP
 Datum: 2026-09-17
 
 ÄNDERUNGEN v0.90.58
@@ -299,3 +299,16 @@ Update v0.90.57:
 - WC: przycisk potwierdzenia istniejącej toalety
 - WC: przycisk zgłoszenia nowej toalety na podstawie aktualnego GPS
 - testowe zgłoszenia są zapisywane lokalnie; centralna baza wymaga osobnego backendu/tabeli
+
+UPDATE v0.90.59
+- WC: jedno dynamiczne wyszukiwanie do maks. 5 km; priorytet wyników do 1 km.
+- WC: przy braku wyników do 5 km pojawia się wyraźne „Neue Toilette melden”.
+- WC: „Neue Toilette melden” pozostaje dostępne także wtedy, gdy wyniki istnieją.
+- Gast: przykładowa, wyraźnie oznaczona testowa reklama wyłącznie na stronie wyników; bez wpływu na ranking.
+- Zalogowani użytkownicy nie widzą testowej reklamy zewnętrznej.
+
+=== v0.90.60 ===
+- Schnellhilfe > Krankenhaus uses dedicated nearby hospital search.
+- Dynamic radius: 10 km -> 25 km -> 50 km; stops at first radius with results.
+- This logic applies only to Schnellhilfe Krankenhaus, not the normal hospital category.
+- Added api/hospitals.js.

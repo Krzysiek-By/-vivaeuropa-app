@@ -3935,6 +3935,10 @@ body:not(.splash-active) #homeView .guest-plus-note{
 .wc-community-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.wc-confirm-btn,.wc-add-btn{min-height:38px;border-radius:11px;font-weight:850;cursor:pointer}.wc-confirm-btn{border:1px solid rgba(68,207,137,.5);background:#0B3B31;color:#D8FFE9}.wc-confirm-btn.confirmed{background:#145A3F;border-color:#52D698}.wc-add-wrap{grid-column:1/-1;display:flex;justify-content:center;margin:8px 0 2px}.wc-add-btn{border:1px solid rgba(255,194,60,.55);background:#5B4200;color:#FFF2C7;padding:0 16px}.wc-report-status{grid-column:1/-1;text-align:center;color:#9FC8AF;font-size:.75rem;margin:2px 0 6px}.wc-report-card textarea{width:100%;min-height:82px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06172A;color:#fff;padding:11px;resize:vertical}.wc-report-card .wc-gps-preview{margin:10px 0;padding:10px;border-radius:12px;background:#0A2744;color:#CFE2FA;font-size:.82rem}.wc-report-save{width:100%;min-height:48px;border:1px solid #49CC86;border-radius:12px;background:#0E6A47;color:#fff;font-weight:900}.wc-report-note{font-size:.72rem!important;color:#8FA9C6!important;margin-top:10px!important}
 @media(max-width:520px){.wc-community-actions{grid-template-columns:1fr}}
 
+/* v0.90.59 guest-only test sponsored card */
+.guest-sponsored-ad{margin:0 0 14px;padding:14px 15px;border-radius:16px;border:1px solid rgba(244,176,0,.42);background:linear-gradient(135deg,#102B4A,#0A2038);box-shadow:0 10px 26px rgba(0,0,0,.18)}
+.guest-sponsored-ad.hidden{display:none!important}.guest-sponsored-label{display:inline-flex;align-items:center;gap:6px;margin-bottom:7px;padding:4px 8px;border-radius:999px;background:rgba(244,176,0,.14);border:1px solid rgba(244,176,0,.28);color:#F4C54A;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.guest-sponsored-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.guest-sponsored-copy strong{display:block;color:#fff;font-size:1rem;margin-bottom:3px}.guest-sponsored-copy span{display:block;color:#AFC4DE;font-size:.82rem;line-height:1.38}.guest-sponsored-action{flex:0 0 auto;min-height:40px;border-radius:11px;border:1px solid rgba(83,167,255,.5);background:#0B5CFF;color:#fff;font-weight:850;padding:0 13px;cursor:pointer}.guest-sponsored-note{margin-top:7px;color:#718DAA;font-size:.68rem}@media(max-width:560px){.guest-sponsored-row{align-items:stretch;flex-direction:column}.guest-sponsored-action{width:100%}}
+
 
 @media(max-width:800px){.results-guide{margin-bottom:14px}.place-card .result-cover{height:104px!important}}
 </style>
@@ -4178,6 +4182,14 @@ body:not(.splash-active) #homeView .guest-plus-note{
         <div class="results-guide" id="resultsGuide">
           <div class="results-guide-icon">◎</div>
           <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC oder Polizei wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
+        </div>
+        <div class="guest-sponsored-ad hidden" id="guestSponsoredAd" aria-label="Anzeige">
+          <div class="guest-sponsored-label">Anzeige · Test</div>
+          <div class="guest-sponsored-row">
+            <div class="guest-sponsored-copy"><strong>☕ Kaffee ist auch eine kleine Pannenhilfe.</strong><span>Bäckerei Morgenmuffel: großer Kaffee, kleine Ausrede. Diese lustige Karte zeigt nur den späteren Werbeplatz.</span></div>
+            <button type="button" class="guest-sponsored-action" id="guestSponsoredAction">Anzeige ansehen</button>
+          </div>
+          <div class="guest-sponsored-note">Testanzeige nur für Gäste · kein Einfluss auf die Reihenfolge der Suchergebnisse.</div>
         </div>
         <div id="radiusExpandNote" class="radius-expand-note"></div>
         <div class="results" id="results"></div>
@@ -7808,9 +7820,62 @@ function vivaRunQuickSearch(filter){
 }
 function vivaHandleSchnellhilfe(kind){
   if(kind==='police'){ vivaRunQuickSearch('police'); return; }
-  if(kind==='hospital'){ vivaRunQuickSearch('__hospital__'); return; }
+  if(kind==='hospital'){ vivaRunQuickHospital(); return; }
   if(kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
 }
+
+async function vivaRunQuickHospital(){
+  if(locationMode==='gps' && !isVivaLocationFresh()){
+    const ok=await requestVivaLocation({silent:true});
+    if(!ok) return;
+  }
+  await searchNearbyHospitals();
+  document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function hospitalLabel(tags={}){
+  return tags.name || tags.operator || 'Krankenhaus';
+}
+async function searchNearbyHospitals(){
+  const origin=getActiveSearchCoordinates();
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
+    els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um das nächste Krankenhaus zu finden.</div>';
+    els.count.textContent='0';
+    return;
+  }
+  els.title.textContent='Nächstes Krankenhaus';
+  els.results.innerHTML='<div class="status">Das nächste Krankenhaus wird gesucht…</div>';
+  const steps=[10,25,50];
+  try{
+    let chosen=null, usedRadius=steps[steps.length-1];
+    for(const radiusKm of steps){
+      const nearby=await vivaFetchNearby('hospitals',origin,radiusKm);
+      const list=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))}))
+        .filter(x=>Number.isFinite(x.distance) && x.distance<=radiusKm)
+        .sort((a,b)=>a.distance-b.distance);
+      if(list.length){ chosen={nearby,list}; usedRadius=radiusKm; break; }
+    }
+    if(!chosen){
+      els.count.textContent='0';
+      els.results.innerHTML='<div class="status">Im Umkreis von 50 km wurde kein Krankenhaus gefunden.</div>';
+      return;
+    }
+    const list=chosen.list.slice(0,5);
+    els.count.textContent=String(list.length);
+    const radiusNote=usedRadius>10?`<div class="radius-expand-note show">Im kleineren Umkreis wurde kein Krankenhaus gefunden. Die Suche wurde automatisch auf ${usedRadius} km erweitert.</div>`:'';
+    els.results.innerHTML=radiusNote+list.map((x,i)=>{
+      const tags=x.tags||{};
+      const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
+      const emergency=String(tags.emergency||'').toLowerCase()==='yes'?'Notaufnahme laut Datensatz':'Notaufnahme nicht bestätigt';
+      return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/hospital.png" alt="Krankenhaus"></div><div class="result-body"><div class="result-category">${i===0?'Nächstes Krankenhaus':'Krankenhaus'}</div><h3>${escapeHtml(hospitalLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(emergency)}</span></div><div class="place-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button></div></div></article>`;
+    }).join('')+vivaNearbyCacheNote(chosen.nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+    els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
+  }catch(e){
+    console.error('Hospital search error',e);
+    els.count.textContent='0';
+    els.results.innerHTML='<div class="status">Die Krankenhausdaten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
+  }
+}
+
 function vivaHandleSchnellzugriff(kind){
   const map={wc:'public_bathroom',ev:'electric_vehicle_charging_station',pharmacy:'pharmacy',gas:'gas_station'};
   if(map[kind]) vivaRunQuickSearch(map[kind]);
@@ -7936,6 +8001,20 @@ function vivaOpenWcReport(origin){
   wrap.querySelector('.emergency-close').onclick=()=>wrap.remove();
   wrap.onclick=e=>{if(e.target===wrap)wrap.remove();};
 }
+
+function vivaUpdateGuestSponsoredAd(show=false){
+  const ad=document.querySelector('#guestSponsoredAd');
+  if(!ad) return;
+  const visible=!!show && getClientAccessTier()==='guest';
+  ad.classList.toggle('hidden',!visible);
+}
+function vivaBindGuestSponsoredAd(){
+  const btn=document.querySelector('#guestSponsoredAction');
+  if(btn && !btn.dataset.bound){
+    btn.dataset.bound='1';
+    btn.addEventListener('click',()=>showToast('Testanzeige: Später kann dieser Platz zu einem klar gekennzeichneten Sponsor führen.'));
+  }
+}
 function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
 }
@@ -7946,40 +8025,45 @@ async function searchNearbyToilets(){
     els.count.textContent='0';
     return;
   }
-  const radiusKm=Math.min(20,Math.max(1,Number(document.querySelector('#radiusSelect')?.value||5)));
+  const radiusKm=5;
   els.title.textContent='WC in deiner Nähe';
-  els.results.innerHTML='<div class="status">Öffentliche Toiletten werden gesucht…</div>';
+  els.results.innerHTML='<div class="status">Öffentliche Toiletten werden bis maximal 5 km gesucht…</div>';
   try{
     const nearby=await vivaFetchNearby('toilets',origin,radiusKm);
-    const list=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))})).sort((a,b)=>a.distance-b.distance).slice(0,30);
+    const all=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))}))
+      .filter(x=>Number.isFinite(x.distance) && x.distance<=5)
+      .sort((a,b)=>a.distance-b.distance);
+    const close=all.filter(x=>x.distance<=1);
+    const list=(close.length?close:all).slice(0,30);
     els.count.textContent=String(list.length);
+    const reportButton='<div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>';
     if(!list.length){
-      els.results.innerHTML='<div class="status">Im gewählten Umkreis wurden keine öffentlichen Toiletten gefunden.</div>';
+      els.results.innerHTML='<div class="status">Im Umkreis von 5 km wurde keine öffentliche Toilette gefunden.</div><div class="wc-report-status">Kennst du hier eine öffentliche Toilette? Hilf anderen und melde sie bei VivaEuropa.</div>'+reportButton+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+      els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
       return;
     }
-    els.results.innerHTML=list.map(x=>{
+    const rangeNote=close.length
+      ? ''
+      : `<div class="radius-expand-note show">Im Umkreis von 1 km wurde keine öffentliche Toilette gefunden. Wir zeigen die nächsten Treffer bis maximal 5 km.</div>`;
+    els.results.innerHTML=rangeNote+list.map(x=>{
       const tags=x.tags||{};
       const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
       const fee=tags.fee==='yes'||tags['toilets:fee']==='yes'?'möglicherweise kostenpflichtig':(tags.fee==='no'||tags['toilets:fee']==='no'?'kostenlos':'Preis unbekannt');
       const wheel=tags.wheelchair==='yes'||tags['toilets:wheelchair']==='yes'?'rollstuhlgerecht':(tags.wheelchair==='no'||tags['toilets:wheelchair']==='no'?'nicht rollstuhlgerecht':'Barrierefreiheit unbekannt');
-      const hours=tags.opening_hours||'Öffnungszeiten unbekannt';
       const confirmed=vivaIsWcConfirmed(x.id);
       return `<article class="result-card place-card compact-place-card"><div class="result-cover"><img src="assets/quick-icons/wc.png" alt="WC"></div><div class="result-body"><div class="result-category">WC</div><h3>${escapeHtml(toiletLabel(tags))}</h3><div class="place-distance">${dist}</div><div class="place-meta"><span class="place-chip">${escapeHtml(fee)}</span><span class="place-chip">${escapeHtml(wheel)}</span></div><div class="wc-community-actions"><button type="button" class="place-route" data-route-lat="${Number(x.lat)}" data-route-lng="${Number(x.lng)}">Route anzeigen</button><button type="button" class="wc-confirm-btn ${confirmed?'confirmed':''}" data-wc-confirm="${escapeHtmlAttr(x.id||'')}">${confirmed?'✓ Toilette bestätigt':'Toilette bestätigen'}</button></div></div></article>`;
-    }).join('')+`<div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>`+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+    }).join('')+reportButton+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
     els.results.querySelectorAll('[data-route-lat]').forEach(b=>b.onclick=()=>vivaOpenRouteChooser(Number(b.dataset.routeLat),Number(b.dataset.routeLng)));
-    els.results.querySelectorAll('[data-wc-confirm]').forEach(b=>{if(vivaIsWcConfirmed(b.dataset.wcConfirm))b.disabled=true;b.onclick=()=>vivaConfirmWc(b.dataset.wcConfirm,b);});
+    els.results.querySelectorAll('[data-wc-confirm]').forEach(b=>b.onclick=()=>vivaConfirmWc(b.dataset.wcConfirm,b));
     els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
   }catch(e){
-    console.error('WC search error',e);
+    console.error('Toilet search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht geladen werden. Bitte später erneut versuchen.</div>';
+    els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div><div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>';
+    els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
   }
 }
 
-
-function policeLabel(tags={}){
-  return tags.name || tags.operator || 'Polizeidienststelle';
-}
 async function searchNearbyPolice(){
   const origin=getActiveSearchCoordinates();
   if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
@@ -8025,6 +8109,9 @@ async function search(){
     const ok=await activateManualLocation();
     if(!ok) return;
   }
+
+  vivaBindGuestSponsoredAd();
+  vivaUpdateGuestSponsoredAd(true);
 
   if(selectedCategoryFilter==='public_bathroom'){
     await searchNearbyToilets();
