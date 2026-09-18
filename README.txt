@@ -363,3 +363,7 @@ v0.90.74-R1-PRIVATE-PROFILE-FOUNDATION
 - New private-user dashboard with profile photo upload.
 - Payment-status placeholder, language/communication and preferred-map settings.
 - No ads or Pro labels added to the logged-in private profile.
+
+
+[v0.90.80-R1] Öffentliche Einrichtungen & Mobilität – strukturalny szkielet zakończony.
+Dodano: öffentliche Schule, Hochschule/Universität, Bibliothek, Wertstoffhof/Recyclinghof oraz rozpoznawanie tych potrzeb przez Viva-KI.

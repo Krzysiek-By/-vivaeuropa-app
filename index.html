@@ -4329,6 +4329,10 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
               <button type="button" class="public-more-btn" data-public-search="auslaenderbehoerde"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Ausländerbehörde</strong><small>Aufenthalt & Migration</small></span></button>
               <button type="button" class="public-more-btn" data-public-search="finanzamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Finanzamt</strong><small>Steuerbehörde</small></span></button>
               <button type="button" class="public-more-btn" data-public-search="jobcenter"><img src="assets/category-icons/06-public.png" alt=""><span><strong>Jobcenter / Arbeitsagentur</strong><small>Arbeit & Leistungen</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="public_school"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Öffentliche Schule</strong><small>Schule in deiner Nähe</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="public_university"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Hochschule / Universität</strong><small>Öffentliche Bildung</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="public_library"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Bibliothek</strong><small>Öffentliche Bibliothek</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="recycling_center"><img src="assets/category-icons/15-services.png" alt=""><span><strong>Wertstoffhof</strong><small>Recyclinghof / Annahmestelle</small></span></button>
             </div>
           </div>
           <div class="public-ki-note"><strong>Viva-KI-Logik:</strong> Erst zeigen wir dir die öffentliche Infrastruktur. Firmen erscheinen erst, wenn du sie ausdrücklich sehen möchtest.</div>
@@ -6104,7 +6108,11 @@ const VIVA_PUBLIC_SEARCHES={
   fuehrerscheinstelle:{label:'Führerscheinstelle',endpointKind:'fuehrerschein',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde keine Führerscheinstelle gefunden.'},
   auslaenderbehoerde:{label:'Ausländerbehörde',endpointKind:'auslaender',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde keine Ausländerbehörde gefunden.'},
   finanzamt:{label:'Finanzamt',endpointKind:'finanzamt',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde kein Finanzamt gefunden.'},
-  jobcenter:{label:'Jobcenter / Agentur für Arbeit',endpointKind:'jobcenter',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.publicService,empty:'Im Umkreis von 50 km wurde kein Jobcenter oder keine Agentur für Arbeit gefunden.'}
+  jobcenter:{label:'Jobcenter / Agentur für Arbeit',endpointKind:'jobcenter',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.publicService,empty:'Im Umkreis von 50 km wurde kein Jobcenter oder keine Agentur für Arbeit gefunden.'},
+  public_school:{label:'Öffentliche Schule',endpointKind:'school',radiusSteps:[5,15,30],icon:'assets/category-icons/04-education.png',empty:'Im Umkreis von 30 km wurde keine passende Schule gefunden.'},
+  public_university:{label:'Hochschule / Universität',endpointKind:'university',radiusSteps:[10,25,50],icon:'assets/category-icons/04-education.png',empty:'Im Umkreis von 50 km wurde keine Hochschule oder Universität gefunden.'},
+  public_library:{label:'Bibliothek',endpointKind:'library',radiusSteps:[5,15,30],icon:'assets/category-icons/04-education.png',empty:'Im Umkreis von 30 km wurde keine öffentliche Bibliothek gefunden.'},
+  recycling_center:{label:'Wertstoffhof / Recyclinghof',endpointKind:'recycling',radiusSteps:[10,25,50],icon:'assets/category-icons/15-services.png',empty:'Im Umkreis von 50 km wurde kein Wertstoffhof oder Recyclinghof gefunden.'}
 };
 
 const VIVA_GUEST_QUICK_CATEGORIES=[
@@ -8399,7 +8407,7 @@ async function vivaFetchPublicNearby(kind,origin,radiusKm){
 function publicPlaceLabel(kind,tags={}){
   const name=tags.name||tags['name:de']||tags.official_name||'';
   if(name) return name;
-  const map={station:'Bahnhof',bus:'ZOB / Busbahnhof',taxi:'Taxistand',tourist:'Tourist-Info',cityhall:'Rathaus / Bürgerbüro',parkride:'P+R Parkplatz',landratsamt:'Landratsamt / Kreisverwaltung',zulassung:'Zulassungsstelle',fuehrerschein:'Führerscheinstelle',auslaender:'Ausländerbehörde',finanzamt:'Finanzamt',jobcenter:'Jobcenter / Agentur für Arbeit'};
+  const map={station:'Bahnhof',bus:'ZOB / Busbahnhof',taxi:'Taxistand',tourist:'Tourist-Info',cityhall:'Rathaus / Bürgerbüro',parkride:'P+R Parkplatz',landratsamt:'Landratsamt / Kreisverwaltung',zulassung:'Zulassungsstelle',fuehrerschein:'Führerscheinstelle',auslaender:'Ausländerbehörde',finanzamt:'Finanzamt',jobcenter:'Jobcenter / Agentur für Arbeit',school:'Öffentliche Schule',university:'Hochschule / Universität',library:'Bibliothek',recycling:'Wertstoffhof / Recyclinghof'};
   return map[kind]||'Öffentlicher Ort';
 }
 function publicPlaceMeta(kind,tags={}){
@@ -8410,6 +8418,10 @@ function publicPlaceMeta(kind,tags={}){
   if(kind==='tourist' && tags.operator) out.push(tags.operator);
   if(kind==='cityhall') out.push(tags.operator||'Behörde');
   if(kind==='parkride') out.push(String(tags.fee||'').toLowerCase()==='yes'?'Möglicherweise kostenpflichtig':'Öffentlich');
+  if(kind==='school') out.push('Bildung');
+  if(kind==='university') out.push('Hochschule');
+  if(kind==='library') out.push('Öffentliche Einrichtung');
+  if(kind==='recycling') out.push('Recycling / Wertstoffe');
   if(tags.opening_hours) out.push(tags.opening_hours);
   return out.filter(Boolean).slice(0,2);
 }
@@ -8481,6 +8493,10 @@ function vivaPublicIntentFallback(message=''){
   if(/apotheke|pharmacy/.test(q)) return 'pharmacy';
   if(/krankenhaus|hospital|notaufnahme/.test(q)) return 'hospital';
   if(/polizei|police/.test(q)) return 'police';
+  if(/schule|school|grundschule|realschule|gymnasium/.test(q)) return 'public_school';
+  if(/universität|universitaet|hochschule|university|college/.test(q)) return 'public_university';
+  if(/bibliothek|bücherei|buecherei|library/.test(q)) return 'public_library';
+  if(/wertstoffhof|recyclinghof|recycling|müll|muell|entsorgung/.test(q)) return 'recycling_center';
   return 'unknown';
 }
 function vivaRunPublicIntent(intent){
@@ -8503,12 +8519,12 @@ async function vivaAskPublicAI(){
     if(r.ok){ const data=await r.json(); intent=String(data.intent||'unknown'); }
   }catch(_){ }
   if(intent==='unknown') intent=vivaPublicIntentFallback(message);
-  const labels={wc:'WC',taxi:'Taxistand',train_station:'Bahnhof',bus_station:'ZOB / Busbahnhof',tourist_info:'Tourist-Info',city_hall:'Rathaus / Bürgerbüro',park_ride:'P+R',pharmacy:'Apotheke',hospital:'Krankenhaus',police:'Polizei'};
+  const labels={wc:'WC',taxi:'Taxistand',train_station:'Bahnhof',bus_station:'ZOB / Busbahnhof',tourist_info:'Tourist-Info',city_hall:'Rathaus / Bürgerbüro',park_ride:'P+R',pharmacy:'Apotheke',hospital:'Krankenhaus',police:'Polizei',landratsamt:'Landratsamt',zulassungsstelle:'Zulassungsstelle',fuehrerscheinstelle:'Führerscheinstelle',auslaenderbehoerde:'Ausländerbehörde',finanzamt:'Finanzamt',jobcenter:'Jobcenter / Arbeitsagentur',public_school:'Öffentliche Schule',public_university:'Hochschule / Universität',public_library:'Bibliothek',recycling_center:'Wertstoffhof / Recyclinghof'};
   if(vivaRunPublicIntent(intent)){
     if(out){out.textContent=`Viva-KI öffnet: ${labels[intent]||'passende Suche'}.`;out.classList.add('show');}
     setTimeout(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}),120);
   }else if(out){
-    out.textContent='Das konnte ich noch nicht eindeutig zuordnen. Versuch z. B. „Taxistand“, „Bahnhof“, „WC“, „Rathaus“ oder „Krankenhaus“.';out.classList.add('show');
+    out.textContent='Das konnte ich noch nicht eindeutig zuordnen. Versuch z. B. „Taxistand“, „Bahnhof“, „WC“, „Zulassungsstelle“, „Bibliothek“ oder „Wertstoffhof“.';out.classList.add('show');
   }
 }
 function vivaHandlePublicForward(action){
