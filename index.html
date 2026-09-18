@@ -4031,7 +4031,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 .user-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.user-profile-card{padding:16px;border:1px solid rgba(83,167,255,.24);border-radius:18px;background:#081F38}.user-profile-card h3{margin:0 0 5px;color:#fff;font-size:1rem}.user-profile-card p{margin:0 0 12px;color:#91AAC7;font-size:.82rem;line-height:1.42}.user-profile-card .ghost{width:100%;min-height:42px}.user-settings-form{display:grid;gap:13px}.user-settings-form label{display:grid;gap:6px;color:#CDE0F4;font-size:.78rem;font-weight:800}.user-settings-form select{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.user-safety-note{padding:12px 13px;border-radius:14px;border:1px solid rgba(255,194,60,.32);background:#2B250D;color:#F6E5AF;font-size:.78rem;line-height:1.45}
 @media(max-width:700px){.user-profile-head{grid-template-columns:auto 1fr}.user-profile-actions{grid-column:1/-1}.user-profile-grid{grid-template-columns:1fr}.user-avatar{width:68px;height:68px;border-radius:19px}}
 
-/* ===== v0.90.75 R2 private saved-area + quick access ===== */
+/* ===== v0.90.75 R3 persistent private session fix ===== */
 .user-list{display:grid;gap:10px}.user-list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;border:1px solid rgba(83,167,255,.22);border-radius:14px;background:#081D34}.user-list-row strong{color:#fff}.user-list-row small{display:block;color:#8FA8C4;margin-top:3px}.user-list-actions{display:flex;gap:8px;flex-wrap:wrap}.user-list-actions .ghost{min-height:38px;padding:8px 11px}.quick-pref-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-pref-row label{display:grid;gap:7px;color:#CDE0F4;font-size:.78rem;font-weight:800}.quick-pref-row select{min-height:46px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 11px}.saved-empty{padding:13px;border:1px dashed rgba(83,167,255,.24);border-radius:14px;color:#8FA8C4;background:rgba(8,29,52,.55)}@media(max-width:560px){.quick-pref-row{grid-template-columns:1fr}.user-list-row{align-items:flex-start;flex-direction:column}.user-list-actions{width:100%}.user-list-actions .ghost{flex:1}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -10237,6 +10237,54 @@ async function restoreRecoveryAfterRefresh(){
   }
 }
 
+async function restorePersistentPrivateSession(){
+  // Private accounts use Supabase Auth. After a full app close we rebuild the
+  // lightweight local UI marker from Supabase's persisted session before the
+  // splash decides whether to show the login screen.
+  if(!supabaseClient) return localStorage.getItem('vivaLoggedIn')==='1';
+
+  try{
+    const {data,error}=await supabaseClient.auth.getSession();
+    if(error){
+      console.warn('Persistent session check failed',error);
+      return localStorage.getItem('vivaLoggedIn')==='1';
+    }
+
+    const session=data?.session||null;
+    if(!session?.user) return localStorage.getItem('vivaLoggedIn')==='1';
+
+    const role=localStorage.getItem('vivaAccountRole');
+    if(role==='company' || role==='admin') return true;
+
+    const email=String(session.user.email||'').trim();
+    let user=null;
+    try{user=JSON.parse(localStorage.getItem('vivaUser')||'null')}catch(e){}
+
+    if(!user || (email && String(user.email||'').toLowerCase()!==email.toLowerCase())){
+      const meta=session.user.user_metadata||{};
+      const fullName=String(meta.full_name||meta.name||'').trim();
+      const bits=fullName.split(/\s+/).filter(Boolean);
+      user={
+        name:String(meta.first_name||bits[0]||email.split('@')[0]||'Nutzer'),
+        surname:String(meta.last_name||bits.slice(1).join(' ')||''),
+        email,
+        role:'user',
+        accountLanguage:getVivaAppLanguage()
+      };
+      localStorage.setItem('vivaUser',JSON.stringify(user));
+    }
+
+    localStorage.setItem('vivaLoggedIn','1');
+    localStorage.setItem('vivaAccountRole','user');
+    ensureClientSubscriptionPlan();
+    setGuestMode(false);
+    return true;
+  }catch(err){
+    console.warn('Persistent session restore exception',err);
+    return localStorage.getItem('vivaLoggedIn')==='1';
+  }
+}
+
 function initSplash(){
   document.documentElement.classList.add('splash-active');
   document.body.classList.add('splash-active');
@@ -10459,6 +10507,7 @@ updateNewPasswordSubmitState();
   const recoveryRestored=recoveryHandled ? false : await restoreRecoveryAfterRefresh();
 
   if(!recoveryHandled && !recoveryRestored){
+    await restorePersistentPrivateSession();
     initSplash();
   }
 
