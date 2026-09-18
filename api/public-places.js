@@ -42,7 +42,11 @@ function getQuery(kind,lat,lng,radius){
     fuehrerschein:`[out:json][timeout:10];(node["office"="government"]${around};way["office"="government"]${around};relation["office"="government"]${around};);out center tags 180;`,
     auslaender:`[out:json][timeout:10];(node["office"="government"]${around};way["office"="government"]${around};relation["office"="government"]${around};);out center tags 180;`,
     finanzamt:`[out:json][timeout:10];(node["office"="government"]${around};way["office"="government"]${around};relation["office"="government"]${around};);out center tags 180;`,
-    jobcenter:`[out:json][timeout:10];(node["office"="government"]${around};way["office"="government"]${around};relation["office"="government"]${around};node["office"="employment_agency"]${around};way["office"="employment_agency"]${around};relation["office"="employment_agency"]${around};);out center tags 180;`
+    jobcenter:`[out:json][timeout:10];(node["office"="government"]${around};way["office"="government"]${around};relation["office"="government"]${around};node["office"="employment_agency"]${around};way["office"="employment_agency"]${around};relation["office"="employment_agency"]${around};);out center tags 180;`,
+    school:`[out:json][timeout:10];(node["amenity"="school"]${around};way["amenity"="school"]${around};relation["amenity"="school"]${around};);out center tags 180;`,
+    university:`[out:json][timeout:10];(node["amenity"="university"]${around};way["amenity"="university"]${around};relation["amenity"="university"]${around};node["amenity"="college"]${around};way["amenity"="college"]${around};relation["amenity"="college"]${around};);out center tags 180;`,
+    library:`[out:json][timeout:10];(node["amenity"="library"]${around};way["amenity"="library"]${around};relation["amenity"="library"]${around};);out center tags 180;`,
+    recycling:`[out:json][timeout:10];(node["amenity"="recycling"]["recycling_type"="centre"]${around};way["amenity"="recycling"]["recycling_type"="centre"]${around};relation["amenity"="recycling"]["recycling_type"="centre"]${around};);out center tags 180;`
   };
   return map[kind]||null;
 }
@@ -64,6 +68,13 @@ function keep(kind,tags={}){
   if(kind==='auslaender' && !/(ausländerbehörde|auslaenderbehoerde|ausländeramt|auslaenderamt|migration|aufenthalt)/.test(hay)) return false;
   if(kind==='finanzamt' && !/(finanzamt|steueramt|tax office)/.test(hay)) return false;
   if(kind==='jobcenter' && !/(jobcenter|agentur für arbeit|agentur fuer arbeit|arbeitsagentur|arbeitsamt)/.test(hay) && norm(tags.office)!=='employment_agency') return false;
+  if(['school','university','library'].includes(kind)){
+    const operatorType=norm(tags['operator:type']||tags.operator_type||'');
+    const ownership=norm(tags.ownership||tags.owner_type||'');
+    const fee=norm(tags.fee||'');
+    if(['private','commercial'].includes(operatorType) || ['private','commercial'].includes(ownership)) return false;
+    if(kind==='library' && fee==='yes' && operatorType==='private') return false;
+  }
   return true;
 }
 
@@ -85,24 +96,31 @@ function normalizeItems(kind,data){
 export default async function handler(req,res){
   res.setHeader('Cache-Control','s-maxage=900, stale-while-revalidate=3600');
   const lat=Number(req.query?.lat), lng=Number(req.query?.lng);
-  const radiusKm=Math.min(30,Math.max(1,Number(req.query?.radius||5)));
+  const radiusKm=Math.min(50,Math.max(1,Number(req.query?.radius||5)));
   const kind=String(req.query?.kind||'').toLowerCase();
   if(!Number.isFinite(lat)||!Number.isFinite(lng)) return res.status(400).json({error:'invalid_coordinates'});
   const q=getQuery(kind,lat,lng,Math.round(radiusKm*1000));
   if(!q) return res.status(400).json({error:'invalid_kind'});
 
-  // Ask both mirrors at once. The previous sequential version could exceed the browser timeout
-  // before the second mirror got a chance to answer.
-  const tasks=OVERPASS_ENDPOINTS.map(async url=>{
+  // Ask both mirrors in parallel and merge successful answers. This avoids treating
+  // a fast empty mirror as authoritative when another mirror has usable data.
+  const settled=await Promise.allSettled(OVERPASS_ENDPOINTS.map(async url=>{
     const data=await fetchOverpass(url,q);
-    return {url,data,items:normalizeItems(kind,data)};
-  });
-
-  try{
-    const first=await Promise.any(tasks);
-    return res.status(200).json({source:'OpenStreetMap/Overpass',license:'ODbL',kind,mirror:first.url,items:first.items});
-  }catch(err){
-    console.error('Public places unavailable',kind,err);
+    return {url,items:normalizeItems(kind,data)};
+  }));
+  const good=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);
+  if(!good.length){
+    console.error('Public places unavailable',kind,settled);
     return res.status(502).json({error:'public_places_unavailable',kind});
   }
+  const seen=new Set();
+  const items=[];
+  for(const source of good){
+    for(const item of source.items){
+      const key=`${Number(item.lat).toFixed(5)},${Number(item.lng).toFixed(5)}:${norm(item.tags?.name||item.tags?.operator||kind)}`;
+      if(seen.has(key)) continue;
+      seen.add(key); items.push(item);
+    }
+  }
+  return res.status(200).json({source:'OpenStreetMap/Overpass',license:'ODbL',kind,mirrors:good.map(x=>x.url),items});
 }
