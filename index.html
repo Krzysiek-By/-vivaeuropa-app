@@ -3949,25 +3949,24 @@ body:not(.splash-active) #homeView .guest-plus-note{
 .emergency-card-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(0,8,20,.78);display:grid;place-items:end center;padding:18px}.emergency-card{width:min(520px,100%);background:#071A30;border:1px solid rgba(83,167,255,.4);border-radius:22px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.5)}.emergency-card-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:#0B2848;border:1px solid rgba(255,194,60,.5);font-size:30px;margin-bottom:10px}.emergency-card-icon img{width:48px;height:48px;object-fit:contain}.emergency-card h3{margin:0 0 7px;color:#fff;font-size:1.35rem}.emergency-card p{margin:0 0 15px;color:#B7CEE8;line-height:1.45}.emergency-card .emergency-call-main{width:100%;min-height:50px;border:1px solid #FFBE3D;border-radius:13px;background:#9B5700;color:#fff;font-weight:900;font-size:1rem}.emergency-card .emergency-close{width:100%;min-height:44px;margin-top:8px;border:1px solid rgba(83,167,255,.3);border-radius:12px;background:transparent;color:#C9DCF1;font-weight:800}
 @media(max-width:640px){.schnellhilfe-grid,.schnellzugriff-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.schnellhilfe,.schnellzugriff{padding:11px}.schnellhilfe-btn,.schnellzugriff-btn{min-height:76px;font-size:.78rem}.schnellhilfe-btn img,.schnellhilfe-symbol,.schnellzugriff-btn img{width:38px;height:38px}.schnellhilfe-symbol{font-size:21px}.schnellhilfe-head span{display:none}}
 /* v0.90.58 Schnellhilfe + Schnellzugriff home */
-/* v0.90.78 Public infrastructure + mobility layer */
-.public-ki-panel{margin-top:18px;padding:18px;border:1px solid rgba(83,167,255,.18);border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fbff 100%);box-shadow:0 10px 26px rgba(15,56,120,.06)}
-.public-ki-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
-.public-ki-btn{display:flex;align-items:center;gap:11px;border:1px solid rgba(83,167,255,.24);border-radius:16px;background:#fff;padding:13px 14px;cursor:pointer;text-align:left;min-height:74px;box-shadow:0 6px 16px rgba(15,56,120,.05)}
-.public-ki-btn:hover{border-color:#8eb4ff;transform:translateY(-1px)}
-.public-ki-btn img{width:30px;height:30px;display:block;object-fit:contain;flex:none}
-.public-ki-btn strong{display:block;font-size:.96rem;color:#0B1F33}
-.public-ki-btn small{display:block;color:#607086;line-height:1.35;margin-top:3px}
-.public-ki-note{margin-top:12px;padding:12px 14px;border-radius:14px;background:#EEF4FF;color:#36527A;font-size:.92rem;line-height:1.5}
-.public-ki-note strong{color:#0B5CFF}
-.public-helper-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.public-helper-btn{border:1px solid rgba(83,167,255,.22);background:#fff;border-radius:999px;padding:9px 12px;font-size:.88rem;color:#0B5CFF;cursor:pointer}
-.public-helper-btn:hover{border-color:#0B5CFF;background:#EEF4FF}
-.public-kind-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#EEF4FF;color:#0B5CFF;font-size:.78rem;font-weight:800;margin-bottom:8px}
-.public-kind-badge img{width:16px;height:16px;display:block}
-.public-result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.public-result-actions .place-route,.public-result-actions .ghost{min-height:38px}
-@media(max-width:760px){.public-ki-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){.public-ki-grid{grid-template-columns:1fr}.public-ki-btn{min-height:66px}}
+/* v0.90.78 R2 Public infrastructure + mobility + KI */
+.public-ki-panel{margin:18px 0 6px;padding:14px;border:1px solid rgba(83,167,255,.28);border-radius:18px;background:rgba(5,25,48,.72)}
+.public-ki-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
+.public-ki-btn{min-height:92px;border:1px solid rgba(83,167,255,.35);border-radius:15px;background:#09233F;color:#fff;font-weight:850;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;text-align:center;padding:10px}
+.public-ki-btn:active{transform:scale(.98)}
+.public-ki-btn img{width:46px;height:46px;display:block;object-fit:contain}
+.public-ki-btn strong{display:block;font-size:.80rem;color:#fff;line-height:1.12}
+.public-ki-btn small{display:block;color:#9CB4D1;font-size:.67rem;line-height:1.25;margin-top:2px}
+.public-ki-note{margin-top:10px;padding:11px 12px;border-radius:13px;border:1px solid rgba(83,167,255,.22);background:#071D34;color:#9FB8D5;font-size:.76rem;line-height:1.45}
+.public-ki-note strong{color:#FFD45A}
+.public-ai-box{margin-top:10px;padding:12px;border:1px solid rgba(255,194,60,.28);border-radius:14px;background:#071D34}
+.public-ai-box strong{color:#fff;font-size:.88rem}.public-ai-box p{margin:3px 0 9px;color:#93ABC7;font-size:.72rem;line-height:1.35}
+.public-ai-row{display:grid;grid-template-columns:1fr auto;gap:8px}.public-ai-row input{min-width:0;min-height:44px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.public-ai-row input::placeholder{color:#718AA7}.public-ai-row button{min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;padding:0 13px}.public-ai-answer{display:none;margin-top:9px;padding:9px 10px;border-radius:11px;background:#0B2848;color:#CFE2FA;font-size:.75rem;line-height:1.4}.public-ai-answer.show{display:block}
+.public-helper-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.public-helper-btn{border:1px solid rgba(83,167,255,.30);background:#0A2949;border-radius:999px;padding:8px 11px;font-size:.76rem;color:#DCEBFB;cursor:pointer}.public-helper-btn:hover{border-color:#2D86FF;background:#0D3158}
+.public-kind-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.70rem;font-weight:800;margin-bottom:6px}.public-kind-badge img{width:16px;height:16px;display:block}
+.public-result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.public-result-actions .place-route,.public-result-actions .ghost{min-height:38px}
+@media(max-width:760px){.public-ki-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.public-ki-panel{padding:11px}.public-ki-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.public-ki-btn{min-height:84px;padding:7px 4px}.public-ki-btn img{width:40px;height:40px}.public-ki-btn small{display:none}.public-ai-row{grid-template-columns:1fr}.public-ai-row button{width:100%}}
 /* v0.90.57 WC community prototype */
 .wc-community-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.wc-confirm-btn,.wc-add-btn{min-height:38px;border-radius:11px;font-weight:850;cursor:pointer}.wc-confirm-btn{border:1px solid rgba(68,207,137,.5);background:#0B3B31;color:#D8FFE9}.wc-confirm-btn.confirmed{background:#145A3F;border-color:#52D698}.wc-add-wrap{grid-column:1/-1;display:flex;justify-content:center;margin:8px 0 2px}.wc-add-btn{border:1px solid rgba(255,194,60,.55);background:#5B4200;color:#FFF2C7;padding:0 16px}.wc-report-status{grid-column:1/-1;text-align:center;color:#9FC8AF;font-size:.75rem;margin:2px 0 6px}.wc-report-card textarea{width:100%;min-height:82px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06172A;color:#fff;padding:11px;resize:vertical}.wc-report-card .wc-gps-preview{margin:10px 0;padding:10px;border-radius:12px;background:#0A2744;color:#CFE2FA;font-size:.82rem}.wc-report-save{width:100%;min-height:48px;border:1px solid #49CC86;border-radius:12px;background:#0E6A47;color:#fff;font-weight:900}.wc-report-note{font-size:.72rem!important;color:#8FA9C6!important;margin-top:10px!important}
 @media(max-width:520px){.wc-community-actions{grid-template-columns:1fr}}
@@ -4296,19 +4295,19 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
           <div class="schnellhilfe-head"><strong>Öffentliche Orte & Mobilität</strong><span>Öffentliche Infrastruktur zuerst – Firmen erst auf Wunsch</span></div>
           <div class="public-ki-grid">
             <button type="button" class="public-ki-btn" data-public-search="train_station">
-              <img src="assets/quick-icons/train-station.svg" alt="">
+              <img src="assets/quick-icons/train-station.png" alt="">
               <span><strong>Bahnhof</strong><small>Zugbahnhof in deiner Nähe</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="bus_station">
-              <img src="assets/quick-icons/bus-station.svg" alt="">
+              <img src="assets/quick-icons/bus-station.png" alt="">
               <span><strong>ZOB / Busbahnhof</strong><small>Wichtige Busknoten unterwegs</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="taxi">
-              <img src="assets/quick-icons/taxi-stand.svg" alt="">
+              <img src="assets/quick-icons/taxi-stand.png" alt="">
               <span><strong>Taxistand</strong><small>Nur Standorte, keine Gratis-Werbung</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="tourist_info">
-              <img src="assets/quick-icons/tourist-info.svg" alt="">
+              <img src="assets/quick-icons/tourist-info.png" alt="">
               <span><strong>Tourist-Info</strong><small>Offizielle Infos vor Ort</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="city_hall">
@@ -4316,11 +4315,17 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
               <span><strong>Rathaus / Bürgerbüro</strong><small>Wichtige Behörden in der Nähe</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="park_ride">
-              <img src="assets/quick-icons/park-ride.svg" alt="">
+              <img src="assets/quick-icons/park-ride.png" alt="">
               <span><strong>P+R</strong><small>Parken und weiterfahren</small></span>
             </button>
           </div>
-          <div class="public-ki-note"><strong>Viva-KI-Logik:</strong> Erst zeigen wir dir die öffentliche Infrastruktur. Danach kannst du bei Bedarf direkt weiter zu passenden Firmen wechseln – zum Beispiel vom <strong>Taxistand</strong> zu lokalen Taxiunternehmen oder vom <strong>Bahnhof</strong> zu WC und Apotheke in der Nähe.</div>
+          <div class="public-ki-note"><strong>Viva-KI-Logik:</strong> Erst zeigen wir dir die öffentliche Infrastruktur. Firmen erscheinen erst, wenn du sie ausdrücklich sehen möchtest.</div>
+          <div class="public-ai-box">
+            <strong>Frag VivaEuropa</strong>
+            <p>Beschreibe kurz, was du brauchst. Viva-KI wählt die passende öffentliche Suche.</p>
+            <div class="public-ai-row"><input id="publicAiInput" type="text" placeholder="z. B. Wo ist der nächste Taxistand?"><button id="publicAiAsk" type="button">Viva-KI fragen</button></div>
+            <div id="publicAiAnswer" class="public-ai-answer" aria-live="polite"></div>
+          </div>
         </section>
 
         <div id="locationStatus" class="location-status">
@@ -6067,11 +6072,11 @@ const VIVA_QUICK_ICON_MAP={
   cityHall:'assets/quick-icons/city-hall.png',
   fire:'assets/quick-icons/fire-department.svg',
   notarzt:'assets/quick-icons/notarzt.svg',
-  trainStation:'assets/quick-icons/train-station.svg',
-  busStation:'assets/quick-icons/bus-station.svg',
-  taxiStand:'assets/quick-icons/taxi-stand.svg',
-  touristInfo:'assets/quick-icons/tourist-info.svg',
-  parkRide:'assets/quick-icons/park-ride.svg'
+  trainStation:'assets/quick-icons/train-station.png',
+  busStation:'assets/quick-icons/bus-station.png',
+  taxiStand:'assets/quick-icons/taxi-stand.png',
+  touristInfo:'assets/quick-icons/tourist-info.png',
+  parkRide:'assets/quick-icons/park-ride.png'
 };
 const VIVA_PUBLIC_SEARCHES={
   train_station:{label:'Bahnhof',endpointKind:'station',radiusSteps:[3,10,25],icon:VIVA_QUICK_ICON_MAP.trainStation,empty:'Im Umkreis von 25 km wurde kein Bahnhof gefunden.',helper:[{kind:'wc',label:'WC in der Nähe'},{kind:'taxi_company',label:'Taxiunternehmen anzeigen'}]},
@@ -8234,8 +8239,12 @@ document.addEventListener('click',e=>{
   const quick=e.target.closest?.('[data-schnellzugriff]');
   if(quick) vivaHandleSchnellzugriff(quick.dataset.schnellzugriff||'');
   const publicBtn=e.target.closest?.('[data-public-search]');
-  if(publicBtn){ searchNearbyPublicPlace(publicBtn.dataset.publicSearch||''); }
+  if(publicBtn){
+    searchNearbyPublicPlace(publicBtn.dataset.publicSearch||'').then(()=>setTimeout(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}),80));
+  }
+  if(e.target.closest?.('#publicAiAsk')) vivaAskPublicAI();
 });
+document.querySelector('#publicAiInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();vivaAskPublicAI();}});
 function vivaDistanceKm(lat1,lng1,lat2,lng2){
   const R=6371;
   const toRad=x=>x*Math.PI/180;
@@ -8421,6 +8430,48 @@ async function searchNearbyPublicPlace(publicKey){
     console.error('Public place search error',e);
     els.count.textContent='0';
     els.results.innerHTML='<div class="status">Die öffentlichen Daten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
+  }
+}
+function vivaPublicIntentFallback(message=''){
+  const q=String(message||'').toLocaleLowerCase('de-DE');
+  if(/toilet|toilette|wc|klo|kloett|kibel|ubikac/.test(q)) return 'wc';
+  if(/taxi|taxistand|taxi stand/.test(q)) return 'taxi';
+  if(/bahnhof|zug|train|rail/.test(q)) return 'train_station';
+  if(/zob|busbahnhof|bus station|fernbus/.test(q)) return 'bus_station';
+  if(/tourist|information|touristeninfo/.test(q)) return 'tourist_info';
+  if(/rathaus|bürgerbüro|buergerbuero|amt|behörde|behoerde/.test(q)) return 'city_hall';
+  if(/p\+r|park and ride|park.*ride/.test(q)) return 'park_ride';
+  if(/apotheke|pharmacy/.test(q)) return 'pharmacy';
+  if(/krankenhaus|hospital|notaufnahme/.test(q)) return 'hospital';
+  if(/polizei|police/.test(q)) return 'police';
+  return 'unknown';
+}
+function vivaRunPublicIntent(intent){
+  if(intent==='wc'){vivaRunQuickSearch('public_bathroom');return true;}
+  if(intent==='pharmacy'){vivaRunQuickSearch('pharmacy');return true;}
+  if(intent==='hospital'){vivaRunQuickHospital();return true;}
+  if(intent==='police'){vivaRunQuickSearch('police');return true;}
+  if(VIVA_PUBLIC_SEARCHES[intent]){searchNearbyPublicPlace(intent);return true;}
+  return false;
+}
+async function vivaAskPublicAI(){
+  const input=document.querySelector('#publicAiInput');
+  const out=document.querySelector('#publicAiAnswer');
+  const message=String(input?.value||'').trim();
+  if(!message){ if(out){out.textContent='Schreib kurz, was du suchst.';out.classList.add('show');} return; }
+  if(out){out.textContent='Viva-KI prüft deine Anfrage…';out.classList.add('show');}
+  let intent='unknown';
+  try{
+    const r=await fetch('/api/ai-company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'public_help',message,language:'de'})});
+    if(r.ok){ const data=await r.json(); intent=String(data.intent||'unknown'); }
+  }catch(_){ }
+  if(intent==='unknown') intent=vivaPublicIntentFallback(message);
+  const labels={wc:'WC',taxi:'Taxistand',train_station:'Bahnhof',bus_station:'ZOB / Busbahnhof',tourist_info:'Tourist-Info',city_hall:'Rathaus / Bürgerbüro',park_ride:'P+R',pharmacy:'Apotheke',hospital:'Krankenhaus',police:'Polizei'};
+  if(vivaRunPublicIntent(intent)){
+    if(out){out.textContent=`Viva-KI öffnet: ${labels[intent]||'passende Suche'}.`;out.classList.add('show');}
+    setTimeout(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}),120);
+  }else if(out){
+    out.textContent='Das konnte ich noch nicht eindeutig zuordnen. Versuch z. B. „Taxistand“, „Bahnhof“, „WC“, „Rathaus“ oder „Krankenhaus“.';out.classList.add('show');
   }
 }
 function vivaHandlePublicForward(action){
