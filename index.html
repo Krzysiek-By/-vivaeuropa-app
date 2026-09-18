@@ -9040,8 +9040,8 @@ document.querySelector('#registerBtn').onclick=()=>setView('welcome');
 document.querySelector('#navAccount').onclick=()=>{
   if(isAdmin()){renderAdmin();return;}
   if(isCompanyAccount()){renderCompanyPanel();return;}
-  if(localStorage.getItem('vivaLoggedIn')==='1'){document.querySelector('#loginBtn').click();}
-  else{showAccount('login');}
+  if(localStorage.getItem('vivaLoggedIn')==='1'){openModule('user');return;}
+  showAccount('login');
 };
 document.querySelector('#switchModeBtn').onclick=()=>{
   if(accountMode==='register'){
@@ -9944,20 +9944,7 @@ function showLoggedAccountView(){
     renderCompanyPanel();
     return;
   }
-
-  const user=getActiveProfile();
-  setView('account',{skipHistory:true});
-  document.querySelector('#accountTitle').textContent='Twoje konto';
-  document.querySelector('#accountIntro').textContent=user
-    ? `Zalogowany jako ${user.name} ${user.surname||''}.`
-    : 'Jesteś zalogowany.';
-  document.querySelector('#accountForm').classList.add('hidden');
-  document.querySelector('#switchModeBtn').classList.add('hidden');
-  const status=document.querySelector('#accountStatus');
-  status.textContent='Sesja jest aktywna.';
-  status.style.background='#eef8f0';
-  status.style.color='#20652f';
-  status.classList.remove('hidden');
+  openModule('user');
 }
 
 
