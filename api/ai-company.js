@@ -49,6 +49,25 @@ async function openAIText(body){
   }
   return text.trim();
 }
+
+async function openAIPublicIntent(body){
+  const message=cleanText(body.message,600);
+  if(!message) return 'unknown';
+  const allowed=['train_station','bus_station','taxi','tourist_info','city_hall','park_ride','wc','pharmacy','hospital','police','unknown'];
+  const instructions=`Classify the user's local public-infrastructure need. Return exactly ONE token from this list and nothing else: ${allowed.join(', ')}. Use train_station for railway station, bus_station only for ZOB/bus terminal, taxi for a taxi stand (not taxi company), tourist_info for official tourist information, city_hall for Rathaus/Bürgerbüro/authority, park_ride for P+R, wc for public toilet, pharmacy for pharmacy, hospital for hospital/emergency department, police for ordinary police station. If unclear return unknown.`;
+  const r=await fetch('https://api.openai.com/v1/responses',{
+    method:'POST',
+    headers:{'Authorization':`Bearer ${OPENAI_API_KEY}`,'Content-Type':'application/json'},
+    body:JSON.stringify({model:'gpt-5.6-luna',instructions,input:message,store:false})
+  });
+  const data=await r.json();
+  if(!r.ok) throw new Error(data?.error?.message||'OPENAI_PUBLIC_HELP_ERROR');
+  let out='';
+  for(const item of data.output||[]){ if(item.type==='message'){ for(const c of item.content||[]){ if(c.type==='output_text') out+=c.text||''; } } }
+  const intent=out.trim().toLowerCase().replace(/[^a-z_]/g,'');
+  return allowed.includes(intent)?intent:'unknown';
+}
+
 async function openAIEnhanceImage(body){
   const match=String(body.imageData||'').match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
   if(!match) throw new Error('INVALID_IMAGE');
@@ -94,6 +113,9 @@ module.exports = async function handler(req,res){
     }
     if(body.action==='enhance_image'){
       return send(res,200,{imageData:await openAIEnhanceImage(body)});
+    }
+    if(body.action==='public_help'){
+      return send(res,200,{intent:await openAIPublicIntent(body)});
     }
     return send(res,400,{error:'Unknown action'});
   }catch(err){
