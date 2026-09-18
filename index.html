@@ -4030,6 +4030,9 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 .subscription-pill{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:#0A2039;font-size:.78rem;font-weight:850}.subscription-dot{width:10px;height:10px;border-radius:50%;background:#8797AB;box-shadow:0 0 0 4px rgba(135,151,171,.12)}.subscription-pill[data-status="active"] .subscription-dot{background:#42D889;box-shadow:0 0 0 4px rgba(66,216,137,.12)}.subscription-pill[data-status="renew"] .subscription-dot{background:#F0A93A}.subscription-pill[data-status="problem"] .subscription-dot{background:#F05A68}
 .user-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.user-profile-card{padding:16px;border:1px solid rgba(83,167,255,.24);border-radius:18px;background:#081F38}.user-profile-card h3{margin:0 0 5px;color:#fff;font-size:1rem}.user-profile-card p{margin:0 0 12px;color:#91AAC7;font-size:.82rem;line-height:1.42}.user-profile-card .ghost{width:100%;min-height:42px}.user-settings-form{display:grid;gap:13px}.user-settings-form label{display:grid;gap:6px;color:#CDE0F4;font-size:.78rem;font-weight:800}.user-settings-form select{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.user-safety-note{padding:12px 13px;border-radius:14px;border:1px solid rgba(255,194,60,.32);background:#2B250D;color:#F6E5AF;font-size:.78rem;line-height:1.45}
 @media(max-width:700px){.user-profile-head{grid-template-columns:auto 1fr}.user-profile-actions{grid-column:1/-1}.user-profile-grid{grid-template-columns:1fr}.user-avatar{width:68px;height:68px;border-radius:19px}}
+
+/* ===== v0.90.75 R2 private saved-area + quick access ===== */
+.user-list{display:grid;gap:10px}.user-list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;border:1px solid rgba(83,167,255,.22);border-radius:14px;background:#081D34}.user-list-row strong{color:#fff}.user-list-row small{display:block;color:#8FA8C4;margin-top:3px}.user-list-actions{display:flex;gap:8px;flex-wrap:wrap}.user-list-actions .ghost{min-height:38px;padding:8px 11px}.quick-pref-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-pref-row label{display:grid;gap:7px;color:#CDE0F4;font-size:.78rem;font-weight:800}.quick-pref-row select{min-height:46px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 11px}.saved-empty{padding:13px;border:1px dashed rgba(83,167,255,.24);border-radius:14px;color:#8FA8C4;background:rgba(8,29,52,.55)}@media(max-width:560px){.quick-pref-row{grid-template-columns:1fr}.user-list-row{align-items:flex-start;flex-direction:column}.user-list-actions{width:100%}.user-list-actions .ghost{flex:1}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -5018,6 +5021,7 @@ function refreshAuthUI(){
   }
 
   applyGlobalLanguage(getVivaAppLanguage());
+  refreshHomeQuickAccess();
 }
 
 
@@ -6799,6 +6803,7 @@ function render(list=companies){
   }
 }
 function openCompany(id){
+  if(localStorage.getItem('vivaLoggedIn')==='1' && (localStorage.getItem('vivaAccountRole')||'user')==='user') pushRecentCompany(id);
   const c=companies.find(x=>x.id===id); if(!c)return;
   localStorage.setItem('vivaLastCompanyId',String(id));
   const lang=getVivaAppLanguage();
@@ -6852,6 +6857,7 @@ function openCompany(id){
            ${telPhone?`<a class="primary" href="tel:${telPhone}">${de?'Anrufen':'Anrufen'}</a>`:''}
            ${safeWwwHref?`<a class="ghost" href="${safeWwwHref}" target="_blank" rel="noopener">${de?'Webseite':'WWW'}</a>`:''}
            ${Number(favoriteLimit)>0?`<button class="ghost" onclick="toggleFavorite(${c.id})">♡ ${de?'Favoriten':'Favoriten'}</button>`:''}
+           ${clientTier!=='guest'?`<button class="ghost" onclick="toggleLater(${c.id})">⏱ ${de?'Für später merken':'Für später merken'}</button>`:''}
            ${clientTier==='guest'?`<button class="ghost" onclick="setGuestMode(false);showAccount('register')">Kostenloses Konto</button>`:`<button class="ghost" onclick="showGuestPlusModalNow()">VivaEuropa Plus ansehen</button>`}
          </div>
        </div>`
@@ -6877,6 +6883,7 @@ function openCompany(id){
            <a class="ghost" target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(c.address)}">${vivaTranslateString('Apple Maps',lang)}</a>
          </div>
            <button class="ghost" onclick="toggleFavorite(${c.id})">♡ ${de?'Favoriten':'Favoriten'}</button>
+           ${clientTier!=='guest'?`<button class="ghost" onclick="toggleLater(${c.id})">⏱ ${de?'Für später merken':'Für später merken'}</button>`:''}
            ${canEditCompany(c)?`<button class="ghost" onclick="editCompany(${c.id})">${de?'Geschäftsbereich bearbeiten':'Geschäftsbereich bearbeiten'}</button>`:''}
          </div>
          <div class="placeholder-note">${de?'Gutscheine und Aktionen – Bereich vorbereitet, Aktivierung später.':'Gutscheine und Aktionen – Bereich vorbereitet, Aktivierung später.'}</div>
@@ -6910,6 +6917,30 @@ function toggleFavorite(id){
 }
 
 
+const VIVA_USER_QUICK_KEY='vivaUserQuickAccess';
+const VIVA_USER_RECENT_KEY='vivaUserRecentCompanies';
+const VIVA_USER_LATER_KEY='vivaUserLater';
+const VIVA_QUICK_OPTIONS={
+  pharmacy:{label:'Apotheke',icon:'assets/quick-icons/pharmacy.png',kind:'pharmacy'},
+  gas:{label:'Tankstelle',icon:'assets/quick-icons/gas-station.png',kind:'gas'},
+  parking:{label:'Parkplatz',icon:'assets/category-icons/01-automotive.png',kind:'parking'},
+  restaurant:{label:'Restaurant',icon:'assets/category-icons/08-food-drink.png',kind:'restaurant'},
+  supermarket:{label:'Supermarkt',icon:'assets/category-icons/16-shopping.png',kind:'supermarket'}
+};
+function getUserQuickAccess(){try{const x=JSON.parse(localStorage.getItem(VIVA_USER_QUICK_KEY)||'null');if(x&&Array.isArray(x.custom)&&x.custom.length===2)return x}catch{}return {custom:['pharmacy','gas']}}
+function saveUserQuickAccess(){const a=document.querySelector('#quickSlot3')?.value||'pharmacy';const b=document.querySelector('#quickSlot4')?.value||'gas';localStorage.setItem(VIVA_USER_QUICK_KEY,JSON.stringify({custom:[a,b]}));refreshHomeQuickAccess();showToast('Schnellzugriff gespeichert.')}
+function quickSettingsHtml(){const q=getUserQuickAccess().custom;const opts=v=>Object.entries(VIVA_QUICK_OPTIONS).map(([k,o])=>`<option value="${k}" ${k===v?'selected':''}>${o.label}</option>`).join('');return `<div class="user-settings-form"><div class="placeholder-note"><strong>Fest:</strong> WC und Ladestation. Zwei weitere Plätze kannst du selbst bestimmen.</div><div class="quick-pref-row"><label>Platz 3<select id="quickSlot3">${opts(q[0])}</select></label><label>Platz 4<select id="quickSlot4">${opts(q[1])}</select></label></div><button class="primary" type="button" onclick="saveUserQuickAccess()">Schnellzugriff speichern</button></div>`}
+function refreshHomeQuickAccess(){const grid=document.querySelector('.schnellzugriff-grid');if(!grid)return;const isPrivateUser=localStorage.getItem('vivaLoggedIn')==='1'&&(localStorage.getItem('vivaAccountRole')||'user')==='user';const q=isPrivateUser?getUserQuickAccess().custom:['pharmacy','gas'];const items=[{label:'WC',icon:'assets/quick-icons/wc.png',kind:'wc'},{label:'Ladestation',icon:'assets/quick-icons/ev-charging.png',kind:'ev'},...q.map(k=>VIVA_QUICK_OPTIONS[k]).filter(Boolean)];grid.innerHTML=items.map(o=>`<button type="button" class="schnellzugriff-btn" data-schnellzugriff="${o.kind}"><img src="${o.icon}" alt=""><small>${o.label}</small></button>`).join('')}
+function pushRecentCompany(id){let list=[];try{list=JSON.parse(localStorage.getItem(VIVA_USER_RECENT_KEY)||'[]')||[]}catch{}list=[Number(id),...list.map(Number).filter(x=>x!==Number(id))].slice(0,20);localStorage.setItem(VIVA_USER_RECENT_KEY,JSON.stringify(list))}
+function recentCompanies(){let ids=[];try{ids=JSON.parse(localStorage.getItem(VIVA_USER_RECENT_KEY)||'[]')||[]}catch{}return ids.map(id=>companies.find(c=>Number(c.id)===Number(id))).filter(Boolean)}
+function getLaterIds(){try{return (JSON.parse(localStorage.getItem(VIVA_USER_LATER_KEY)||'[]')||[]).map(Number)}catch{return []}}
+function toggleLater(id){const numericId=Number(id);let list=getLaterIds();const exists=list.includes(numericId);list=exists?list.filter(x=>x!==numericId):[numericId,...list.filter(x=>x!==numericId)].slice(0,30);localStorage.setItem(VIVA_USER_LATER_KEY,JSON.stringify(list));showToast(exists?'Aus „Für später“ entfernt.':'Für später gespeichert.')}
+function laterCompanies(){return getLaterIds().map(id=>companies.find(c=>Number(c.id)===Number(id))).filter(Boolean)}
+function removeLater(id){const list=getLaterIds().filter(x=>x!==Number(id));localStorage.setItem(VIVA_USER_LATER_KEY,JSON.stringify(list));openModule('userSaved')}
+function userSavedRows(list,withRemove=false){return list.length?list.map(c=>`<div class="user-list-row"><div><strong>${escapeHtml(c.name)}</strong><small>${escapeHtml(translateCategory(c.cat))}</small></div><div class="user-list-actions"><button class="ghost" onclick="openCompany(${c.id})">Öffnen</button>${withRemove?`<button class="ghost" onclick="removeLater(${c.id})">Entfernen</button>`:''}</div></div>`).join(''):'<div class="saved-empty">Noch keine Einträge.</div>'}
+function userSavedAreaHtml(){const fav=getFavoriteCompanies(),recent=recentCompanies(),later=laterCompanies();return `<div class="module-section"><h3>Favoriten</h3><div class="user-list">${userSavedRows(fav)}</div></div><div class="module-section"><h3>Für später gemerkt</h3><div class="user-list">${userSavedRows(later,true)}</div></div><div class="module-section"><h3>Zuletzt angesehen</h3><div class="user-list">${userSavedRows(recent)}</div></div>`}
+
+
 const VIVA_USER_AVATAR_KEY='vivaUserAvatar';
 const VIVA_USER_COMM_LANG_KEY='vivaUserCommunicationLanguage';
 const VIVA_USER_MAP_KEY='vivaUserPreferredMap';
@@ -6924,8 +6955,8 @@ function privateUserDashboardHtml(){
   return `<div class="user-profile-shell">
     <div class="user-profile-head"><div class="user-avatar">${avatar?`<img src="${avatar}" alt="Profilfoto">`:userInitials()}</div><div><div class="user-profile-name">${escapeHtml(((u.name||'')+' '+(u.surname||'')).trim()||'VivaEuropa Nutzer')}</div><div class="user-profile-email">${escapeHtml(u.email||'')}</div><div class="subscription-pill" data-status="${st}"><span class="subscription-dot"></span><span>${subscriptionStatusLabel()}</span></div></div><div class="user-profile-actions"><button class="ghost" type="button" onclick="document.querySelector('#userAvatarInput').click()">Profilfoto ändern</button><input id="userAvatarInput" type="file" accept="image/*" class="hidden"></div></div>
     <div class="user-profile-grid">
-      <div class="user-profile-card"><h3>Favoriten & gespeicherte Orte</h3><p>${getFavoriteCompanies().length} favorisierte Unternehmen. Weitere Speicherfunktionen werden schrittweise ergänzt.</p><button class="ghost" onclick="openModule('favorites')">Öffnen</button></div>
-      <div class="user-profile-card"><h3>Schnellzugriff</h3><p>Deine wichtigsten Kategorien auf der Startseite verwalten.</p><button class="ghost" onclick="openModule('userPreferences')">Einstellungen</button></div>
+      <div class="user-profile-card"><h3>Favoriten & gespeicherte Orte</h3><p>${getFavoriteCompanies().length} favorisierte Unternehmen. Favoriten, Merkliste und Verlauf an einem Ort.</p><button class="ghost" onclick="openModule('userSaved')">Öffnen</button></div>
+      <div class="user-profile-card"><h3>Schnellzugriff</h3><p>WC und Ladestation bleiben fest. Zwei weitere Plätze bestimmst du selbst.</p><button class="ghost" onclick="openModule('userQuickAccess')">Anpassen</button></div>
       <div class="user-profile-card"><h3>Meine Bewertungen & Meldungen</h3><p>Eigene Bewertungen, Meldungen und Prüfstatus – vorbereitet für die nächsten Schritte.</p></div>
       <div class="user-profile-card"><h3>Kontakt mit Unternehmen</h3><p>E-Mail als Basis, später ergänzt um KI, WhatsApp, Telegram, Messenger und weitere freigegebene Kanäle.</p></div>
       <div class="user-profile-card"><h3>Rechtliches & Datenschutz</h3><p>Nutzungsbedingungen, Datenschutz und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
@@ -6950,6 +6981,18 @@ const moduleData={
     title:'Einstellungen',
     intro:'Sprache, Kommunikation, Navigation und Konto.',
     html:()=>userPreferencesHtml()
+  },
+  userQuickAccess:{
+    eyebrow:'KONTO',
+    title:'Schnellzugriff',
+    intro:'Passe zwei persönliche Plätze auf der Startseite an.',
+    html:()=>quickSettingsHtml()
+  },
+  userSaved:{
+    eyebrow:'NUTZER',
+    title:'Gespeichert & Verlauf',
+    intro:'Favoriten, Merkliste und zuletzt angesehene Unternehmen.',
+    html:()=>userSavedAreaHtml()
   },
   legalDocuments:{
     eyebrow:'RECHTLICHES',
@@ -8027,7 +8070,7 @@ async function searchNearbyHospitals(){
 }
 
 function vivaHandleSchnellzugriff(kind){
-  const map={wc:'public_bathroom',ev:'electric_vehicle_charging_station',pharmacy:'pharmacy',gas:'gas_station'};
+  const map={wc:'public_bathroom',ev:'electric_vehicle_charging_station',pharmacy:'pharmacy',gas:'gas_station',parking:'parking',restaurant:'restaurant',supermarket:'supermarket'};
   if(map[kind]) vivaRunQuickSearch(map[kind]);
 }
 document.addEventListener('click',e=>{
