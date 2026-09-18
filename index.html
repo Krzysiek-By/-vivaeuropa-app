@@ -4295,19 +4295,19 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
           <div class="schnellhilfe-head"><strong>Öffentliche Orte & Mobilität</strong><span>Öffentliche Infrastruktur zuerst – Firmen erst auf Wunsch</span></div>
           <div class="public-ki-grid">
             <button type="button" class="public-ki-btn" data-public-search="train_station">
-              <img src="assets/quick-icons/train-station.png" alt="">
+              <img src="assets/category-icons/18-transport.png" alt="">
               <span><strong>Bahnhof</strong><small>Zugbahnhof in deiner Nähe</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="bus_station">
-              <img src="assets/quick-icons/bus-station.png" alt="">
+              <img src="assets/category-icons/18-transport.png" alt="">
               <span><strong>ZOB / Busbahnhof</strong><small>Wichtige Busknoten unterwegs</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="taxi">
-              <img src="assets/quick-icons/taxi-stand.png" alt="">
+              <img src="assets/quick-icons/taxi.png" alt="">
               <span><strong>Taxistand</strong><small>Nur Standorte, keine Gratis-Werbung</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="tourist_info">
-              <img src="assets/quick-icons/tourist-info.png" alt="">
+              <img src="assets/category-icons/06-public.png" alt="">
               <span><strong>Tourist-Info</strong><small>Offizielle Infos vor Ort</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="city_hall">
@@ -4315,7 +4315,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
               <span><strong>Rathaus / Bürgerbüro</strong><small>Wichtige Behörden in der Nähe</small></span>
             </button>
             <button type="button" class="public-ki-btn" data-public-search="park_ride">
-              <img src="assets/quick-icons/park-ride.png" alt="">
+              <img src="assets/category-icons/18-transport.png" alt="">
               <span><strong>P+R</strong><small>Parken und weiterfahren</small></span>
             </button>
           </div>
@@ -6072,11 +6072,11 @@ const VIVA_QUICK_ICON_MAP={
   cityHall:'assets/quick-icons/city-hall.png',
   fire:'assets/quick-icons/fire-department.svg',
   notarzt:'assets/quick-icons/notarzt.svg',
-  trainStation:'assets/quick-icons/train-station.png',
-  busStation:'assets/quick-icons/bus-station.png',
-  taxiStand:'assets/quick-icons/taxi-stand.png',
-  touristInfo:'assets/quick-icons/tourist-info.png',
-  parkRide:'assets/quick-icons/park-ride.png'
+  trainStation:'assets/category-icons/18-transport.png',
+  busStation:'assets/category-icons/18-transport.png',
+  taxiStand:'assets/quick-icons/taxi.png',
+  touristInfo:'assets/category-icons/06-public.png',
+  parkRide:'assets/category-icons/18-transport.png'
 };
 const VIVA_PUBLIC_SEARCHES={
   train_station:{label:'Bahnhof',endpointKind:'station',radiusSteps:[3,10,25],icon:VIVA_QUICK_ICON_MAP.trainStation,empty:'Im Umkreis von 25 km wurde kein Bahnhof gefunden.',helper:[{kind:'wc',label:'WC in der Nähe'},{kind:'taxi_company',label:'Taxiunternehmen anzeigen'}]},
@@ -8345,19 +8345,25 @@ async function vivaFetchPublicNearby(kind,origin,radiusKm){
   const fresh=vivaReadPublicCache(kind,origin,radiusKm,VIVA_NEARBY_CACHE_TTL);
   if(fresh) return {items:fresh.items,cache:'fresh'};
   const stale=vivaReadPublicCache(kind,origin,radiusKm,VIVA_NEARBY_CACHE_STALE);
-  const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
-  const timer=ctrl?setTimeout(()=>ctrl.abort(),8000):null;
-  try{
-    const r=await fetch(`/api/public-places?kind=${encodeURIComponent(kind)}&lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`,ctrl?{signal:ctrl.signal}:undefined);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    const items=Array.isArray(data.items)?data.items:[];
-    vivaWritePublicCache(kind,origin,radiusKm,items);
-    return {items,cache:'network'};
-  }catch(err){
-    if(stale) return {items:stale.items,cache:'stale',error:err};
-    throw err;
-  }finally{ if(timer) clearTimeout(timer); }
+  const url=`/api/public-places?kind=${encodeURIComponent(kind)}&lat=${encodeURIComponent(origin.lat)}&lng=${encodeURIComponent(origin.lng)}&radius=${encodeURIComponent(radiusKm)}`;
+  let lastError=null;
+  for(let attempt=1;attempt<=2;attempt++){
+    const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+    const timer=ctrl?setTimeout(()=>ctrl.abort(),12000):null;
+    try{
+      const r=await fetch(url,ctrl?{signal:ctrl.signal}:undefined);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const data=await r.json();
+      const items=Array.isArray(data.items)?data.items:[];
+      vivaWritePublicCache(kind,origin,radiusKm,items);
+      return {items,cache:'network'};
+    }catch(err){
+      lastError=err;
+      if(attempt<2) await new Promise(resolve=>setTimeout(resolve,500));
+    }finally{ if(timer) clearTimeout(timer); }
+  }
+  if(stale) return {items:stale.items,cache:'stale',error:lastError};
+  throw lastError||new Error('public_places_unavailable');
 }
 function publicPlaceLabel(kind,tags={}){
   const name=tags.name||tags['name:de']||tags.official_name||'';
@@ -8434,10 +8440,10 @@ async function searchNearbyPublicPlace(publicKey){
 }
 function vivaPublicIntentFallback(message=''){
   const q=String(message||'').toLocaleLowerCase('de-DE');
-  if(/toilet|toilette|wc|klo|kloett|kibel|ubikac/.test(q)) return 'wc';
-  if(/taxi|taxistand|taxi stand/.test(q)) return 'taxi';
-  if(/bahnhof|zug|train|rail/.test(q)) return 'train_station';
-  if(/zob|busbahnhof|bus station|fernbus/.test(q)) return 'bus_station';
+  if(/toilet|toilette|wc|klo|kloett|kibel|ubikac|toaleta/.test(q)) return 'wc';
+  if(/taxi|taxe|zaxi|taxistand|taxi stand|taxi-stand/.test(q)) return 'taxi';
+  if(/bahnhof|banhof|bahnof|zug|train|rail/.test(q)) return 'train_station';
+  if(/zob|busbahnhof|bus station|bus station|fernbus|bus terminal/.test(q)) return 'bus_station';
   if(/tourist|information|touristeninfo/.test(q)) return 'tourist_info';
   if(/rathaus|bürgerbüro|buergerbuero|amt|behörde|behoerde/.test(q)) return 'city_hall';
   if(/p\+r|park and ride|park.*ride/.test(q)) return 'park_ride';
