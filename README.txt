@@ -351,3 +351,15 @@ v0.90.71-R1-RESET-CARD-SPACING-STRONG-FIX
 
 v0.90.72-R1-VE008-BOTTOM-SPACER-FIX
 - VE-008: added an explicit physical spacer below the reset form so the Reset-Link senden button cannot sit on the card border.
+
+
+v0.90.73-R1-LOCATION-ORIGIN-CLARITY
+- Results info now distinguishes GPS from manual location.
+- GPS shows the current-position origin and, when available, GPS accuracy.
+- Manual shows the chosen place/address as the origin and explains that GPS is more precise for current position.
+
+
+v0.90.74-R1-PRIVATE-PROFILE-FOUNDATION
+- New private-user dashboard with profile photo upload.
+- Payment-status placeholder, language/communication and preferred-map settings.
+- No ads or Pro labels added to the logged-in private profile.

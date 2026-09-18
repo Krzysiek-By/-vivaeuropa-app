@@ -4023,6 +4023,13 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
   }
 }
 
+
+/* ===== v0.90.74 private user profile foundation ===== */
+.user-profile-shell{display:grid;gap:16px}.user-profile-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:18px;border:1px solid rgba(83,167,255,.30);border-radius:22px;background:linear-gradient(135deg,#0A2747,#071B31)}
+.user-avatar{width:76px;height:76px;border-radius:22px;border:2px solid rgba(255,194,60,.55);background:#0C3158;display:grid;place-items:center;overflow:hidden;color:#fff;font-size:25px;font-weight:900}.user-avatar img{width:100%;height:100%;object-fit:cover}.user-profile-name{font-size:1.25rem;font-weight:900;color:#fff}.user-profile-email{color:#9FB8D5;font-size:.84rem;margin-top:4px}.user-profile-actions{display:flex;gap:8px;flex-wrap:wrap}.user-profile-actions button{min-height:40px}
+.subscription-pill{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:#0A2039;font-size:.78rem;font-weight:850}.subscription-dot{width:10px;height:10px;border-radius:50%;background:#8797AB;box-shadow:0 0 0 4px rgba(135,151,171,.12)}.subscription-pill[data-status="active"] .subscription-dot{background:#42D889;box-shadow:0 0 0 4px rgba(66,216,137,.12)}.subscription-pill[data-status="renew"] .subscription-dot{background:#F0A93A}.subscription-pill[data-status="problem"] .subscription-dot{background:#F05A68}
+.user-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.user-profile-card{padding:16px;border:1px solid rgba(83,167,255,.24);border-radius:18px;background:#081F38}.user-profile-card h3{margin:0 0 5px;color:#fff;font-size:1rem}.user-profile-card p{margin:0 0 12px;color:#91AAC7;font-size:.82rem;line-height:1.42}.user-profile-card .ghost{width:100%;min-height:42px}.user-settings-form{display:grid;gap:13px}.user-settings-form label{display:grid;gap:6px;color:#CDE0F4;font-size:.78rem;font-weight:800}.user-settings-form select{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.user-safety-note{padding:12px 13px;border-radius:14px;border:1px solid rgba(255,194,60,.32);background:#2B250D;color:#F6E5AF;font-size:.78rem;line-height:1.45}
+@media(max-width:700px){.user-profile-head{grid-template-columns:auto 1fr}.user-profile-actions{grid-column:1/-1}.user-profile-grid{grid-template-columns:1fr}.user-avatar{width:68px;height:68px;border-radius:19px}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4271,7 +4278,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
         </div>
         <div class="results-guide" id="resultsGuide">
           <div class="results-guide-icon">◎</div>
-          <div><strong>Entfernung ab deinem Standort</strong><span>Bei Orten wie WC wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
+          <div><strong id="distanceOriginTitle">Entfernung ab deinem Standort</strong><span id="distanceOriginHint">Bei Orten wie WC wählst du bei „Route anzeigen“ selbst Google Maps oder Apple Maps sowie Zu Fuß oder Auto.</span></div>
         </div>
         <div class="guest-sponsored-ad hidden" id="guestSponsoredAd" aria-label="Anzeige">
           <div class="guest-sponsored-label">Anzeige · Test</div>
@@ -6217,10 +6224,31 @@ function updateLocationModeButtons(){
   if(manual) manual.classList.toggle('active',locationMode==='manual');
 }
 
+function updateDistanceOriginCopy(){
+  const title=document.querySelector('#distanceOriginTitle');
+  const hint=document.querySelector('#distanceOriginHint');
+  if(!title || !hint) return;
+
+  if(locationMode==='manual'){
+    const label=(loadManualLocation() || vivaManualCoords?.label || '').trim();
+    title.textContent=label
+      ? `Entfernung ab dem gewählten Ort: ${label}`
+      : 'Entfernung ab dem gewählten Ort';
+    hint.textContent='Die Entfernung wird vom manuell gewählten Ort bzw. der eingegebenen Adresse berechnet. GPS ist für deinen aktuellen Standort genauer.';
+  }else{
+    title.textContent='Entfernung ab deinem Standort';
+    const meters=Math.round(Number(vivaLocation?.accuracy||0));
+    hint.textContent=meters
+      ? `GPS-Standort aktiv. Aktuelle Genauigkeit ca. ${meters} m. Bei „Route anzeigen“ wählst du Google Maps oder Apple Maps sowie Zu Fuß oder Auto.`
+      : 'GPS-Standort aktiv. Bei „Route anzeigen“ wählst du Google Maps oder Apple Maps sowie Zu Fuß oder Auto.';
+  }
+}
+
 function setLocationMode(mode,{requestGps=false}={}){
   locationMode=mode==='manual'?'manual':'gps';
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
   updateLocationModeButtons();
+  updateDistanceOriginCopy();
 
   const manualRow=document.querySelector('#manualLocationRow');
   const gpsBtn=document.querySelector('#gpsBtn');
@@ -6382,6 +6410,7 @@ function requestVivaLocation({silent=false}={}){
         localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
         refreshCompanyDistances();
         updateLocationModeButtons();
+        updateDistanceOriginCopy();
         renderLocationStatus();
         els.loc.disabled=true;
         els.loc.value='';
@@ -6473,6 +6502,7 @@ async function activateManualLocation(){
   locationMode='manual';
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'manual');
   updateLocationModeButtons();
+  updateDistanceOriginCopy();
   refreshCompanyDistances();
 
   const wrap=document.querySelector('#locationStatus');
@@ -6879,25 +6909,47 @@ function toggleFavorite(id){
   showToast(list.includes(numericId)?'Zu Favoriten hinzugefügt.':'Aus Favoriten entfernt.');
 }
 
+
+const VIVA_USER_AVATAR_KEY='vivaUserAvatar';
+const VIVA_USER_COMM_LANG_KEY='vivaUserCommunicationLanguage';
+const VIVA_USER_MAP_KEY='vivaUserPreferredMap';
+const VIVA_USER_SUB_STATUS_KEY='vivaPrivateSubscriptionStatus';
+function userInitials(){const u=getActiveProfile()||{};return ((u.name||'U').slice(0,1)+(u.surname||'').slice(0,1)).toUpperCase()}
+function getUserAvatar(){return localStorage.getItem(VIVA_USER_AVATAR_KEY)||''}
+function subscriptionStatus(){return localStorage.getItem(VIVA_USER_SUB_STATUS_KEY)||'inactive'}
+function subscriptionStatusLabel(){const x=subscriptionStatus();return x==='active'?'Abonnement aktiv':x==='renew'?'Verlängerung bald':x==='problem'?'Zahlung prüfen':'Kein aktives Abonnement'}
+function privateUserDashboardHtml(){
+  const u=getActiveProfile()||{};const avatar=getUserAvatar();const st=subscriptionStatus();
+  const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';
+  return `<div class="user-profile-shell">
+    <div class="user-profile-head"><div class="user-avatar">${avatar?`<img src="${avatar}" alt="Profilfoto">`:userInitials()}</div><div><div class="user-profile-name">${escapeHtml(((u.name||'')+' '+(u.surname||'')).trim()||'VivaEuropa Nutzer')}</div><div class="user-profile-email">${escapeHtml(u.email||'')}</div><div class="subscription-pill" data-status="${st}"><span class="subscription-dot"></span><span>${subscriptionStatusLabel()}</span></div></div><div class="user-profile-actions"><button class="ghost" type="button" onclick="document.querySelector('#userAvatarInput').click()">Profilfoto ändern</button><input id="userAvatarInput" type="file" accept="image/*" class="hidden"></div></div>
+    <div class="user-profile-grid">
+      <div class="user-profile-card"><h3>Favoriten & gespeicherte Orte</h3><p>${getFavoriteCompanies().length} favorisierte Unternehmen. Weitere Speicherfunktionen werden schrittweise ergänzt.</p><button class="ghost" onclick="openModule('favorites')">Öffnen</button></div>
+      <div class="user-profile-card"><h3>Schnellzugriff</h3><p>Deine wichtigsten Kategorien auf der Startseite verwalten.</p><button class="ghost" onclick="openModule('userPreferences')">Einstellungen</button></div>
+      <div class="user-profile-card"><h3>Meine Bewertungen & Meldungen</h3><p>Eigene Bewertungen, Meldungen und Prüfstatus – vorbereitet für die nächsten Schritte.</p></div>
+      <div class="user-profile-card"><h3>Kontakt mit Unternehmen</h3><p>E-Mail als Basis, später ergänzt um KI, WhatsApp, Telegram, Messenger und weitere freigegebene Kanäle.</p></div>
+      <div class="user-profile-card"><h3>Rechtliches & Datenschutz</h3><p>Nutzungsbedingungen, Datenschutz und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
+      <div class="user-profile-card"><h3>Konto</h3><p>Profil, Sprache, Navigation und Abmeldung.</p><button class="ghost" onclick="openModule('userPreferences')">Konto-Einstellungen</button></div>
+    </div>
+  </div>`
+}
+function bindPrivateUserDashboard(){const input=document.querySelector('#userAvatarInput');if(input) input.onchange=e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>2.5*1024*1024){showToast('Bitte ein Profilfoto unter 2,5 MB wählen.');return}const r=new FileReader();r.onload=()=>{localStorage.setItem(VIVA_USER_AVATAR_KEY,String(r.result||''));openModule('user')};r.readAsDataURL(file)}}
+function userPreferencesHtml(){const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';return `<div class="user-settings-form"><label>App-Sprache<select id="userAppLang"><option value="de">Deutsch</option><option value="pl">Polski</option><option value="en">English</option><option value="es">Español</option></select></label><label>Bevorzugte Sprache für Kommunikation<select id="userCommLang"><option value="de" ${comm==='de'?'selected':''}>Deutsch</option><option value="pl" ${comm==='pl'?'selected':''}>Polski</option><option value="en" ${comm==='en'?'selected':''}>English</option><option value="es" ${comm==='es'?'selected':''}>Español</option><option value="it" ${comm==='it'?'selected':''}>Italiano</option><option value="fr" ${comm==='fr'?'selected':''}>Français</option></select></label><label>Bevorzugte Karten-App<select id="userMapPref"><option value="google" ${map==='google'?'selected':''}>Google Maps</option><option value="apple" ${map==='apple'?'selected':''}>Apple Maps</option></select></label><button class="primary" type="button" onclick="saveUserPreferences()">Einstellungen speichern</button><div class="user-safety-note">Kontakt mit Unternehmen: Gib niemals Kreditkarten-, PIN-, Passwort- oder Zugangsdaten in Nachrichten weiter. Öffne keine verdächtigen Links.</div><button class="ghost" type="button" onclick="document.querySelector('#logoutBtn').click()">Abmelden</button></div>`}
+function bindUserPreferences(){const a=document.querySelector('#userAppLang');if(a)a.value=getVivaAppLanguage()}
+function saveUserPreferences(){const app=document.querySelector('#userAppLang')?.value||'de';const comm=document.querySelector('#userCommLang')?.value||'de';const map=document.querySelector('#userMapPref')?.value||'google';setVivaAppLanguage(app);localStorage.setItem(VIVA_USER_COMM_LANG_KEY,comm);localStorage.setItem(VIVA_USER_MAP_KEY,map);showToast('Einstellungen gespeichert.');openModule('userPreferences')}
+
 const moduleData={
   user:{
     eyebrow:'NUTZER',
     title:'Mein Konto',
-    intro:'Grundstruktur des Nutzerbereichs.',
-    html:()=>{const tier=getClientAccessTier();const plus=tier==='plus';const favLimit=getClientAccessRules().favoritesLimit;return `<div class="user-hub">
-      <div class="placeholder-note"><strong>${plus?'VivaEuropa Plus':'Kostenloses Nutzerkonto'}</strong> · ${plus?'voller Funktionsumfang':'Basisfunktionen aktiv – Plus-Funktionen sind vorbereitet und gesperrt.'}</div>
-      <div class="module-section"><h3>Meine Modi ${plus?'':'🔒 Plus'}</h3><div class="user-mode-row">
-        <div class="user-mode">🏖 Urlaub</div><div class="user-mode">💼 Arbeit</div>
-        <div class="user-mode">☕ Freizeit</div><div class="user-mode">🎯 Hobby</div>
-      </div><div class="placeholder-note">${plus?'Eigene Modi – später.':'Urlaub / Arbeit / Freizeit / Hobby gehören zu VivaEuropa Plus.'}</div></div>
-      <div class="module-grid">
-        <div class="module-card"><h3>Gespeicherte Orte ${plus?'':'🔒 Plus'}</h3><p>${plus?'Grundstruktur der Liste gespeicherter Orte.':'Gespeicherte Orte werden mit VivaEuropa Plus freigeschaltet.'}</p></div>
-        <div class="module-card"><h3>Favorisierte Unternehmen</h3><p>${getFavoriteCompanies().length} gespeichert${Number.isFinite(Number(favLimit))?` · Limit ${favLimit}`:' · ohne Limit'}.</p><button class="ghost" onclick="openModule('favorites')">Anzeigen</button></div>
-        <div class="module-card"><h3>Standorteinstellungen</h3><p>GPS / manuell und gespeicherter Modus.</p></div>
-        <div class="module-card"><h3>Profildaten</h3><p>Vollständige Bearbeitung der Daten wird später ergänzt.</p></div>
-        <div class="module-card"><h3>Rechtliches & Dokumente</h3><p>Nutzungsbedingungen, Datenschutz, Impressum und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
-      </div>
-    </div>`}
+    intro:'Dein persönlicher Bereich in VivaEuropa.',
+    html:()=>privateUserDashboardHtml()
+  },
+  userPreferences:{
+    eyebrow:'KONTO',
+    title:'Einstellungen',
+    intro:'Sprache, Kommunikation, Navigation und Konto.',
+    html:()=>userPreferencesHtml()
   },
   legalDocuments:{
     eyebrow:'RECHTLICHES',
@@ -7856,6 +7908,8 @@ function openModule(key){
   localStorage.setItem('vivaLastModule',key);
   setView('module');
   if(key==='companyData') bindCompanyMasterForm();
+  if(key==='user') bindPrivateUserDashboard();
+  if(key==='userPreferences') bindUserPreferences();
   applyGlobalLanguage(lang);
 }
 
@@ -10355,6 +10409,7 @@ if(loadManualLocation() && !localStorage.getItem(VIVA_LOCATION_MODE_KEY)){
   locationMode='manual';
 }
 setLocationMode(locationMode);
+updateDistanceOriginCopy();
 
 ensureAccountLanguage();
 applyGlobalLanguage(getVivaAppLanguage());
