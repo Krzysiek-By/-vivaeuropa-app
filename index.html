@@ -6917,6 +6917,14 @@ function toggleFavorite(id){
 }
 
 
+
+const VIVA_USER_REVIEWS_KEY='vivaUserReviews';
+function getUserReviews(){try{return JSON.parse(localStorage.getItem(VIVA_USER_REVIEWS_KEY)||'[]')||[]}catch{return []}}
+function getUserReports(){const reports=[];try{const wc=JSON.parse(localStorage.getItem('vivaLocalWcReports')||'[]')||[];wc.slice().reverse().forEach(x=>reports.push({type:'Toilette',date:x.createdAt||'',status:x.status||'gemeldet',label:x.note||'Neue Toilette gemeldet'}))}catch{}return reports}
+function reviewStars(value){const n=Math.max(1,Math.min(5,Number(value)||0));return '★'.repeat(n)}
+function userReviewsHtml(){const list=getUserReviews();return `<div class="module-section"><h3>Meine Bewertungen</h3><p class="muted">Hier findest du später deine abgegebenen Bewertungen mit Datum und Status. Geplant ist ein Verlauf bis zu 24 Monate.</p><div class="user-list">${list.length?list.map(x=>`<div class="user-list-row"><div><strong>${escapeHtml(x.company||'Unternehmen')}</strong><small>${reviewStars(x.rating)}${x.date?` · ${escapeHtml(String(x.date).slice(0,10))}`:''}</small></div><span class="pill">${escapeHtml(x.status||'Veröffentlicht')}</span></div>`).join(''):'<div class="saved-empty">Du hast noch keine Bewertungen abgegeben.</div>'}</div></div><div class="module-section"><h3>Klärungsfälle</h3><div class="saved-empty">Wenn eine Bewertung geprüft oder beanstandet wird, erscheint hier der Status: eingereicht → in Prüfung → geklärt.</div></div>`}
+function userReportsHtml(){const list=getUserReports();return `<div class="module-section"><h3>Meine Meldungen</h3><p class="muted">Hier siehst du eigene Meldungen und später auch deren Prüfstatus.</p><div class="user-list">${list.length?list.map(x=>`<div class="user-list-row"><div><strong>${escapeHtml(x.type)}</strong><small>${escapeHtml(x.label)}${x.date?` · ${escapeHtml(String(x.date).slice(0,10))}`:''}</small></div><span class="pill">${escapeHtml(x.status)}</span></div>`).join(''):'<div class="saved-empty">Noch keine Meldungen vorhanden.</div>'}</div></div>`}
+
 const VIVA_USER_QUICK_KEY='vivaUserQuickAccess';
 const VIVA_USER_RECENT_KEY='vivaUserRecentCompanies';
 const VIVA_USER_LATER_KEY='vivaUserLater';
@@ -6957,7 +6965,8 @@ function privateUserDashboardHtml(){
     <div class="user-profile-grid">
       <div class="user-profile-card"><h3>Favoriten & gespeicherte Orte</h3><p>${getFavoriteCompanies().length} favorisierte Unternehmen. Favoriten, Merkliste und Verlauf an einem Ort.</p><button class="ghost" onclick="openModule('userSaved')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Schnellzugriff</h3><p>WC und Ladestation bleiben fest. Zwei weitere Plätze bestimmst du selbst.</p><button class="ghost" onclick="openModule('userQuickAccess')">Anpassen</button></div>
-      <div class="user-profile-card"><h3>Meine Bewertungen & Meldungen</h3><p>Eigene Bewertungen, Meldungen und Prüfstatus – vorbereitet für die nächsten Schritte.</p></div>
+      <div class="user-profile-card"><h3>Meine Bewertungen</h3><p>Eigene Bewertungen und mögliche Klärungsfälle übersichtlich wiederfinden.</p><button class="ghost" onclick="openModule('userReviews')">Öffnen</button></div>
+      <div class="user-profile-card"><h3>Meine Meldungen</h3><p>Eigene Meldungen und deren Prüfstatus an einem Ort.</p><button class="ghost" onclick="openModule('userReports')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Kontakt mit Unternehmen</h3><p>E-Mail als Basis, später ergänzt um KI, WhatsApp, Telegram, Messenger und weitere freigegebene Kanäle.</p></div>
       <div class="user-profile-card"><h3>Rechtliches & Datenschutz</h3><p>Nutzungsbedingungen, Datenschutz und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Konto</h3><p>Profil, Sprache, Navigation und Abmeldung.</p><button class="ghost" onclick="openModule('userPreferences')">Konto-Einstellungen</button></div>
@@ -6987,6 +6996,18 @@ const moduleData={
     title:'Schnellzugriff',
     intro:'Passe zwei persönliche Plätze auf der Startseite an.',
     html:()=>quickSettingsHtml()
+  },
+  userReviews:{
+    eyebrow:'NUTZER',
+    title:'Meine Bewertungen',
+    intro:'Deine Bewertungen und mögliche Klärungsfälle.',
+    html:()=>userReviewsHtml()
+  },
+  userReports:{
+    eyebrow:'NUTZER',
+    title:'Meine Meldungen',
+    intro:'Deine Meldungen und deren Prüfstatus.',
+    html:()=>userReportsHtml()
   },
   userSaved:{
     eyebrow:'NUTZER',
