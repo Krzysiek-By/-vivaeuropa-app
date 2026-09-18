@@ -4024,11 +4024,15 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 }
 
 
+/* ===== v0.90.76 R3 personal data fix ===== */
+/* Keeps prior private-profile foundation and adds editable personal data. */
+
 /* ===== v0.90.74 private user profile foundation ===== */
 .user-profile-shell{display:grid;gap:16px}.user-profile-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:18px;border:1px solid rgba(83,167,255,.30);border-radius:22px;background:linear-gradient(135deg,#0A2747,#071B31)}
 .user-avatar{width:76px;height:76px;border-radius:22px;border:2px solid rgba(255,194,60,.55);background:#0C3158;display:grid;place-items:center;overflow:hidden;color:#fff;font-size:25px;font-weight:900}.user-avatar img{width:100%;height:100%;object-fit:cover}.user-profile-name{font-size:1.25rem;font-weight:900;color:#fff}.user-profile-email{color:#9FB8D5;font-size:.84rem;margin-top:4px}.user-profile-actions{display:flex;gap:8px;flex-wrap:wrap}.user-profile-actions button{min-height:40px}
 .subscription-pill{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:#0A2039;font-size:.78rem;font-weight:850}.subscription-dot{width:10px;height:10px;border-radius:50%;background:#8797AB;box-shadow:0 0 0 4px rgba(135,151,171,.12)}.subscription-pill[data-status="active"] .subscription-dot{background:#42D889;box-shadow:0 0 0 4px rgba(66,216,137,.12)}.subscription-pill[data-status="renew"] .subscription-dot{background:#F0A93A}.subscription-pill[data-status="problem"] .subscription-dot{background:#F05A68}
-.user-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.user-profile-card{padding:16px;border:1px solid rgba(83,167,255,.24);border-radius:18px;background:#081F38}.user-profile-card h3{margin:0 0 5px;color:#fff;font-size:1rem}.user-profile-card p{margin:0 0 12px;color:#91AAC7;font-size:.82rem;line-height:1.42}.user-profile-card .ghost{width:100%;min-height:42px}.user-settings-form{display:grid;gap:13px}.user-settings-form label{display:grid;gap:6px;color:#CDE0F4;font-size:.78rem;font-weight:800}.user-settings-form select{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.user-safety-note{padding:12px 13px;border-radius:14px;border:1px solid rgba(255,194,60,.32);background:#2B250D;color:#F6E5AF;font-size:.78rem;line-height:1.45}
+.user-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.user-profile-card{padding:16px;border:1px solid rgba(83,167,255,.24);border-radius:18px;background:#081F38}.user-profile-card h3{margin:0 0 5px;color:#fff;font-size:1rem}.user-profile-card p{margin:0 0 12px;color:#91AAC7;font-size:.82rem;line-height:1.42}.user-profile-card .ghost{width:100%;min-height:42px}.user-settings-form{display:grid;gap:13px}.user-settings-form label{display:grid;gap:6px;color:#CDE0F4;font-size:.78rem;font-weight:800}.user-settings-form select{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}
+.user-settings-form input{width:100%;min-height:44px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 12px;box-sizing:border-box}.user-settings-form input[readonly]{color:#9FB8D5;background:#081A2E}.user-settings-note{color:#91AAC7;font-size:.76rem;line-height:1.4;margin-top:-4px}.user-profile-phone{color:#9FB8D5;font-size:.82rem;margin-top:3px}.user-safety-note{padding:12px 13px;border-radius:14px;border:1px solid rgba(255,194,60,.32);background:#2B250D;color:#F6E5AF;font-size:.78rem;line-height:1.45}
 @media(max-width:700px){.user-profile-head{grid-template-columns:auto 1fr}.user-profile-actions{grid-column:1/-1}.user-profile-grid{grid-template-columns:1fr}.user-avatar{width:68px;height:68px;border-radius:19px}}
 
 /* ===== v0.90.75 R3 persistent private session fix ===== */
@@ -6961,8 +6965,9 @@ function privateUserDashboardHtml(){
   const u=getActiveProfile()||{};const avatar=getUserAvatar();const st=subscriptionStatus();
   const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';
   return `<div class="user-profile-shell">
-    <div class="user-profile-head"><div class="user-avatar">${avatar?`<img src="${avatar}" alt="Profilfoto">`:userInitials()}</div><div><div class="user-profile-name">${escapeHtml(((u.name||'')+' '+(u.surname||'')).trim()||'VivaEuropa Nutzer')}</div><div class="user-profile-email">${escapeHtml(u.email||'')}</div><div class="subscription-pill" data-status="${st}"><span class="subscription-dot"></span><span>${subscriptionStatusLabel()}</span></div></div><div class="user-profile-actions"><button class="ghost" type="button" onclick="document.querySelector('#userAvatarInput').click()">Profilfoto ändern</button><input id="userAvatarInput" type="file" accept="image/*" class="hidden"></div></div>
+    <div class="user-profile-head"><div class="user-avatar">${avatar?`<img src="${avatar}" alt="Profilfoto">`:userInitials()}</div><div><div class="user-profile-name">${escapeHtml(((u.name||'')+' '+(u.surname||'')).trim()||'VivaEuropa Nutzer')}</div><div class="user-profile-email">${escapeHtml(u.email||'')}</div>${u.phone?`<div class="user-profile-phone">${escapeHtml(u.phone)}</div>`:''}<div class="subscription-pill" data-status="${st}"><span class="subscription-dot"></span><span>${subscriptionStatusLabel()}</span></div></div><div class="user-profile-actions"><button class="ghost" type="button" onclick="document.querySelector('#userAvatarInput').click()">Profilfoto ändern</button><input id="userAvatarInput" type="file" accept="image/*" class="hidden"></div></div>
     <div class="user-profile-grid">
+      <div class="user-profile-card"><h3>Persönliche Daten</h3><p>Vorname, Nachname, E-Mail-Adresse und optionale Telefonnummer.</p><button class="ghost" onclick="openModule('userPersonalData')">Bearbeiten</button></div>
       <div class="user-profile-card"><h3>Favoriten & gespeicherte Orte</h3><p>${getFavoriteCompanies().length} favorisierte Unternehmen. Favoriten, Merkliste und Verlauf an einem Ort.</p><button class="ghost" onclick="openModule('userSaved')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Schnellzugriff</h3><p>WC und Ladestation bleiben fest. Zwei weitere Plätze bestimmst du selbst.</p><button class="ghost" onclick="openModule('userQuickAccess')">Anpassen</button></div>
       <div class="user-profile-card"><h3>Meine Bewertungen</h3><p>Eigene Bewertungen und mögliche Klärungsfälle übersichtlich wiederfinden.</p><button class="ghost" onclick="openModule('userReviews')">Öffnen</button></div>
@@ -6974,6 +6979,42 @@ function privateUserDashboardHtml(){
   </div>`
 }
 function bindPrivateUserDashboard(){const input=document.querySelector('#userAvatarInput');if(input) input.onchange=e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>2.5*1024*1024){showToast('Bitte ein Profilfoto unter 2,5 MB wählen.');return}const r=new FileReader();r.onload=()=>{localStorage.setItem(VIVA_USER_AVATAR_KEY,String(r.result||''));openModule('user')};r.readAsDataURL(file)}}
+function userPersonalDataHtml(){
+  const u=getActiveProfile()||{};
+  return `<div class="user-settings-form">
+    <label>Vorname<input id="userFirstName" autocomplete="given-name" value="${escapeHtml(u.name||'')}"></label>
+    <label>Nachname<input id="userLastName" autocomplete="family-name" value="${escapeHtml(u.surname||'')}"></label>
+    <label>E-Mail-Adresse<input id="userProfileEmail" type="email" autocomplete="email" value="${escapeHtml(u.email||'')}" readonly></label>
+    <div class="user-settings-note">Die E-Mail-Adresse gehört zu deinem Login. Eine spätere Änderung wird separat über die Kontosicherheit geführt.</div>
+    <label>Telefonnummer (optional)<input id="userPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="z. B. +491711234567" value="${escapeHtml(u.phone||'')}"></label>
+    <div class="user-settings-note">Bitte im internationalen Format mit +Ländervorwahl eingeben.</div>
+    <button class="primary" type="button" onclick="saveUserPersonalData()">Persönliche Daten speichern</button>
+  </div>`;
+}
+async function saveUserPersonalData(){
+  const current=getActiveProfile()||{};
+  const name=String(document.querySelector('#userFirstName')?.value||'').trim();
+  const surname=String(document.querySelector('#userLastName')?.value||'').trim();
+  const phone=normalizeInternationalPhone(document.querySelector('#userPhone')?.value||'');
+  if(!name || !surname){showToast('Bitte Vorname und Nachname eingeben.');return;}
+  if(phone && !internationalPhoneIsValid(phone)){showToast('Bitte die Telefonnummer im internationalen Format eingeben.');return;}
+  const user={...current,name,surname,phone,role:'user'};
+  localStorage.setItem('vivaUser',JSON.stringify(user));
+  try{
+    if(supabaseClient){
+      const {data}=await supabaseClient.auth.getSession();
+      if(data?.session?.user){
+        const oldMeta=data.session.user.user_metadata||{};
+        const {error}=await supabaseClient.auth.updateUser({data:{...oldMeta,first_name:name,last_name:surname,full_name:`${name} ${surname}`.trim(),phone}});
+        if(error) console.warn('Profile metadata update failed',error);
+      }
+    }
+  }catch(e){console.warn('Profile metadata sync failed',e)}
+  refreshAuthUI();
+  showToast('Persönliche Daten gespeichert.');
+  openModule('user');
+}
+
 function userPreferencesHtml(){const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';return `<div class="user-settings-form"><label>App-Sprache<select id="userAppLang"><option value="de">Deutsch</option><option value="pl">Polski</option><option value="en">English</option><option value="es">Español</option></select></label><label>Bevorzugte Sprache für Kommunikation<select id="userCommLang"><option value="de" ${comm==='de'?'selected':''}>Deutsch</option><option value="pl" ${comm==='pl'?'selected':''}>Polski</option><option value="en" ${comm==='en'?'selected':''}>English</option><option value="es" ${comm==='es'?'selected':''}>Español</option><option value="it" ${comm==='it'?'selected':''}>Italiano</option><option value="fr" ${comm==='fr'?'selected':''}>Français</option></select></label><label>Bevorzugte Karten-App<select id="userMapPref"><option value="google" ${map==='google'?'selected':''}>Google Maps</option><option value="apple" ${map==='apple'?'selected':''}>Apple Maps</option></select></label><button class="primary" type="button" onclick="saveUserPreferences()">Einstellungen speichern</button><div class="user-safety-note">Kontakt mit Unternehmen: Gib niemals Kreditkarten-, PIN-, Passwort- oder Zugangsdaten in Nachrichten weiter. Öffne keine verdächtigen Links.</div><button class="ghost" type="button" onclick="document.querySelector('#logoutBtn').click()">Abmelden</button></div>`}
 function bindUserPreferences(){const a=document.querySelector('#userAppLang');if(a)a.value=getVivaAppLanguage()}
 function saveUserPreferences(){const app=document.querySelector('#userAppLang')?.value||'de';const comm=document.querySelector('#userCommLang')?.value||'de';const map=document.querySelector('#userMapPref')?.value||'google';setVivaAppLanguage(app);localStorage.setItem(VIVA_USER_COMM_LANG_KEY,comm);localStorage.setItem(VIVA_USER_MAP_KEY,map);showToast('Einstellungen gespeichert.');openModule('userPreferences')}
@@ -6984,6 +7025,12 @@ const moduleData={
     title:'Mein Konto',
     intro:'Dein persönlicher Bereich in VivaEuropa.',
     html:()=>privateUserDashboardHtml()
+  },
+  userPersonalData:{
+    eyebrow:'KONTO',
+    title:'Persönliche Daten',
+    intro:'Deine grundlegenden Kontaktdaten für VivaEuropa.',
+    html:()=>userPersonalDataHtml()
   },
   userPreferences:{
     eyebrow:'KONTO',
@@ -10281,19 +10328,20 @@ async function restorePersistentPrivateSession(){
     let user=null;
     try{user=JSON.parse(localStorage.getItem('vivaUser')||'null')}catch(e){}
 
-    if(!user || (email && String(user.email||'').toLowerCase()!==email.toLowerCase())){
-      const meta=session.user.user_metadata||{};
-      const fullName=String(meta.full_name||meta.name||'').trim();
-      const bits=fullName.split(/\s+/).filter(Boolean);
-      user={
-        name:String(meta.first_name||bits[0]||email.split('@')[0]||'Nutzer'),
-        surname:String(meta.last_name||bits.slice(1).join(' ')||''),
-        email,
-        role:'user',
-        accountLanguage:getVivaAppLanguage()
-      };
-      localStorage.setItem('vivaUser',JSON.stringify(user));
-    }
+    const meta=session.user.user_metadata||{};
+    const fullName=String(meta.full_name||meta.name||'').trim();
+    const bits=fullName.split(/\s+/).filter(Boolean);
+    const sameLocalUser=!!user && (!email || String(user.email||'').toLowerCase()===email.toLowerCase());
+    user={
+      ...(sameLocalUser?user:{}),
+      name:String((sameLocalUser&&user.name)||meta.first_name||bits[0]||email.split('@')[0]||'Nutzer'),
+      surname:String((sameLocalUser&&user.surname)||meta.last_name||bits.slice(1).join(' ')||''),
+      phone:String((sameLocalUser&&user.phone)||meta.phone||''),
+      email,
+      role:'user',
+      accountLanguage:(sameLocalUser&&user.accountLanguage)||getVivaAppLanguage()
+    };
+    localStorage.setItem('vivaUser',JSON.stringify(user));
 
     localStorage.setItem('vivaLoggedIn','1');
     localStorage.setItem('vivaAccountRole','user');
