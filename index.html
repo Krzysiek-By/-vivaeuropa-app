@@ -4319,6 +4319,17 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
               <span><strong>P+R</strong><small>Parken und weiterfahren</small></span>
             </button>
           </div>
+          <div class="public-more-wrap">
+            <button type="button" class="public-more-toggle" id="publicMoreToggle">Weitere öffentliche Einrichtungen</button>
+            <div class="public-more-grid hidden" id="publicMoreGrid">
+              <button type="button" class="public-more-btn" data-public-search="landratsamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Landratsamt</strong><small>Kreisverwaltung</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="zulassungsstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Zulassungsstelle</strong><small>Fahrzeug & Kennzeichen</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="fuehrerscheinstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Führerscheinstelle</strong><small>Führerschein & Fahrerlaubnis</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="auslaenderbehoerde"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Ausländerbehörde</strong><small>Aufenthalt & Migration</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="finanzamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Finanzamt</strong><small>Steuerbehörde</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="jobcenter"><img src="assets/category-icons/06-public.png" alt=""><span><strong>Jobcenter / Arbeitsagentur</strong><small>Arbeit & Leistungen</small></span></button>
+            </div>
+          </div>
           <div class="public-ki-note"><strong>Viva-KI-Logik:</strong> Erst zeigen wir dir die öffentliche Infrastruktur. Firmen erscheinen erst, wenn du sie ausdrücklich sehen möchtest.</div>
           <div class="public-ai-box">
             <strong>Frag VivaEuropa</strong>
@@ -6076,7 +6087,9 @@ const VIVA_QUICK_ICON_MAP={
   busStation:'assets/category-icons/18-transport.png',
   taxiStand:'assets/quick-icons/taxi.png',
   touristInfo:'assets/category-icons/06-public.png',
-  parkRide:'assets/category-icons/18-transport.png'
+  parkRide:'assets/category-icons/18-transport.png',
+  government:'assets/category-icons/09-government.png',
+  publicService:'assets/category-icons/06-public.png'
 };
 const VIVA_PUBLIC_SEARCHES={
   train_station:{label:'Bahnhof',endpointKind:'station',radiusSteps:[3,10,25],icon:VIVA_QUICK_ICON_MAP.trainStation,empty:'Im Umkreis von 25 km wurde kein Bahnhof gefunden.',helper:[{kind:'wc',label:'WC in der Nähe'},{kind:'taxi_company',label:'Taxiunternehmen anzeigen'}]},
@@ -6084,7 +6097,13 @@ const VIVA_PUBLIC_SEARCHES={
   taxi:{label:'Taxistand',endpointKind:'taxi',radiusSteps:[2,5,10],icon:VIVA_QUICK_ICON_MAP.taxiStand,empty:'Im Umkreis von 10 km wurde kein Taxistand gefunden.',helper:[{kind:'taxi_company',label:'Lokale Taxiunternehmen'},{kind:'bus_station',label:'Busbahnhof suchen'}]},
   tourist_info:{label:'Tourist-Info',endpointKind:'tourist',radiusSteps:[3,10,25],icon:VIVA_QUICK_ICON_MAP.touristInfo,empty:'Im Umkreis von 25 km wurde keine Tourist-Info gefunden.',helper:[{kind:'hotel',label:'Hotels anzeigen'},{kind:'restaurant',label:'Restaurants anzeigen'}]},
   city_hall:{label:'Rathaus / Bürgerbüro',endpointKind:'cityhall',radiusSteps:[3,10,20],icon:VIVA_QUICK_ICON_MAP.cityHall,empty:'Im Umkreis von 20 km wurde kein Rathaus oder Bürgerbüro gefunden.',helper:[{kind:'pharmacy',label:'Apotheke in der Nähe'},{kind:'train_station',label:'Bahnhof suchen'}]},
-  park_ride:{label:'P+R',endpointKind:'parkride',radiusSteps:[5,15,30],icon:VIVA_QUICK_ICON_MAP.parkRide,empty:'Im Umkreis von 30 km wurde kein P+R-Platz gefunden.',helper:[{kind:'train_station',label:'Bahnhof suchen'},{kind:'bus_station',label:'Busbahnhof suchen'}]}
+  park_ride:{label:'P+R',endpointKind:'parkride',radiusSteps:[5,15,30],icon:VIVA_QUICK_ICON_MAP.parkRide,empty:'Im Umkreis von 30 km wurde kein P+R-Platz gefunden.',helper:[{kind:'train_station',label:'Bahnhof suchen'},{kind:'bus_station',label:'Busbahnhof suchen'}]},
+  landratsamt:{label:'Landratsamt / Kreisverwaltung',endpointKind:'landratsamt',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde kein Landratsamt oder keine Kreisverwaltung gefunden.'},
+  zulassungsstelle:{label:'Zulassungsstelle',endpointKind:'zulassung',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde keine Zulassungsstelle gefunden.'},
+  fuehrerscheinstelle:{label:'Führerscheinstelle',endpointKind:'fuehrerschein',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde keine Führerscheinstelle gefunden.'},
+  auslaenderbehoerde:{label:'Ausländerbehörde',endpointKind:'auslaender',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde keine Ausländerbehörde gefunden.'},
+  finanzamt:{label:'Finanzamt',endpointKind:'finanzamt',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.government,empty:'Im Umkreis von 50 km wurde kein Finanzamt gefunden.'},
+  jobcenter:{label:'Jobcenter / Agentur für Arbeit',endpointKind:'jobcenter',radiusSteps:[10,25,50],icon:VIVA_QUICK_ICON_MAP.publicService,empty:'Im Umkreis von 50 km wurde kein Jobcenter oder keine Agentur für Arbeit gefunden.'}
 };
 
 const VIVA_GUEST_QUICK_CATEGORIES=[
@@ -8368,7 +8387,7 @@ async function vivaFetchPublicNearby(kind,origin,radiusKm){
 function publicPlaceLabel(kind,tags={}){
   const name=tags.name||tags['name:de']||tags.official_name||'';
   if(name) return name;
-  const map={station:'Bahnhof',bus:'ZOB / Busbahnhof',taxi:'Taxistand',tourist:'Tourist-Info',cityhall:'Rathaus / Bürgerbüro',parkride:'P+R Parkplatz'};
+  const map={station:'Bahnhof',bus:'ZOB / Busbahnhof',taxi:'Taxistand',tourist:'Tourist-Info',cityhall:'Rathaus / Bürgerbüro',parkride:'P+R Parkplatz',landratsamt:'Landratsamt / Kreisverwaltung',zulassung:'Zulassungsstelle',fuehrerschein:'Führerscheinstelle',auslaender:'Ausländerbehörde',finanzamt:'Finanzamt',jobcenter:'Jobcenter / Agentur für Arbeit'};
   return map[kind]||'Öffentlicher Ort';
 }
 function publicPlaceMeta(kind,tags={}){
