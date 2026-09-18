@@ -4037,6 +4037,9 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 
 /* ===== v0.90.75 R3 persistent private session fix ===== */
 .user-list{display:grid;gap:10px}.user-list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;border:1px solid rgba(83,167,255,.22);border-radius:14px;background:#081D34}.user-list-row strong{color:#fff}.user-list-row small{display:block;color:#8FA8C4;margin-top:3px}.user-list-actions{display:flex;gap:8px;flex-wrap:wrap}.user-list-actions .ghost{min-height:38px;padding:8px 11px}.quick-pref-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-pref-row label{display:grid;gap:7px;color:#CDE0F4;font-size:.78rem;font-weight:800}.quick-pref-row select{min-height:46px;border:1px solid rgba(83,167,255,.32);border-radius:12px;background:#06182B;color:#fff;padding:0 11px}.saved-empty{padding:13px;border:1px dashed rgba(83,167,255,.24);border-radius:14px;color:#8FA8C4;background:rgba(8,29,52,.55)}@media(max-width:560px){.quick-pref-row{grid-template-columns:1fr}.user-list-row{align-items:flex-start;flex-direction:column}.user-list-actions{width:100%}.user-list-actions .ghost{flex:1}}
+/* ===== v0.90.77 R2 contact + KI communication skeleton ===== */
+.contact-hub{display:grid;gap:13px}.contact-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.contact-step{padding:12px;border:1px solid rgba(83,167,255,.24);border-radius:14px;background:#081E36;color:#DCEBFB;text-align:center;font-size:.78rem;font-weight:850}.contact-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.contact-template-grid button{min-height:44px;border-radius:12px;border:1px solid rgba(83,167,255,.28);background:#0A2949;color:#fff;font-weight:800}.contact-security{padding:13px;border:1px solid rgba(255,194,60,.38);border-radius:15px;background:#2D250B;color:#F7E5A9;line-height:1.5;font-size:.8rem}@media(max-width:620px){.contact-flow{grid-template-columns:repeat(2,1fr)}.contact-template-grid{grid-template-columns:1fr}}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -6972,7 +6975,7 @@ function privateUserDashboardHtml(){
       <div class="user-profile-card"><h3>Schnellzugriff</h3><p>WC und Ladestation bleiben fest. Zwei weitere Plätze bestimmst du selbst.</p><button class="ghost" onclick="openModule('userQuickAccess')">Anpassen</button></div>
       <div class="user-profile-card"><h3>Meine Bewertungen</h3><p>Eigene Bewertungen und mögliche Klärungsfälle übersichtlich wiederfinden.</p><button class="ghost" onclick="openModule('userReviews')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Meine Meldungen</h3><p>Eigene Meldungen und deren Prüfstatus an einem Ort.</p><button class="ghost" onclick="openModule('userReports')">Öffnen</button></div>
-      <div class="user-profile-card"><h3>Kontakt mit Unternehmen</h3><p>E-Mail als Basis, später ergänzt um KI, WhatsApp, Telegram, Messenger und weitere freigegebene Kanäle.</p></div>
+      <div class="user-profile-card"><h3>Kontakt mit Unternehmen</h3><p>E-Mail als Basis, später ergänzt um KI, WhatsApp, Telegram, Messenger und weitere freigegebene Kanäle.</p><button class="ghost" onclick="openModule('userContact')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Rechtliches & Datenschutz</h3><p>Nutzungsbedingungen, Datenschutz und weitere Dokumente.</p><button class="ghost" onclick="openModule('legalDocuments')">Öffnen</button></div>
       <div class="user-profile-card"><h3>Konto</h3><p>Profil, Sprache, Navigation und Abmeldung.</p><button class="ghost" onclick="openModule('userPreferences')">Konto-Einstellungen</button></div>
     </div>
@@ -7013,6 +7016,20 @@ async function saveUserPersonalData(){
   refreshAuthUI();
   showToast('Persönliche Daten gespeichert.');
   openModule('user');
+}
+
+
+function userContactHubHtml(){
+  const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';
+  const langNames={de:'Deutsch',pl:'Polski',en:'English',es:'Español',it:'Italiano',fr:'Français'};
+  return `<div class="contact-hub">
+    <div class="contact-security"><strong>Sicher kommunizieren</strong><br>Gib niemals Kreditkarten-, PIN-, Passwort- oder Zugangsdaten in Nachrichten weiter. Öffne keine verdächtigen Links und bestätige Zahlungen nur über vertrauenswürdige Wege.</div>
+    <div class="module-section"><h3>So wird es funktionieren</h3><div class="contact-flow"><div class="contact-step">1 · Anliegen wählen</div><div class="contact-step">2 · Schreiben oder diktieren</div><div class="contact-step">3 · KI übersetzt natürlich</div><div class="contact-step">4 · Prüfen & senden</div></div></div>
+    <div class="module-section"><h3>Bevorzugte Kommunikationssprache</h3><div class="placeholder-note">Aktuell: <strong>${langNames[comm]||comm}</strong>. Änderbar unter Konto → Einstellungen.</div></div>
+    <div class="module-section"><h3>Schnelle Anfrage</h3><div class="contact-template-grid"><button type="button">Reservierung</button><button type="button">Verfügbarkeit</button><button type="button">Preis</button><button type="button">Parkplatz / Haustiere / Kinder</button></div><div class="placeholder-note" style="margin-top:10px">E-Mail bleibt der universelle Startkanal. Weitere Kanäle wie WhatsApp, Telegram und Messenger/Instagram werden nur angeboten, wenn das Unternehmen sie selbst freigibt.</div></div>
+    <div class="module-section"><h3>Status & wichtige Antwort</h3><div class="placeholder-note">Geplant: Gesendet → Antwort erhalten → Erledigt. Wichtige Antworten können später separat gespeichert werden, ohne die komplette Kommunikation aufzubewahren.</div></div>
+    <div class="module-section"><h3>KI-Telefonhilfe</h3><div class="placeholder-note">Geplant: kurze Gesprächshilfe in der Sprache des Unternehmens – ohne Mithören des Telefonats.</div></div>
+  </div>`;
 }
 
 function userPreferencesHtml(){const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';return `<div class="user-settings-form"><label>App-Sprache<select id="userAppLang"><option value="de">Deutsch</option><option value="pl">Polski</option><option value="en">English</option><option value="es">Español</option></select></label><label>Bevorzugte Sprache für Kommunikation<select id="userCommLang"><option value="de" ${comm==='de'?'selected':''}>Deutsch</option><option value="pl" ${comm==='pl'?'selected':''}>Polski</option><option value="en" ${comm==='en'?'selected':''}>English</option><option value="es" ${comm==='es'?'selected':''}>Español</option><option value="it" ${comm==='it'?'selected':''}>Italiano</option><option value="fr" ${comm==='fr'?'selected':''}>Français</option></select></label><label>Bevorzugte Karten-App<select id="userMapPref"><option value="google" ${map==='google'?'selected':''}>Google Maps</option><option value="apple" ${map==='apple'?'selected':''}>Apple Maps</option></select></label><button class="primary" type="button" onclick="saveUserPreferences()">Einstellungen speichern</button><div class="user-safety-note">Kontakt mit Unternehmen: Gib niemals Kreditkarten-, PIN-, Passwort- oder Zugangsdaten in Nachrichten weiter. Öffne keine verdächtigen Links.</div><button class="ghost" type="button" onclick="document.querySelector('#logoutBtn').click()">Abmelden</button></div>`}
@@ -7061,6 +7078,12 @@ const moduleData={
     title:'Gespeichert & Verlauf',
     intro:'Favoriten, Merkliste und zuletzt angesehene Unternehmen.',
     html:()=>userSavedAreaHtml()
+  },
+  userContact:{
+    eyebrow:'KONTAKT',
+    title:'Kontakt mit Unternehmen',
+    intro:'Sichere, mehrsprachige Kommunikation mit KI-Unterstützung.',
+    html:()=>userContactHubHtml()
   },
   legalDocuments:{
     eyebrow:'RECHTLICHES',
