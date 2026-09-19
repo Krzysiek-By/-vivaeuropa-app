@@ -61,6 +61,13 @@ function keep(kind,tags={}){
   if(kind==='bus'){
     if(norm(tags.amenity)!=='bus_station') return false;
   }
+  if(kind==='taxi'){
+    // A Taxistand is physical public infrastructure. Exclude taxi-company offices/businesses.
+    if(norm(tags.amenity)!=='taxi') return false;
+    if(norm(tags.office)==='taxi') return false;
+    const taxiBusinessHay=norm([tags.shop,tags.craft,tags.service,tags.business,tags['contact:website'],tags.website].filter(Boolean).join(' | '));
+    if(/taxi_company|taxi company|taxiunternehmen/.test(taxiBusinessHay)) return false;
+  }
   const hay=norm([tags.name,tags['name:de'],tags.official_name,tags.operator,tags.government,tags.department].filter(Boolean).join(' | '));
   if(kind==='landratsamt' && !/(landratsamt|kreisverwaltung|landkreis)/.test(hay)) return false;
   if(kind==='zulassung' && !/(zulassungsstelle|kfz-zulassung|fahrzeugzulassung|verkehrsamt)/.test(hay)) return false;
