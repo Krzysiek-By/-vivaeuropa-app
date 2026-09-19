@@ -4009,6 +4009,11 @@ body:not(.splash-active) #homeView .guest-plus-note{
     opacity:.98;
     pointer-events:none;
   }
+  body.viva-keyboard-open:not(.splash-active) .bottom-nav{
+    transform:translate3d(0,calc(100% + 18px),0)!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
 }
 
 /* ===== v0.90.71 VE-008 strong bottom-spacing override ===== */
@@ -8371,7 +8376,7 @@ function vivaNearbyCacheNote(mode){
 }
 function vivaPublicCacheKey(kind,origin,radiusKm){
   const lat=Number(origin.lat).toFixed(3), lng=Number(origin.lng).toFixed(3);
-  return `vivaPublic:${kind}:${lat}:${lng}:${Math.round(Number(radiusKm)||5)}`;
+  return `vivaPublic:v2:${kind}:${lat}:${lng}:${Math.round(Number(radiusKm)||5)}`;
 }
 function vivaReadPublicCache(kind,origin,radiusKm,maxAge=VIVA_NEARBY_CACHE_STALE){
   try{
@@ -8520,11 +8525,17 @@ async function vivaAskPublicAI(){
   if(!message){ if(out){out.textContent='Schreib kurz, was du suchst.';out.classList.add('show');} return; }
   if(out){out.textContent='Viva-KI prüft deine Anfrage…';out.classList.add('show');}
   let intent='unknown';
-  try{
-    const r=await fetch('/api/ai-company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'public_help',message,language:'de'})});
-    if(r.ok){ const data=await r.json(); intent=String(data.intent||'unknown'); }
-  }catch(_){ }
-  if(intent==='unknown') intent=vivaPublicIntentFallback(message);
+  const localIntent=vivaPublicIntentFallback(message);
+  // In this public-infrastructure box, an explicit taxi request always means Taxistand, never Taxiunternehmen.
+  if(localIntent==='taxi'){
+    intent='taxi';
+  }else{
+    try{
+      const r=await fetch('/api/ai-company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'public_help',message,language:'de'})});
+      if(r.ok){ const data=await r.json(); intent=String(data.intent||'unknown'); }
+    }catch(_){ }
+    if(intent==='unknown') intent=localIntent;
+  }
   const labels={wc:'WC',taxi:'Taxistand',train_station:'Bahnhof',bus_station:'ZOB / Busbahnhof',tourist_info:'Tourist-Info',city_hall:'Rathaus / Bürgerbüro',park_ride:'P+R',pharmacy:'Apotheke',hospital:'Krankenhaus',police:'Polizei',landratsamt:'Landratsamt',zulassungsstelle:'Zulassungsstelle',fuehrerscheinstelle:'Führerscheinstelle',auslaenderbehoerde:'Ausländerbehörde',finanzamt:'Finanzamt',jobcenter:'Jobcenter / Arbeitsagentur',public_school:'Öffentliche Schule',public_university:'Hochschule / Universität',public_library:'Bibliothek',recycling_center:'Wertstoffhof / Recyclinghof'};
   if(vivaRunPublicIntent(intent)){
     if(out){out.textContent=`Viva-KI öffnet: ${labels[intent]||'passende Suche'}.`;out.classList.add('show');}
@@ -10813,9 +10824,26 @@ window.addEventListener('pageshow',()=>{refreshGpsWhenReturningToApp();});
 let vivaBottomNavLastY=window.scrollY||0;
 let vivaBottomNavSettleTimer=null;
 function vivaBottomNavReveal(){
+  if(document.body.classList.contains('viva-keyboard-open')) return;
   const nav=document.querySelector('.bottom-nav');
   if(nav) nav.classList.remove('nav-hidden');
 }
+function vivaIsTypingField(el){
+  if(!el || !el.matches) return false;
+  return el.matches('input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]');
+}
+document.addEventListener('focusin',e=>{
+  if(window.innerWidth<=800 && vivaIsTypingField(e.target)) document.body.classList.add('viva-keyboard-open');
+});
+document.addEventListener('focusout',e=>{
+  if(!vivaIsTypingField(e.target)) return;
+  setTimeout(()=>{
+    if(!vivaIsTypingField(document.activeElement)){
+      document.body.classList.remove('viva-keyboard-open');
+      vivaBottomNavReveal();
+    }
+  },120);
+});
 window.addEventListener('scroll',()=>{
   if(window.innerWidth>800) return;
   const nav=document.querySelector('.bottom-nav');
@@ -10828,7 +10856,7 @@ window.addEventListener('scroll',()=>{
     vivaBottomNavLastY=y;
   }
   clearTimeout(vivaBottomNavSettleTimer);
-  vivaBottomNavSettleTimer=setTimeout(()=>nav.classList.remove('nav-hidden'),450);
+  vivaBottomNavSettleTimer=setTimeout(()=>{if(!document.body.classList.contains('viva-keyboard-open')) nav.classList.remove('nav-hidden');},450);
 },{passive:true});
 
 window.addEventListener('resize',()=>{
