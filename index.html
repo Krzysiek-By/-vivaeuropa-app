@@ -4323,16 +4323,16 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
           <div class="public-more-wrap">
             <button type="button" class="public-more-toggle" id="publicMoreToggle">Weitere öffentliche Einrichtungen</button>
             <div class="public-more-grid hidden" id="publicMoreGrid">
-              <button type="button" class="public-more-btn" data-public-search="landratsamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Landratsamt</strong><small>Kreisverwaltung</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="zulassungsstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Zulassungsstelle</strong><small>Fahrzeug & Kennzeichen</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="fuehrerscheinstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Führerscheinstelle</strong><small>Führerschein & Fahrerlaubnis</small></span></button>
               <button type="button" class="public-more-btn" data-public-search="auslaenderbehoerde"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Ausländerbehörde</strong><small>Aufenthalt & Migration</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="finanzamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Finanzamt</strong><small>Steuerbehörde</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="jobcenter"><img src="assets/category-icons/06-public.png" alt=""><span><strong>Jobcenter / Arbeitsagentur</strong><small>Arbeit & Leistungen</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="public_school"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Öffentliche Schule</strong><small>Schule in deiner Nähe</small></span></button>
-              <button type="button" class="public-more-btn" data-public-search="public_university"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Hochschule / Universität</strong><small>Öffentliche Bildung</small></span></button>
               <button type="button" class="public-more-btn" data-public-search="public_library"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Bibliothek</strong><small>Öffentliche Bibliothek</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="finanzamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Finanzamt</strong><small>Steuerbehörde</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="fuehrerscheinstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Führerscheinstelle</strong><small>Führerschein & Fahrerlaubnis</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="public_university"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Hochschule / Universität</strong><small>Öffentliche Bildung</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="jobcenter"><img src="assets/category-icons/06-public.png" alt=""><span><strong>Jobcenter / Arbeitsagentur</strong><small>Arbeit & Leistungen</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="landratsamt"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Landratsamt</strong><small>Kreisverwaltung</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="public_school"><img src="assets/category-icons/04-education.png" alt=""><span><strong>Öffentliche Schule</strong><small>Schule in deiner Nähe</small></span></button>
               <button type="button" class="public-more-btn" data-public-search="recycling_center"><img src="assets/category-icons/15-services.png" alt=""><span><strong>Wertstoffhof</strong><small>Recyclinghof / Annahmestelle</small></span></button>
+              <button type="button" class="public-more-btn" data-public-search="zulassungsstelle"><img src="assets/category-icons/09-government.png" alt=""><span><strong>Zulassungsstelle</strong><small>Fahrzeug & Kennzeichen</small></span></button>
             </div>
           </div>
           <div class="public-ki-note"><strong>Viva-KI-Logik:</strong> Erst zeigen wir dir die öffentliche Infrastruktur. Firmen erscheinen erst, wenn du sie ausdrücklich sehen möchtest.</div>
@@ -8195,23 +8195,28 @@ function vivaOpenEmergencyCard(kind){
   wrap.querySelector('.emergency-close').onclick=()=>wrap.remove();
   wrap.onclick=e=>{if(e.target===wrap)wrap.remove();};
 }
+function vivaScrollToResults(){
+  const target=document.querySelector('.results-wrap');
+  if(target) requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
+}
 function vivaRunQuickSearch(filter){
   selectedCategoryFilter=filter;
   renderCategoryFilters();
   saveTreePrefs();
-  search().then(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}));
+  vivaScrollToResults();
+  search();
 }
 function vivaHandleSchnellhilfe(kind){
   if(kind==='police' || kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
 }
 
 async function vivaRunQuickHospital(){
+  vivaScrollToResults();
   if(locationMode==='gps' && !isVivaLocationFresh()){
     const ok=await requestVivaLocation({silent:true});
     if(!ok) return;
   }
   await searchNearbyHospitals();
-  document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function hospitalLabel(tags={}){
   return tags.name || tags.operator || 'Krankenhaus';
@@ -8253,7 +8258,7 @@ async function searchNearbyHospitals(){
   }catch(e){
     console.error('Hospital search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die Krankenhausdaten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
+    els.results.innerHTML='<div class="status">Die Krankenhausdaten konnten gerade nicht vom Server geladen werden. Bitte aktualisiere die Seite und versuche es anschließend erneut.</div>';
   }
 }
 
@@ -8268,7 +8273,8 @@ document.addEventListener('click',e=>{
   if(quick) vivaHandleSchnellzugriff(quick.dataset.schnellzugriff||'');
   const publicBtn=e.target.closest?.('[data-public-search]');
   if(publicBtn){
-    searchNearbyPublicPlace(publicBtn.dataset.publicSearch||'').then(()=>setTimeout(()=>document.querySelector('.results-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}),80));
+    vivaScrollToResults();
+    searchNearbyPublicPlace(publicBtn.dataset.publicSearch||'');
   }
   const moreToggle=e.target.closest?.('#publicMoreToggle');
   if(moreToggle){
@@ -8478,7 +8484,7 @@ async function searchNearbyPublicPlace(publicKey){
   }catch(e){
     console.error('Public place search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die öffentlichen Daten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
+    els.results.innerHTML='<div class="status">Die öffentlichen Daten konnten gerade nicht vom Server geladen werden. Bitte aktualisiere die Seite und versuche es anschließend erneut.</div>';
   }
 }
 function vivaPublicIntentFallback(message=''){
@@ -8638,7 +8644,7 @@ async function searchNearbyToilets(){
   }catch(e){
     console.error('Toilet search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht geladen werden. Bitte erneut versuchen.</div><div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>';
+    els.results.innerHTML='<div class="status">Die WC-Daten konnten gerade nicht vom Server geladen werden. Bitte aktualisiere die Seite und versuche es anschließend erneut.</div><div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>';
     els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
   }
 }
@@ -8672,7 +8678,7 @@ async function searchNearbyPolice(){
   }catch(e){
     console.error('Police search error',e);
     els.count.textContent='0';
-    els.results.innerHTML='<div class="status">Die Polizeidienststellen konnten gerade nicht geladen werden. Bitte erneut versuchen.</div>';
+    els.results.innerHTML='<div class="status">Die Polizeidienststellen konnten gerade nicht vom Server geladen werden. Bitte aktualisiere die Seite und versuche es anschließend erneut.</div>';
   }
 }
 
