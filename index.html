@@ -4220,7 +4220,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
             <span>Czego szukasz?</span>
             <input id="queryInput" placeholder="z. B. Bäckerei, Friseur, Apotheke" autocomplete="off" />
           </label>
-          <label>
+          <label id="searchLocationLabel">
             <span>Gdzie?</span>
             <div class="location-mode-switch" aria-label="Standortmodus">
               <button type="button" class="location-mode-btn active" id="locationModeGps">◎ GPS</button>
@@ -4809,6 +4809,7 @@ function setGuestMode(on){
   if(guestMode) localStorage.setItem('vivaGuestMode','1');
   else localStorage.removeItem('vivaGuestMode');
   applyGuestRadiusOptions();
+  setTimeout(()=>applyGuestLocationControls(),0);
 }
 
 /* ===== v0.90.49 client access architecture =====
@@ -4819,8 +4820,8 @@ function setGuestMode(on){
 const VIVA_CLIENT_PLAN_KEY='vivaClientPlan';
 const VIVA_CLIENT_ACCESS_RULES=Object.freeze({
   guest:Object.freeze({
-    resultLimit:10,
-    radiusValues:['1','5','10'],
+    resultLimit:20,
+    radiusValues:['1','2','3','5','10'],
     photoLimit:3,
     favoritesLimit:0,
     phone:true, website:true, email:false, messengers:false, social:false,
@@ -4879,6 +4880,7 @@ function setClientSubscriptionPlan(plan){
   const next=plan==='plus'?'plus':'free';
   localStorage.setItem(VIVA_CLIENT_PLAN_KEY,next);
   applyGuestRadiusOptions();
+  applyGuestLocationControls();
   if(typeof renderQuickCats==='function') renderQuickCats();
   if(typeof search==='function' && currentView==='home') search();
   return next;
@@ -4937,6 +4939,7 @@ function maybeShowGuestPlusReminder(){
 }
 
 applyGuestRadiusOptions();
+setTimeout(()=>applyGuestLocationControls(),0);
 
 function showToast(message){
   const old=document.querySelector('.app-toast');
@@ -6185,6 +6188,7 @@ function renderCategoryFilters(){
       search();
     };
   });
+  applyGuestLocationControls();
 }
 
 function buildGuestCategoryTree(query=''){
@@ -8157,17 +8161,81 @@ function applyGuestRadiusOptions(){
     sel.dataset.fullOptions=sel.innerHTML;
   }
 
+  const tier=getClientAccessTier();
   const current=String(sel.value||'5');
   const allowed=getClientAccessRules().radiusValues;
+  const radiusLabel=sel.closest('label');
+
+  // For guests the radius is automatic and intentionally hidden from the UI.
+  // The app checks 1 -> 2 -> 3 -> 5 -> 10 km and stops at the first radius with results.
+  if(radiusLabel) radiusLabel.classList.toggle('hidden',tier==='guest');
 
   if(Array.isArray(allowed)){
-    const labelByValue={1:'bis 1 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
+    const labelByValue={1:'bis 1 km',2:'2 km',3:'3 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
     sel.innerHTML=allowed.map(v=>`<option value="${v}">${labelByValue[v]||`${v} km`}</option>`).join('');
     sel.value=allowed.includes(current)?current:(allowed.includes('5')?'5':allowed[0]);
   }else{
     sel.innerHTML=sel.dataset.fullOptions;
     const values=[...sel.options].map(o=>o.value);
     sel.value=values.includes(current)?current:(values.includes('5')?'5':values[0]);
+  }
+}
+
+function applyGuestLocationControls(){
+  const tier=getClientAccessTier();
+  const isGuest=tier==='guest';
+  const modeSwitch=document.querySelector('.location-mode-switch');
+  const locationLabel=document.querySelector('#searchLocationLabel');
+  const manualRow=document.querySelector('#manualLocationRow');
+  const loc=els?.loc || document.querySelector('#locationInput');
+
+  if(!isGuest){
+    if(modeSwitch) modeSwitch.classList.remove('hidden');
+    if(locationLabel) locationLabel.classList.remove('hidden');
+    updateLocationModeButtons();
+    if(locationMode==='manual'){
+      if(manualRow) manualRow.classList.remove('hidden');
+      if(loc) loc.disabled=false;
+    }else{
+      if(manualRow) manualRow.classList.add('hidden');
+      if(loc) loc.disabled=true;
+    }
+    return;
+  }
+
+  // Guest: no separate GPS / Manuell switch. Normal use is always current GPS.
+  if(modeSwitch) modeSwitch.classList.add('hidden');
+
+  // Planning another city remains possible through an explicitly selected company category.
+  // Only then we reveal a simple city/postcode field; this is not shown as a general "Manual" mode.
+  const categoryPlanning=!!selectedCategoryFilter && !['public_bathroom','police'].includes(selectedCategoryFilter);
+  if(locationLabel) locationLabel.classList.toggle('hidden',!categoryPlanning);
+  if(manualRow) manualRow.classList.toggle('hidden',!categoryPlanning);
+
+  if(!categoryPlanning){
+    locationMode='gps';
+    localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+    if(loc){ loc.disabled=true; loc.value=''; }
+    vivaManualCoords=null;
+    localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
+    localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
+    return;
+  }
+
+  if(loc){
+    loc.disabled=false;
+    loc.placeholder='Stadt oder PLZ für diese Kategoriesuche (optional)';
+    const value=loc.value.trim();
+    locationMode=value?'manual':'gps';
+    localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
+  }
+}
+
+function vivaClearRadiusExpandNote(){
+  const note=document.querySelector('#radiusExpandNote');
+  if(note){
+    note.textContent='';
+    note.classList.remove('show');
   }
 }
 
@@ -8227,6 +8295,7 @@ function hospitalLabel(tags={}){
   return tags.name || tags.operator || 'Krankenhaus';
 }
 async function searchNearbyHospitals(){
+  vivaClearRadiusExpandNote();
   const origin=getActiveSearchCoordinates();
   if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
     els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um das nächste Krankenhaus zu finden.</div>';
@@ -8460,10 +8529,14 @@ async function searchNearbyPublicPlace(publicKey){
     return;
   }
   els.title.textContent=cfg.label;
+  vivaClearRadiusExpandNote();
   els.results.innerHTML=`<div class="status">${cfg.label} wird gesucht…</div>`;
   try{
-    let chosen=null, usedRadius=cfg.radiusSteps[cfg.radiusSteps.length-1];
-    for(const radiusKm of cfg.radiusSteps){
+    const isGuest=getClientAccessTier()==='guest';
+    const radiusSteps=isGuest ? [1,2,3,5,10] : cfg.radiusSteps;
+    const maxRadius=radiusSteps[radiusSteps.length-1];
+    let chosen=null, usedRadius=maxRadius;
+    for(const radiusKm of radiusSteps){
       const nearby=await vivaFetchPublicNearby(cfg.endpointKind,origin,radiusKm);
       const list=(nearby.items||[]).map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))}))
         .filter(x=>Number.isFinite(x.distance)&&x.distance<=radiusKm)
@@ -8472,12 +8545,13 @@ async function searchNearbyPublicPlace(publicKey){
     }
     if(!chosen){
       els.count.textContent='0';
-      els.results.innerHTML=`<div class="status">${cfg.empty}</div><div class="public-ki-note">Viva-KI kann danach direkt weiterhelfen – zum Beispiel mit WC, Apotheke oder lokalen Firmen.</div>`;
+      const emptyText=isGuest ? `Kostenlose Gastversion: Bis ${maxRadius} km wurde kein passender Treffer gefunden. Ein größerer Suchradius gehört zum erweiterten Zugang.` : cfg.empty;
+      els.results.innerHTML=`<div class="status">${emptyText}</div><div class="public-ki-note">Viva-KI kann danach direkt weiterhelfen – zum Beispiel mit WC, Apotheke oder lokalen Firmen.</div>`;
       return;
     }
-    const list=chosen.list.slice(0,8);
+    const list=chosen.list.slice(0,20);
     els.count.textContent=String(list.length);
-    const radiusNote=usedRadius>cfg.radiusSteps[0]?`<div class="radius-expand-note show">Im kleineren Umkreis wurde nichts gefunden. Die Suche wurde automatisch auf ${usedRadius} km erweitert.</div>`:'';
+    const radiusNote=isGuest ? '' : (usedRadius>radiusSteps[0]?`<div class="radius-expand-note show">Im kleineren Umkreis wurde nichts gefunden. Die Suche wurde automatisch auf ${usedRadius} km erweitert.</div>`:'');
     els.results.innerHTML=radiusNote+list.map((x,i)=>{
       const tags=x.tags||{};
       const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
@@ -8523,6 +8597,15 @@ async function vivaAskPublicAI(){
   const out=document.querySelector('#publicAiAnswer');
   const message=String(input?.value||'').trim();
   if(!message){ if(out){out.textContent='Schreib kurz, was du suchst.';out.classList.add('show');} return; }
+  if(getClientAccessTier()==='guest'){
+    // Guest KI always searches from the current GPS position. Planning another city is reserved for category search.
+    locationMode='gps';
+    localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+    if(!isVivaLocationFresh()){
+      const ok=await requestVivaLocation({silent:true});
+      if(!ok){ if(out){out.textContent='Für die Gast-KI wird dein aktueller GPS-Standort benötigt.';out.classList.add('show');} return; }
+    }
+  }
   if(out){out.textContent='Viva-KI prüft deine Anfrage…';out.classList.add('show');}
   let intent='unknown';
   const localIntent=vivaPublicIntentFallback(message);
@@ -8615,6 +8698,7 @@ function toiletLabel(tags={}){
   return tags.name || tags.operator || 'Öffentliche Toilette';
 }
 async function searchNearbyToilets(){
+  vivaClearRadiusExpandNote();
   const origin=getActiveSearchCoordinates();
   if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
     els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um Toiletten in deiner Nähe zu finden.</div>';
@@ -8661,6 +8745,7 @@ async function searchNearbyToilets(){
 }
 
 async function searchNearbyPolice(){
+  vivaClearRadiusExpandNote();
   const origin=getActiveSearchCoordinates();
   if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))){
     els.results.innerHTML='<div class="status">GPS-Position wird benötigt, um Polizeidienststellen in deiner Nähe zu finden.</div>';
@@ -8729,6 +8814,8 @@ async function search(){
   const sort=document.querySelector('#sortSelect')?.value||'distance';
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
+  const isGuest=getClientAccessTier()==='guest';
+  const guestRadiusSteps=[1,2,3,5,10];
 
   const baseFilter=(radius)=>companies.filter(c=>
     c.moderationStatus!=='blocked' &&
@@ -8740,11 +8827,11 @@ async function search(){
   );
 
   let effectiveRadius=requestedRadius;
-  let list=baseFilter(effectiveRadius);
+  let list=[];
 
-  if(getClientAccessTier()==='plus' && !list.length){
-    const larger=radiusSteps.filter(r=>r>requestedRadius);
-    for(const candidate of larger){
+  if(isGuest){
+    // Guest search radius is automatic and hidden: 1 -> 2 -> 3 -> 5 -> 10 km.
+    for(const candidate of guestRadiusSteps){
       const candidateList=baseFilter(candidate);
       if(candidateList.length){
         effectiveRadius=candidate;
@@ -8752,17 +8839,34 @@ async function search(){
         break;
       }
     }
+    if(!list.length) effectiveRadius=guestRadiusSteps[guestRadiusSteps.length-1];
+  }else{
+    list=baseFilter(effectiveRadius);
+    if(getClientAccessTier()==='plus' && !list.length){
+      const larger=radiusSteps.filter(r=>r>requestedRadius);
+      for(const candidate of larger){
+        const candidateList=baseFilter(candidate);
+        if(candidateList.length){
+          effectiveRadius=candidate;
+          list=candidateList;
+          break;
+        }
+      }
+    }
   }
 
   const note=document.querySelector('#radiusExpandNote');
   if(note){
-    if(isNonPayingPrivateClient() && !list.length){
+    if(isGuest && !list.length){
+      note.innerHTML='In der kostenlosen Gastversion suchen wir automatisch bis 10 km. In diesem Bereich wurden keine passenden Ergebnisse gefunden.<br><strong>Ein größerer Suchradius gehört zum erweiterten Zugang.</strong>';
+      note.classList.add('show');
+    }else if(!isGuest && isNonPayingPrivateClient() && !list.length){
       note.textContent=vivaTemplate(
         'Im gewählten Umkreis von {from} km wurden keine Ergebnisse gefunden.',
         {from:requestedRadius}
       );
       note.classList.add('show');
-    }else if(list.length && effectiveRadius>requestedRadius){
+    }else if(!isGuest && list.length && effectiveRadius>requestedRadius){
       note.textContent=vivaTemplate(
         'Im Umkreis von {from} km wurden keine Ergebnisse gefunden. Wir zeigen Ergebnisse bis {to} km.',
         {from:requestedRadius,to:effectiveRadius}
@@ -9428,8 +9532,11 @@ els.query.addEventListener('input',()=>{
 });
 els.query.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 els.loc.addEventListener('input',()=>{
-  if(locationMode!=='manual') return;
   const value=els.loc.value.trim();
+  if(getClientAccessTier()==='guest' && selectedCategoryFilter){
+    locationMode=value?'manual':'gps';
+    localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
+  }else if(locationMode!=='manual') return;
   vivaManualCoords=null;
   localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
   const wrap=document.querySelector('#locationStatus');
@@ -9437,8 +9544,8 @@ els.loc.addEventListener('input',()=>{
   if(wrap && text){
     wrap.classList.remove('ok','warn');
     text.textContent=value
-      ? 'Lokalizacja ręczna — naciśnij „Szukaj”, aby użyć.'
-      : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.';
+      ? 'Planung: Dieser Ort wird für die gewählte Kategoriesuche verwendet.'
+      : (getClientAccessTier()==='guest' ? 'Ohne Ortsangabe suchen wir an deinem aktuellen GPS-Standort.' : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.');
   }
 });
 els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});

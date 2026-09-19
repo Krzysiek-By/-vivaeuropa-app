@@ -367,3 +367,12 @@ v0.90.74-R1-PRIVATE-PROFILE-FOUNDATION
 
 [v0.90.80-R1] Öffentliche Einrichtungen & Mobilität – strukturalny szkielet zakończony.
 Dodano: öffentliche Schule, Hochschule/Universität, Bibliothek, Wertstoffhof/Recyclinghof oraz rozpoznawanie tych potrzeb przez Viva-KI.
+
+
+[v0.90.84-R1] GUEST LOCATION SIMPLIFICATION
+- Gast: Auswahl GPS / Manuell auf VE-003 entfernt; Standardnutzung basiert auf aktuellem GPS.
+- Gast: Suchradius bleibt unsichtbar und wird automatisch bis maximal 10 km erweitert.
+- Gast: Planung in einer anderen Stadt bleibt ueber eine bewusst ausgewaehlte Firmenkategorie moeglich; dann erscheint nur ein einfaches Feld fuer Stadt/PLZ.
+- Gast: Viva-KI fuer oeffentliche Hilfe verwendet immer den aktuellen GPS-Standort, nicht den Planungsort einer Kategoriesuche.
+- Gast: Bei null Treffern erklaert der Hinweis den 10-km-Gastbereich und verweist neutral auf einen erweiterten Zugang.
+- Noch NICHT umgesetzt: endgueltiges Gast-KI-Limit / serverseitiges Rate-Limit; dies wird separat festgelegt.
