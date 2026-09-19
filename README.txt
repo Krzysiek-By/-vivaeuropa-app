@@ -390,3 +390,11 @@ Dodano: öffentliche Schule, Hochschule/Universität, Bibliothek, Wertstoffhof/R
 - Krankenhaus dla gościa: GPS maksymalnie do 10 km; brak automatycznego rozszerzania do 25/50 km.
 - Schnellhilfe pozostaje bez zmian i zachowuje osobną logikę alarmową.
 - Viva-KI dla gościa: GPS, 1 poprawne zapytanie na 24 godziny, maksymalnie 250 znaków. Limit jest na tym etapie prototypowo zapisywany lokalnie; przed produkcją musi być egzekwowany także po stronie serwera.
+
+[v0.90.86-R1] GUEST SEARCH UX FIXES
+- Dotyczy testowanego widoku niezarejestrowanego gościa.
+- VE-001: prawny footer nie jest wyświetlany na ekranie splash/start; dokumenty prawne pozostają dostępne w aplikacji poza splash.
+- Ręczne wyszukiwanie: przycisk „Suchen” oraz Enter przewijają ekran od razu do sekcji wyników.
+- Ręczny Radius dla gościa: domyślnie 1 km; dostępne wartości 1 / 3 / 5 / 10 km.
+- Schnellzugriff → WC: kliknięcie od razu przygotowuje sekcję wyników, pobiera GPS i uruchamia dedykowane wyszukiwanie WC; przy braku GPS pokazuje czytelny komunikat.
+- Schnellzugriff i inne istniejące zasady gościa pozostają bez zmian.
