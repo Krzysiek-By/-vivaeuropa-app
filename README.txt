@@ -376,3 +376,17 @@ Dodano: öffentliche Schule, Hochschule/Universität, Bibliothek, Wertstoffhof/R
 - Gast: Viva-KI fuer oeffentliche Hilfe verwendet immer den aktuellen GPS-Standort, nicht den Planungsort einer Kategoriesuche.
 - Gast: Bei null Treffern erklaert der Hinweis den 10-km-Gastbereich und verweist neutral auf einen erweiterten Zugang.
 - Noch NICHT umgesetzt: endgueltiges Gast-KI-Limit / serverseitiges Rate-Limit; dies wird separat festgelegt.
+
+
+[v0.90.85-R1] GUEST SEARCH LOGIC CONSOLIDATION
+- Dotyczy wyłącznie niezarejestrowanego gościa; logika kont zalogowanych nie została zmieniona.
+- Zwykły formularz wyszukiwania jest ręcznym planowaniem: użytkownik wpisuje czego szuka i miasto/PLZ/adres; nie korzysta z GPS.
+- W ręcznym wyszukiwaniu gość może wybrać promień tylko do 10 km.
+- Usunięto kafelek „Alle”, bo nie wnosił osobnej, czytelnej funkcji.
+- „Kategorien” otwiera pełny wybór kategorii, przełącza na ręczne planowanie i po wyborze czeka na wpisanie miejsca oraz naciśnięcie „Suchen”.
+- Kafelki skrótów (Pannenhilfe, Taxi, Apotheke, Tankstelle, Ladestation, Krankenhaus, Rathaus), Schnellzugriff i Öffentliche Orte używają aktualnego GPS i przeszukują cały darmowy zakres do 10 km.
+- Dla gościa wyniki GPS nie zatrzymują się na pierwszym znalezionym promieniu; zbierane są wyniki w całym zakresie 10 km, maksymalnie 20.
+- WC dla gościa: GPS do 10 km, maksymalnie 20 wyników.
+- Krankenhaus dla gościa: GPS maksymalnie do 10 km; brak automatycznego rozszerzania do 25/50 km.
+- Schnellhilfe pozostaje bez zmian i zachowuje osobną logikę alarmową.
+- Viva-KI dla gościa: GPS, 1 poprawne zapytanie na 24 godziny, maksymalnie 250 znaków. Limit jest na tym etapie prototypowo zapisywany lokalnie; przed produkcją musi być egzekwowany także po stronie serwera.

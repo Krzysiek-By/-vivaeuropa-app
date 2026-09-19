@@ -3961,7 +3961,7 @@ body:not(.splash-active) #homeView .guest-plus-note{
 .public-ki-note strong{color:#FFD45A}
 .public-ai-box{margin-top:10px;padding:12px;border:1px solid rgba(255,194,60,.28);border-radius:14px;background:#071D34}
 .public-ai-box strong{color:#fff;font-size:.88rem}.public-ai-box p{margin:3px 0 9px;color:#93ABC7;font-size:.72rem;line-height:1.35}
-.public-ai-row{display:grid;grid-template-columns:1fr auto;gap:8px}.public-ai-row input{min-width:0;min-height:44px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.public-ai-row input::placeholder{color:#718AA7}.public-ai-row button{min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;padding:0 13px}.public-ai-answer{display:none;margin-top:9px;padding:9px 10px;border-radius:11px;background:#0B2848;color:#CFE2FA;font-size:.75rem;line-height:1.4}.public-ai-answer.show{display:block}
+.public-ai-row{display:grid;grid-template-columns:1fr auto;gap:8px}.public-ai-row input{min-width:0;min-height:44px;border:1px solid rgba(83,167,255,.35);border-radius:12px;background:#06182B;color:#fff;padding:0 12px}.public-ai-row input::placeholder{color:#718AA7}.public-ai-row button{min-height:44px;border:1px solid #2D86FF;border-radius:12px;background:#1768FF;color:#fff;font-weight:900;padding:0 13px}.public-ai-limit-note{margin-top:7px;color:#8EA9C7;font-size:.7rem;line-height:1.35}.public-ai-answer{display:none;margin-top:9px;padding:9px 10px;border-radius:11px;background:#0B2848;color:#CFE2FA;font-size:.75rem;line-height:1.4}.public-ai-answer.show{display:block}
 .public-helper-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.public-helper-btn{border:1px solid rgba(83,167,255,.30);background:#0A2949;border-radius:999px;padding:8px 11px;font-size:.76rem;color:#DCEBFB;cursor:pointer}.public-helper-btn:hover{border-color:#2D86FF;background:#0D3158}
 .public-kind-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#0B213B;border:1px solid rgba(83,167,255,.35);color:#CFE2FA;font-size:.70rem;font-weight:800;margin-bottom:6px}.public-kind-badge img{width:16px;height:16px;display:block}
 .public-result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.public-result-actions .place-route,.public-result-actions .ghost{min-height:38px}
@@ -4344,7 +4344,8 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
           <div class="public-ai-box">
             <strong>Frag VivaEuropa</strong>
             <p>Beschreibe kurz, was du brauchst. Viva-KI wählt die passende öffentliche Suche.</p>
-            <div class="public-ai-row"><input id="publicAiInput" type="text" placeholder="z. B. Wo ist der nächste Taxistand?"><button id="publicAiAsk" type="button">Viva-KI fragen</button></div>
+            <div class="public-ai-row"><input id="publicAiInput" type="text" maxlength="250" placeholder="z. B. Wo ist der nächste Taxistand?"><button id="publicAiAsk" type="button">Viva-KI fragen</button></div>
+            <div class="public-ai-limit-note">Kostenlos als Gast: 1 Viva-KI-Frage pro 24 Stunden · maximal 250 Zeichen.</div>
             <div id="publicAiAnswer" class="public-ai-answer" aria-live="polite"></div>
           </div>
         </section>
@@ -6124,7 +6125,6 @@ const VIVA_PUBLIC_SEARCHES={
 };
 
 const VIVA_GUEST_QUICK_CATEGORIES=[
-  {id:'',label:'Alle',icon:'◎'},
   {id:'__categories__',label:'Kategorien',icon:'▦'},
   {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_QUICK_ICON_MAP.roadside},
   {id:'taxi_service',label:'Taxi',image:VIVA_QUICK_ICON_MAP.taxi},
@@ -6176,16 +6176,24 @@ function renderCategoryFilters(){
   }).join('');
 
   root.querySelectorAll('[data-quick-cat]').forEach(btn=>{
-    btn.onclick=()=>{
+    btn.onclick=async()=>{
       const id=btn.dataset.quickCat||'';
       if(id==='__categories__'){
+        vivaSetGuestManualMode();
         openGuestCategoryPicker();
         return;
       }
       selectedCategoryFilter=id;
       renderCategoryFilters();
       saveTreePrefs();
-      search();
+      const ok=await vivaSetGuestGpsMode();
+      if(!ok) return;
+      vivaScrollToResults();
+      if(id==='__hospital__'){
+        await vivaRunQuickHospital();
+      }else{
+        await search({guestGpsQuick:true});
+      }
     };
   });
   applyGuestLocationControls();
@@ -6231,10 +6239,12 @@ function buildGuestCategoryTree(query=''){
   root.querySelectorAll('[data-master-cat]').forEach(btn=>{
     btn.onclick=()=>{
       selectedCategoryFilter=btn.dataset.masterCat||'';
+      vivaSetGuestManualMode();
       closeGuestCategoryPicker();
       renderCategoryFilters();
       saveTreePrefs();
-      search();
+      if(els?.query && !els.query.value.trim()) els.query.value=vivaCategoryLabel(selectedCategoryFilter);
+      setTimeout(()=>els?.loc?.focus(),80);
     };
   });
 }
@@ -8166,9 +8176,9 @@ function applyGuestRadiusOptions(){
   const allowed=getClientAccessRules().radiusValues;
   const radiusLabel=sel.closest('label');
 
-  // For guests the radius is automatic and intentionally hidden from the UI.
-  // The app checks 1 -> 2 -> 3 -> 5 -> 10 km and stops at the first radius with results.
-  if(radiusLabel) radiusLabel.classList.toggle('hidden',tier==='guest');
+  // Gast: der Radius ist nur fuer die manuelle Planung sichtbar.
+  // GPS-Schnellfunktionen ignorieren diese Auswahl und suchen fest bis 10 km.
+  if(radiusLabel) radiusLabel.classList.remove('hidden');
 
   if(Array.isArray(allowed)){
     const labelByValue={1:'bis 1 km',2:'2 km',3:'3 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
@@ -8203,32 +8213,32 @@ function applyGuestLocationControls(){
     return;
   }
 
-  // Guest: no separate GPS / Manuell switch. Normal use is always current GPS.
+  // Gast: das normale Suchformular ist immer eine manuelle Planungssuche.
+  // GPS wird nur ueber Schnellkacheln, Schnellzugriff, oeffentliche Orte und Viva-KI gestartet.
   if(modeSwitch) modeSwitch.classList.add('hidden');
-
-  // Planning another city remains possible through an explicitly selected company category.
-  // Only then we reveal a simple city/postcode field; this is not shown as a general "Manual" mode.
-  const categoryPlanning=!!selectedCategoryFilter && !['public_bathroom','police'].includes(selectedCategoryFilter);
-  if(locationLabel) locationLabel.classList.toggle('hidden',!categoryPlanning);
-  if(manualRow) manualRow.classList.toggle('hidden',!categoryPlanning);
-
-  if(!categoryPlanning){
-    locationMode='gps';
-    localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
-    if(loc){ loc.disabled=true; loc.value=''; }
-    vivaManualCoords=null;
-    localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
-    localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
-    return;
-  }
-
+  if(locationLabel) locationLabel.classList.remove('hidden');
+  if(manualRow) manualRow.classList.remove('hidden');
   if(loc){
     loc.disabled=false;
-    loc.placeholder='Stadt oder PLZ für diese Kategoriesuche (optional)';
-    const value=loc.value.trim();
-    locationMode=value?'manual':'gps';
-    localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
+    loc.placeholder='Stadt, PLZ oder Adresse';
   }
+}
+
+function vivaSetGuestManualMode(){
+  if(getClientAccessTier()!=='guest') return;
+  locationMode='manual';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'manual');
+  applyGuestLocationControls();
+}
+
+async function vivaSetGuestGpsMode(){
+  if(getClientAccessTier()!=='guest') return true;
+  locationMode='gps';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+  if(!isVivaLocationFresh()){
+    return await requestVivaLocation({silent:true});
+  }
+  return true;
 }
 
 function vivaClearRadiusExpandNote(){
@@ -8272,12 +8282,18 @@ function vivaScrollToResults(){
   const target=document.querySelector('.results-wrap');
   if(target) requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
 }
-function vivaRunQuickSearch(filter){
+async function vivaRunQuickSearch(filter){
   selectedCategoryFilter=filter;
   renderCategoryFilters();
   saveTreePrefs();
   vivaScrollToResults();
-  search();
+  if(getClientAccessTier()==='guest'){
+    const ok=await vivaSetGuestGpsMode();
+    if(!ok) return;
+    await search({guestGpsQuick:true});
+    return;
+  }
+  await search();
 }
 function vivaHandleSchnellhilfe(kind){
   if(kind==='police' || kind==='fire' || kind==='notarzt') vivaOpenEmergencyCard(kind);
@@ -8285,7 +8301,10 @@ function vivaHandleSchnellhilfe(kind){
 
 async function vivaRunQuickHospital(){
   vivaScrollToResults();
-  if(locationMode==='gps' && !isVivaLocationFresh()){
+  if(getClientAccessTier()==='guest'){
+    const ok=await vivaSetGuestGpsMode();
+    if(!ok) return;
+  }else if(locationMode==='gps' && !isVivaLocationFresh()){
     const ok=await requestVivaLocation({silent:true});
     if(!ok) return;
   }
@@ -8304,7 +8323,8 @@ async function searchNearbyHospitals(){
   }
   els.title.textContent='Nächstes Krankenhaus';
   els.results.innerHTML='<div class="status">Das nächste Krankenhaus wird gesucht…</div>';
-  const steps=[10,25,50];
+  const isGuest=getClientAccessTier()==='guest';
+  const steps=isGuest?[10]:[10,25,50];
   try{
     let chosen=null, usedRadius=steps[steps.length-1];
     for(const radiusKm of steps){
@@ -8316,12 +8336,14 @@ async function searchNearbyHospitals(){
     }
     if(!chosen){
       els.count.textContent='0';
-      els.results.innerHTML='<div class="status">Im Umkreis von 50 km wurde kein Krankenhaus gefunden.</div>';
+      els.results.innerHTML=isGuest
+        ? '<div class="status">Kostenlose Gastversion: Im Umkreis von 10 km wurde kein Krankenhaus gefunden. Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.</div>'
+        : '<div class="status">Im Umkreis von 50 km wurde kein Krankenhaus gefunden.</div>';
       return;
     }
-    const list=chosen.list.slice(0,5);
+    const list=chosen.list.slice(0,isGuest?20:5);
     els.count.textContent=String(list.length);
-    const radiusNote=usedRadius>10?`<div class="radius-expand-note show">Im kleineren Umkreis wurde kein Krankenhaus gefunden. Die Suche wurde automatisch auf ${usedRadius} km erweitert.</div>`:'';
+    const radiusNote=!isGuest && usedRadius>10?`<div class="radius-expand-note show">Im kleineren Umkreis wurde kein Krankenhaus gefunden. Die Suche wurde automatisch auf ${usedRadius} km erweitert.</div>`:'';
     els.results.innerHTML=radiusNote+list.map((x,i)=>{
       const tags=x.tags||{};
       const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
@@ -8348,7 +8370,13 @@ document.addEventListener('click',e=>{
   const publicBtn=e.target.closest?.('[data-public-search]');
   if(publicBtn){
     vivaScrollToResults();
-    searchNearbyPublicPlace(publicBtn.dataset.publicSearch||'');
+    (async()=>{
+      if(getClientAccessTier()==='guest'){
+        const ok=await vivaSetGuestGpsMode();
+        if(!ok) return;
+      }
+      await searchNearbyPublicPlace(publicBtn.dataset.publicSearch||'');
+    })();
   }
   const moreToggle=e.target.closest?.('#publicMoreToggle');
   if(moreToggle){
@@ -8533,7 +8561,7 @@ async function searchNearbyPublicPlace(publicKey){
   els.results.innerHTML=`<div class="status">${cfg.label} wird gesucht…</div>`;
   try{
     const isGuest=getClientAccessTier()==='guest';
-    const radiusSteps=isGuest ? [1,2,3,5,10] : cfg.radiusSteps;
+    const radiusSteps=isGuest ? [10] : cfg.radiusSteps;
     const maxRadius=radiusSteps[radiusSteps.length-1];
     let chosen=null, usedRadius=maxRadius;
     for(const radiusKm of radiusSteps){
@@ -8592,11 +8620,38 @@ function vivaRunPublicIntent(intent){
   if(VIVA_PUBLIC_SEARCHES[intent]){searchNearbyPublicPlace(intent);return true;}
   return false;
 }
+const VIVA_GUEST_PUBLIC_AI_LAST_KEY='vivaGuestPublicAiLastAt';
+const VIVA_GUEST_PUBLIC_AI_MAX_CHARS=250;
+const VIVA_GUEST_PUBLIC_AI_WINDOW_MS=24*60*60*1000;
+
+function vivaGuestAiRemainingText(){
+  const last=Number(localStorage.getItem(VIVA_GUEST_PUBLIC_AI_LAST_KEY)||0);
+  if(!last) return '';
+  const remaining=Math.max(0,VIVA_GUEST_PUBLIC_AI_WINDOW_MS-(Date.now()-last));
+  if(!remaining) return '';
+  const totalMinutes=Math.ceil(remaining/60000);
+  const hours=Math.floor(totalMinutes/60);
+  const minutes=totalMinutes%60;
+  return hours>0?`${hours} Std. ${minutes} Min.`:`${minutes} Min.`;
+}
+
 async function vivaAskPublicAI(){
   const input=document.querySelector('#publicAiInput');
   const out=document.querySelector('#publicAiAnswer');
   const message=String(input?.value||'').trim();
   if(!message){ if(out){out.textContent='Schreib kurz, was du suchst.';out.classList.add('show');} return; }
+  if(message.length>VIVA_GUEST_PUBLIC_AI_MAX_CHARS){
+    if(out){out.textContent=`Bitte kürze deine Frage auf maximal ${VIVA_GUEST_PUBLIC_AI_MAX_CHARS} Zeichen.`;out.classList.add('show');}
+    return;
+  }
+  if(getClientAccessTier()==='guest'){
+    const remaining=vivaGuestAiRemainingText();
+    if(remaining){
+      if(out){out.textContent=`Deine kostenlose Viva-KI-Frage wurde bereits genutzt. Die nächste Frage ist in ${remaining} möglich.`;out.classList.add('show');}
+      return;
+    }
+    localStorage.setItem(VIVA_GUEST_PUBLIC_AI_LAST_KEY,String(Date.now()));
+  }
   if(getClientAccessTier()==='guest'){
     // Guest KI always searches from the current GPS position. Planning another city is reserved for category search.
     locationMode='gps';
@@ -8629,10 +8684,10 @@ async function vivaAskPublicAI(){
 }
 function vivaHandlePublicForward(action){
   if(action==='wc'){ vivaRunQuickSearch('public_bathroom'); return; }
-  if(action==='taxi_company'){ selectedCategoryFilter='taxi_service'; renderCategoryFilters(); saveTreePrefs(); search(); return; }
+  if(action==='taxi_company'){ vivaRunQuickSearch('taxi_service'); return; }
   if(action==='pharmacy'){ vivaRunQuickSearch('pharmacy'); return; }
-  if(action==='hotel'){ selectedCategoryFilter='hotel'; renderCategoryFilters(); saveTreePrefs(); search(); return; }
-  if(action==='restaurant'){ selectedCategoryFilter='restaurant'; renderCategoryFilters(); saveTreePrefs(); search(); return; }
+  if(action==='hotel'){ vivaRunQuickSearch('hotel'); return; }
+  if(action==='restaurant'){ vivaRunQuickSearch('restaurant'); return; }
   if(action==='station'){ searchNearbyPublicPlace('train_station'); return; }
   if(action==='bus'){ searchNearbyPublicPlace('bus_station'); return; }
 }
@@ -8705,26 +8760,30 @@ async function searchNearbyToilets(){
     els.count.textContent='0';
     return;
   }
-  const radiusKm=5;
+  const isGuest=getClientAccessTier()==='guest';
+  const radiusKm=isGuest?10:5;
   els.title.textContent='WC in deiner Nähe';
-  els.results.innerHTML='<div class="status">Öffentliche Toiletten werden bis maximal 5 km gesucht…</div>';
+  els.results.innerHTML=`<div class="status">Öffentliche Toiletten werden bis maximal ${radiusKm} km gesucht…</div>`;
   try{
     const nearby=await vivaFetchNearby('toilets',origin,radiusKm);
     const all=nearby.items.map(x=>({...x,distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(x.lat),Number(x.lng))}))
-      .filter(x=>Number.isFinite(x.distance) && x.distance<=5)
+      .filter(x=>Number.isFinite(x.distance) && x.distance<=radiusKm)
       .sort((a,b)=>a.distance-b.distance);
     const close=all.filter(x=>x.distance<=1);
-    const list=(close.length?close:all).slice(0,30);
+    const list=(isGuest?all:(close.length?close:all)).slice(0,isGuest?20:30);
     els.count.textContent=String(list.length);
     const reportButton='<div class="wc-add-wrap"><button type="button" class="wc-add-btn" data-wc-add>＋ Neue Toilette melden</button></div>';
     if(!list.length){
-      els.results.innerHTML='<div class="status">Im Umkreis von 5 km wurde keine öffentliche Toilette gefunden.</div><div class="wc-report-status">Kennst du hier eine öffentliche Toilette? Hilf anderen und melde sie bei VivaEuropa.</div>'+reportButton+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
+      const emptyText=isGuest
+        ? 'Kostenlose Gastversion: Im Umkreis von 10 km wurde keine öffentliche Toilette gefunden. Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.'
+        : 'Im Umkreis von 5 km wurde keine öffentliche Toilette gefunden.';
+      els.results.innerHTML='<div class="status">'+emptyText+'</div><div class="wc-report-status">Kennst du hier eine öffentliche Toilette? Hilf anderen und melde sie bei VivaEuropa.</div>'+reportButton+vivaNearbyCacheNote(nearby.cache)+'<div class="osm-credit">Daten: © OpenStreetMap-Mitwirkende · ODbL</div>';
       els.results.querySelector('[data-wc-add]')?.addEventListener('click',()=>vivaOpenWcReport(origin));
       return;
     }
-    const rangeNote=close.length
+    const rangeNote=isGuest
       ? ''
-      : `<div class="radius-expand-note show">Im Umkreis von 1 km wurde keine öffentliche Toilette gefunden. Wir zeigen die nächsten Treffer bis maximal 5 km.</div>`;
+      : (close.length ? '' : `<div class="radius-expand-note show">Im Umkreis von 1 km wurde keine öffentliche Toilette gefunden. Wir zeigen die nächsten Treffer bis maximal 5 km.</div>`);
     els.results.innerHTML=rangeNote+list.map(x=>{
       const tags=x.tags||{};
       const dist=x.distance<1?`${Math.max(1,Math.round(x.distance*1000))} m`:`${x.distance.toFixed(1)} km`;
@@ -8778,7 +8837,14 @@ async function searchNearbyPolice(){
   }
 }
 
-async function search(){
+async function search(options={}){
+  const isGuest=getClientAccessTier()==='guest';
+  const guestGpsQuick=!!options.guestGpsQuick && isGuest;
+
+  if(isGuest && !guestGpsQuick){
+    vivaSetGuestManualMode();
+  }
+
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
 
   if(locationMode==='gps'){
@@ -8786,9 +8852,18 @@ async function search(){
       const ok=await requestVivaLocation({silent:true});
       if(!ok) return;
     }
-  }else if(rawLocation){
-    const ok=await activateManualLocation();
-    if(!ok) return;
+  }else{
+    if(isGuest && !rawLocation){
+      els.title.textContent='Suchergebnisse';
+      els.count.textContent='0';
+      els.results.innerHTML='<div class="status">Bitte gib für die manuelle Suche eine Stadt, PLZ oder Adresse ein.</div>';
+      vivaScrollToResults();
+      return;
+    }
+    if(rawLocation){
+      const ok=await activateManualLocation();
+      if(!ok) return;
+    }
   }
 
   vivaBindGuestSponsoredAd();
@@ -8814,8 +8889,6 @@ async function search(){
   const sort=document.querySelector('#sortSelect')?.value||'distance';
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
-  const isGuest=getClientAccessTier()==='guest';
-  const guestRadiusSteps=[1,2,3,5,10];
 
   const baseFilter=(radius)=>companies.filter(c=>
     c.moderationStatus!=='blocked' &&
@@ -8830,16 +8903,10 @@ async function search(){
   let list=[];
 
   if(isGuest){
-    // Guest search radius is automatic and hidden: 1 -> 2 -> 3 -> 5 -> 10 km.
-    for(const candidate of guestRadiusSteps){
-      const candidateList=baseFilter(candidate);
-      if(candidateList.length){
-        effectiveRadius=candidate;
-        list=candidateList;
-        break;
-      }
-    }
-    if(!list.length) effectiveRadius=guestRadiusSteps[guestRadiusSteps.length-1];
+    // Gast: GPS-Schnellfunktionen durchsuchen immer den gesamten kostenlosen Bereich bis 10 km.
+    // Die normale Suche ist manuell und respektiert den vom Gast gewaehlten Radius (max. 10 km).
+    effectiveRadius=guestGpsQuick?10:Math.min(10,Math.max(1,requestedRadius));
+    list=baseFilter(effectiveRadius);
   }else{
     list=baseFilter(effectiveRadius);
     if(getClientAccessTier()==='plus' && !list.length){
@@ -8858,7 +8925,13 @@ async function search(){
   const note=document.querySelector('#radiusExpandNote');
   if(note){
     if(isGuest && !list.length){
-      note.innerHTML='In der kostenlosen Gastversion suchen wir automatisch bis 10 km. In diesem Bereich wurden keine passenden Ergebnisse gefunden.<br><strong>Ein größerer Suchradius gehört zum erweiterten Zugang.</strong>';
+      if(guestGpsQuick){
+        note.innerHTML='Kostenlose Gastversion: Wir haben deinen aktuellen Standort bis 10 km durchsucht und keinen passenden Treffer gefunden.<br><strong>Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.</strong>';
+      }else if(effectiveRadius<10){
+        note.innerHTML=`Im gewählten Umkreis von ${effectiveRadius} km wurden keine Ergebnisse gefunden.<br><strong>In der kostenlosen Version kannst du den manuellen Suchradius bis 10 km erhoehen.</strong>`;
+      }else{
+        note.innerHTML='In der kostenlosen Version wurden im gewaehlten Umkreis bis 10 km keine passenden Ergebnisse gefunden.<br><strong>Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.</strong>';
+      }
       note.classList.add('show');
     }else if(!isGuest && isNonPayingPrivateClient() && !list.length){
       note.textContent=vivaTemplate(
@@ -9516,10 +9589,22 @@ async function editCompany(id){
 }
 
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',goBack));
-document.querySelector('#searchBtn').onclick=search;
-document.querySelector('#radiusSelect').onchange=()=>{saveTreePrefs();search();};
-document.querySelector('#sortSelect').onchange=()=>{saveTreePrefs();search();};
-document.querySelector('#openFilterSelect').onchange=()=>{saveTreePrefs();search();};
+document.querySelector('#searchBtn').onclick=()=>{
+  if(getClientAccessTier()==='guest') vivaSetGuestManualMode();
+  search();
+};
+document.querySelector('#radiusSelect').onchange=()=>{
+  saveTreePrefs();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
+};
+document.querySelector('#sortSelect').onchange=()=>{
+  saveTreePrefs();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
+};
+document.querySelector('#openFilterSelect').onchange=()=>{
+  saveTreePrefs();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
+};
 els.query.addEventListener('input',()=>{
   if(!selectedCategoryFilter) return;
   const expected=translateCategory(selectedCategoryFilter).trim().toLowerCase();
@@ -9530,12 +9615,12 @@ els.query.addEventListener('input',()=>{
     saveTreePrefs();
   }
 });
-els.query.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+els.query.addEventListener('focus',()=>{if(getClientAccessTier()==='guest') vivaSetGuestManualMode();});
+els.query.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();search();}});
 els.loc.addEventListener('input',()=>{
   const value=els.loc.value.trim();
-  if(getClientAccessTier()==='guest' && selectedCategoryFilter){
-    locationMode=value?'manual':'gps';
-    localStorage.setItem(VIVA_LOCATION_MODE_KEY,locationMode);
+  if(getClientAccessTier()==='guest'){
+    vivaSetGuestManualMode();
   }else if(locationMode!=='manual') return;
   vivaManualCoords=null;
   localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
@@ -9544,11 +9629,11 @@ els.loc.addEventListener('input',()=>{
   if(wrap && text){
     wrap.classList.remove('ok','warn');
     text.textContent=value
-      ? 'Planung: Dieser Ort wird für die gewählte Kategoriesuche verwendet.'
-      : (getClientAccessTier()==='guest' ? 'Ohne Ortsangabe suchen wir an deinem aktuellen GPS-Standort.' : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.');
+      ? 'Planung: Dieser Ort wird für die manuelle Suche verwendet.'
+      : (getClientAccessTier()==='guest' ? 'Bitte Stadt, PLZ oder Adresse für die manuelle Suche eingeben.' : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.');
   }
 });
-els.loc.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+els.loc.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();search();}});
 
 document.querySelector('#locationModeGps').onclick=()=>{
   localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
@@ -10896,15 +10981,10 @@ document.querySelector('#welcomeBenefitsBtn').onclick=()=>{
 };
 document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setGuestMode(true);
-  locationMode='gps';
-  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
-  setLocationMode('gps');
   setView('home');
-  const ok=await requestVivaLocation({silent:true});
-  if(ok){
-    refreshCompanyDistances();
-    await search();
-  }
+  await requestVivaLocation({silent:true});
+  refreshCompanyDistances();
+  vivaSetGuestManualMode();
 };
 
 
@@ -11064,6 +11144,8 @@ window.addEventListener('pageshow',()=>{
   window.setTimeout(showRefreshConfirmation,900);
 });
 
-  </script>
+  
+// v0.90.85-R1: Guest search logic unified: manual planning vs GPS shortcuts, 10 km GPS cap, 20 results, 1 KI query/24h.
+</script>
 </body>
 </html>
