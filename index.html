@@ -828,6 +828,7 @@ main{min-height:calc(100dvh - 72px)}
   box-shadow:0 8px 28px rgba(0,0,0,.18);
 }
 .brand,.brand-text strong{color:var(--b-ink)!important}
+.brand.brand-disabled{cursor:default!important}
 .brand-text small{color:var(--b-gold2)!important}
 .brand-logo{
   background:linear-gradient(145deg,#0d2d55,#07182d)!important;
@@ -2913,6 +2914,7 @@ body:not(.splash-active) #welcomeView .guest-card-emotional .guest-cta{
 }
 
 
+/* ===== v0.90.90 R1 VE-002 verified polish: header logo, guest ad persistence, paid-account copy ===== */
 /* ===== v0.89.2 VE-001 + VE-002 micro polish ===== */
 body:not(.splash-active) #welcomeView .role-title{
   margin-bottom:18px!important;
@@ -4203,7 +4205,7 @@ body.viva-keyboard-open .global-refresh-btn{display:none}
                 <li><strong>Intelligente KI-Funktionen</strong> helfen dir, schneller passende Angebote, Orte und Informationen zu finden.</li>
                 <li>Einige hilfreiche Funktionen bleiben <strong>nur registrierten Nutzern vorbehalten.</strong></li>
               </ul>
-              <p class="guest-emotional-close">Mit einem kostenlosen Konto speicherst du deine Favoriten, entdeckst mehr Vorteile und nutzt <strong>intelligente KI-Funktionen</strong> – damit VivaEuropa <strong>zu deiner persönlichen App für unterwegs wird.</strong></p>
+              <p class="guest-emotional-close">Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen.</p>
               <div class="guest-choice-actions">
                 <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
                 <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
@@ -6898,6 +6900,24 @@ function setView(name, options={}){
   const showNav=(name==='home'||name==='company');
   if(bottomNav) bottomNav.style.display=(window.innerWidth<=800 && showNav)?'flex':'none';
   document.body.classList.toggle('onboarding', ['welcome','account','reset','newPassword','admin','editor'].includes(name));
+
+  // VE-002: górne logo zachowuje standardowy rozmiar jak na pozostałych podstronach,
+  // ale na ekranie wyboru dostępu nie może być linkiem do strony głównej.
+  const topBrand=document.querySelector('.topbar .brand');
+  if(topBrand){
+    const disabledOnWelcome=name==='welcome';
+    topBrand.classList.toggle('brand-disabled',disabledOnWelcome);
+    topBrand.setAttribute('aria-disabled',disabledOnWelcome?'true':'false');
+    topBrand.setAttribute('aria-label',disabledOnWelcome?'VivaEuropa':'VivaEuropa - strona główna');
+    topBrand.tabIndex=disabledOnWelcome?-1:0;
+  }
+
+  // VE-002: reklama gościa ma pozostać widoczna również po odświeżeniu / odtworzeniu widoku.
+  if(name==='welcome'){
+    vivaBindGuestSponsoredAd();
+    vivaUpdateGuestSponsoredAd(false);
+  }
+
   placeLegalFooterInActiveView();
   updateBackButtons();
   if(name==='home') setTimeout(maybeShowGuestPlusReminder, 450);
@@ -9755,7 +9775,10 @@ document.querySelector('#gpsBtn').onclick=async()=>{
   setLocationMode('gps');
   await requestVivaLocation();
 };
-document.querySelectorAll('[data-view="home"]').forEach(b=>b.onclick=()=>setView('home'));
+document.querySelectorAll('[data-view="home"]').forEach(b=>b.onclick=()=>{
+  if(b.classList.contains('brand') && currentView==='welcome') return;
+  setView('home');
+});
 document.querySelector('#navSearch').onclick=()=>{setView('home');setTimeout(()=>els.query.focus(),100)};
 document.querySelector('#loginBtn').onclick=()=>{
   if(isAdmin()){renderAdmin();return;}

@@ -406,3 +406,12 @@ Dodano: öffentliche Schule, Hochschule/Universität, Bibliothek, Wertstoffhof/R
 - Ręczny Radius dla gościa: domyślnie 1 km; dostępne wartości 1 / 3 / 5 / 10 km.
 - Schnellzugriff → WC: kliknięcie od razu przygotowuje sekcję wyników, pobiera GPS i uruchamia dedykowane wyszukiwanie WC; przy braku GPS pokazuje czytelny komunikat.
 - Schnellzugriff i inne istniejące zasady gościa pozostają bez zmian.
+
+=== v0.90.90 R1 — VE-002 CHECKED POLISH ===
+Zakres wyłącznie VE-002 zgodnie z audytem użytkownika:
+- górne logo w lewym rogu: standardowy rozmiar globalny, na VE-002 nieklikalne;
+- duże logo w karcie: bez zmian, nadal bez działania;
+- reklama testowa Thermomix: po odświeżeniu / odtworzeniu VE-002 pozostaje widoczna dla gościa;
+- tekst konta zmieniony na zaakceptowaną wersję premium o płatnym koncie;
+- wcześniej zaakceptowane podlinkowania przycisków i refresh VE-002 nie są zmieniane funkcjonalnie.
+MASTER: VivaEuropa-MASTER-SPEC.docx jest częścią pełnego ZIP-a i ma stałą nazwę.
