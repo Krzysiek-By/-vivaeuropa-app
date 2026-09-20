@@ -4065,6 +4065,18 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 /* ===== v0.90.77 R2 contact + KI communication skeleton ===== */
 .contact-hub{display:grid;gap:13px}.contact-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.contact-step{padding:12px;border:1px solid rgba(83,167,255,.24);border-radius:14px;background:#081E36;color:#DCEBFB;text-align:center;font-size:.78rem;font-weight:850}.contact-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.contact-template-grid button{min-height:44px;border-radius:12px;border:1px solid rgba(83,167,255,.28);background:#0A2949;color:#fff;font-weight:800}.contact-security{padding:13px;border:1px solid rgba(255,194,60,.38);border-radius:15px;background:#2D250B;color:#F7E5A9;line-height:1.5;font-size:.8rem}@media(max-width:620px){.contact-flow{grid-template-columns:repeat(2,1fr)}.contact-template-grid{grid-template-columns:1fr}}
 
+/* ===== v0.90.88 R1: precise result scroll + global refresh ===== */
+.global-refresh-btn{
+  position:fixed;right:16px;bottom:92px;z-index:45;width:48px;height:48px;border-radius:50%;
+  border:1px solid rgba(83,167,255,.55);background:rgba(7,28,50,.94);color:#F4C23C;
+  display:grid;place-items:center;font-size:27px;font-weight:800;line-height:1;cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.global-refresh-btn:active{transform:scale(.96)}
+.global-refresh-btn[disabled]{opacity:.6;cursor:wait}
+@media(min-width:801px){.global-refresh-btn{bottom:24px;right:24px}}
+body.viva-keyboard-open .global-refresh-btn{display:none}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4086,6 +4098,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
       <span id="pullRefreshText">Pociągnij, aby odświeżyć</span>
     </div>
   </div>
+  <button type="button" id="globalRefreshBtn" class="global-refresh-btn" aria-label="Seite aktualisieren" title="Seite aktualisieren">↻</button>
 
   <div id="guestPlusModal" class="guest-plus-modal hidden" aria-hidden="true">
     <div class="guest-plus-modal-backdrop" data-guest-plus-close></div>
@@ -6690,6 +6703,9 @@ function startPullRefresh(){
   if(!wrap || !text) return;
 
   pullRefreshing=true;
+  try{sessionStorage.setItem('vivaForceTopAfterRefresh','1');}catch(_){}
+  const refreshBtn=document.querySelector('#globalRefreshBtn');
+  if(refreshBtn) refreshBtn.disabled=true;
   wrap.classList.add('visible','loading');
   wrap.classList.remove('ready');
   text.textContent='Wird aktualisiert…';
@@ -6748,6 +6764,10 @@ document.addEventListener('touchend',()=>{
 document.addEventListener('touchcancel',()=>{
   if(!pullRefreshing) resetPullRefresh();
 },{passive:true});
+
+document.querySelector('#globalRefreshBtn')?.addEventListener('click',()=>{
+  startPullRefresh();
+});
 
 function showRefreshConfirmation(){
   const box=document.querySelector('#refreshConfirm');
@@ -8280,8 +8300,16 @@ function vivaOpenEmergencyCard(kind){
   wrap.onclick=e=>{if(e.target===wrap)wrap.remove();};
 }
 function vivaScrollToResults(){
-  const target=document.querySelector('.results-wrap');
-  if(target) requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
+  const target=document.querySelector('.results-wrap .section-head') || document.querySelector('.results-wrap');
+  if(!target) return;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const topbar=document.querySelector('.topbar');
+      const offset=(topbar?.getBoundingClientRect().height||0)+12;
+      const top=Math.max(0,target.getBoundingClientRect().top+(window.scrollY||0)-offset);
+      window.scrollTo({top,behavior:'smooth'});
+    });
+  });
 }
 async function vivaRunQuickSearch(filter){
   selectedCategoryFilter=filter;
@@ -8860,6 +8888,7 @@ async function searchNearbyPolice(){
 async function search(options={}){
   const isGuest=getClientAccessTier()==='guest';
   const guestGpsQuick=!!options.guestGpsQuick && isGuest;
+  const userInitiated=!!options.userInitiated;
 
   if(isGuest && !guestGpsQuick){
     vivaSetGuestManualMode();
@@ -8877,8 +8906,8 @@ async function search(options={}){
       els.title.textContent='Suchergebnisse';
       els.count.textContent='0';
       els.results.innerHTML='<div class="status">Bitte gib für die manuelle Suche eine Stadt, PLZ oder Adresse ein.</div>';
-      // v0.90.87: Bei Seitenaufruf/Refresh nicht automatisch zu den Ergebnissen springen.
-      // Ein Scroll erfolgt nur nach einer bewussten Suchaktion des Nutzers (Button/Enter/Shortcut).
+      // Nur nach einer bewussten Suchaktion des Nutzers zu den Ergebnissen springen.
+      if(userInitiated) vivaScrollToResults();
       return;
     }
     if(rawLocation){
@@ -8984,6 +9013,7 @@ async function search(options={}){
   render(list);
   renderMapPins(list);
   saveTreePrefs();
+  if(userInitiated) vivaScrollToResults();
 }
 let selectedRole='user';
 function showAccount(mode, options={}){
@@ -9612,8 +9642,7 @@ async function editCompany(id){
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',goBack));
 document.querySelector('#searchBtn').onclick=()=>{
   if(getClientAccessTier()==='guest') vivaSetGuestManualMode();
-  vivaScrollToResults();
-  search();
+  search({userInitiated:true});
 };
 document.querySelector('#radiusSelect').onchange=()=>{
   saveTreePrefs();
@@ -9638,7 +9667,7 @@ els.query.addEventListener('input',()=>{
   }
 });
 els.query.addEventListener('focus',()=>{if(getClientAccessTier()==='guest') vivaSetGuestManualMode();});
-els.query.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();vivaScrollToResults();search();}});
+els.query.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();search({userInitiated:true});}});
 els.loc.addEventListener('input',()=>{
   const value=els.loc.value.trim();
   if(getClientAccessTier()==='guest'){
@@ -11025,7 +11054,29 @@ async function refreshGpsWhenReturningToApp(){
 }
 
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') refreshGpsWhenReturningToApp();});
-window.addEventListener('pageshow',()=>{refreshGpsWhenReturningToApp();});
+try{if('scrollRestoration' in history) history.scrollRestoration='manual';}catch(_){}
+function vivaResetScrollAfterRefresh(){
+  let forced=false;
+  try{
+    forced=sessionStorage.getItem('vivaForceTopAfterRefresh')==='1';
+    if(forced) sessionStorage.removeItem('vivaForceTopAfterRefresh');
+  }catch(_){}
+  let reloaded=false;
+  try{
+    const nav=performance.getEntriesByType?.('navigation')?.[0];
+    reloaded=nav?.type==='reload';
+  }catch(_){}
+  if(!forced && !reloaded) return;
+  const reset=()=>window.scrollTo({top:0,left:0,behavior:'auto'});
+  reset();
+  requestAnimationFrame(reset);
+  setTimeout(reset,80);
+  setTimeout(reset,260);
+}
+window.addEventListener('pageshow',()=>{
+  vivaResetScrollAfterRefresh();
+  refreshGpsWhenReturningToApp();
+});
 
 
 // v0.90.65: dolna nawigacja jest zawsze przyklejona do viewportu.

@@ -1,3 +1,11 @@
+VivaEuropa v0.90.88-R1-RESULT-SCROLL-GLOBAL-REFRESH
+Datum: 2026-09-20
+
+- Manual search scrolls only after a deliberate search action and lands on the ERGEBNISSE header, not the ad block.
+- Reload/refresh resets the current view to the top instead of restoring an old lower scroll position.
+- Added a small fixed refresh button available on every app screen; pull-to-refresh remains available at the top.
+- No changes to search data, ads, Schnellhilfe, account logic, APIs or assets.
+
 VivaEuropa v0.90.67-R1-LOGIN-SPACING-FIX
 
 Zmiany:
