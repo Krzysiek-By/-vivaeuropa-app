@@ -8877,7 +8877,8 @@ async function search(options={}){
       els.title.textContent='Suchergebnisse';
       els.count.textContent='0';
       els.results.innerHTML='<div class="status">Bitte gib für die manuelle Suche eine Stadt, PLZ oder Adresse ein.</div>';
-      vivaScrollToResults();
+      // v0.90.87: Bei Seitenaufruf/Refresh nicht automatisch zu den Ergebnissen springen.
+      // Ein Scroll erfolgt nur nach einer bewussten Suchaktion des Nutzers (Button/Enter/Shortcut).
       return;
     }
     if(rawLocation){
