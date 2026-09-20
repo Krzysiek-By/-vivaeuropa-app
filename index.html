@@ -4066,6 +4066,7 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 .contact-hub{display:grid;gap:13px}.contact-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.contact-step{padding:12px;border:1px solid rgba(83,167,255,.24);border-radius:14px;background:#081E36;color:#DCEBFB;text-align:center;font-size:.78rem;font-weight:850}.contact-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.contact-template-grid button{min-height:44px;border-radius:12px;border:1px solid rgba(83,167,255,.28);background:#0A2949;color:#fff;font-weight:800}.contact-security{padding:13px;border:1px solid rgba(255,194,60,.38);border-radius:15px;background:#2D250B;color:#F7E5A9;line-height:1.5;font-size:.8rem}@media(max-width:620px){.contact-flow{grid-template-columns:repeat(2,1fr)}.contact-template-grid{grid-template-columns:1fr}}
 
 /* ===== v0.90.88 R1: precise result scroll + global refresh ===== */
+/* v0.90.89 R2: refresh preserves active view + exact scroll position globally */
 .global-refresh-btn{
   position:fixed;right:16px;bottom:92px;z-index:45;width:48px;height:48px;border-radius:50%;
   border:1px solid rgba(83,167,255,.55);background:rgba(7,28,50,.94);color:#F4C23C;
@@ -6660,6 +6661,64 @@ const viewHistory=[];
 const accountModeHistory=[];
 let currentView='home';
 
+// ===== v0.90.89 R2: global refresh state preservation =====
+// Refresh must update the document without throwing the user to another view
+// or another scroll position. This applies to guests and logged-in users.
+const VIVA_REFRESH_STATE_KEY='vivaRefreshStateR2';
+function vivaNavigationIsReload(){
+  try{
+    const url=new URL(window.location.href);
+    if(url.searchParams.has('viva_refresh')) return true;
+    const nav=performance.getEntriesByType?.('navigation')?.[0];
+    return nav?.type==='reload';
+  }catch(_){ return false; }
+}
+const VIVA_WAS_RELOAD=vivaNavigationIsReload();
+
+function vivaSaveRefreshState(){
+  try{
+    const active=document.querySelector('.view.active');
+    const view=(active?.id||'').replace(/View$/,'') || currentView || 'home';
+    const state={
+      view,
+      scrollY:Math.max(0,Math.round(window.scrollY||document.documentElement.scrollTop||0)),
+      module:localStorage.getItem('vivaLastModule')||'',
+      accountMode:typeof accountMode!=='undefined' ? accountMode : '',
+      ts:Date.now()
+    };
+    sessionStorage.setItem(VIVA_REFRESH_STATE_KEY,JSON.stringify(state));
+    localStorage.setItem('vivaLastView',view);
+    if(state.module) localStorage.setItem('vivaLastModule',state.module);
+  }catch(_){ }
+}
+
+function vivaReadRefreshState(){
+  if(!VIVA_WAS_RELOAD) return null;
+  try{
+    const state=JSON.parse(sessionStorage.getItem(VIVA_REFRESH_STATE_KEY)||'null');
+    if(!state || !Number.isFinite(Number(state.scrollY))) return null;
+    if(Date.now()-Number(state.ts||0)>10*60*1000) return null;
+    return state;
+  }catch(_){ return null; }
+}
+
+function vivaRestoreRefreshScroll(){
+  const state=vivaReadRefreshState();
+  if(!state) return;
+  const y=Math.max(0,Number(state.scrollY)||0);
+  const restore=()=>window.scrollTo({top:y,left:0,behavior:'auto'});
+  // setView() and asynchronously rendered content may still modify layout,
+  // therefore restore a few times during the first paint only.
+  restore();
+  requestAnimationFrame(restore);
+  setTimeout(restore,80);
+  setTimeout(restore,240);
+  setTimeout(()=>{restore(); try{sessionStorage.removeItem(VIVA_REFRESH_STATE_KEY);}catch(_){ }},650);
+}
+
+window.addEventListener('pagehide',vivaSaveRefreshState);
+window.addEventListener('beforeunload',vivaSaveRefreshState);
+
 
 function updateBackButtons(){
   const logged=localStorage.getItem('vivaLoggedIn')==='1';
@@ -6703,7 +6762,7 @@ function startPullRefresh(){
   if(!wrap || !text) return;
 
   pullRefreshing=true;
-  try{sessionStorage.setItem('vivaForceTopAfterRefresh','1');}catch(_){}
+  vivaSaveRefreshState();
   const refreshBtn=document.querySelector('#globalRefreshBtn');
   if(refreshBtn) refreshBtn.disabled=true;
   wrap.classList.add('visible','loading');
@@ -10693,6 +10752,13 @@ function restoreExactView(){
 
   if(last==='module'){
     const key=localStorage.getItem('vivaLastModule')||'user';
+    if(key.startsWith('legal:')){
+      const legalKey=key.slice('legal:'.length);
+      if(vivaLegalDocuments[legalKey]){
+        openLegalDocument(legalKey);
+        return true;
+      }
+    }
     if(moduleData[key]){
       openModule(key);
       return true;
@@ -11055,26 +11121,12 @@ async function refreshGpsWhenReturningToApp(){
 
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') refreshGpsWhenReturningToApp();});
 try{if('scrollRestoration' in history) history.scrollRestoration='manual';}catch(_){}
-function vivaResetScrollAfterRefresh(){
-  let forced=false;
-  try{
-    forced=sessionStorage.getItem('vivaForceTopAfterRefresh')==='1';
-    if(forced) sessionStorage.removeItem('vivaForceTopAfterRefresh');
-  }catch(_){}
-  let reloaded=false;
-  try{
-    const nav=performance.getEntriesByType?.('navigation')?.[0];
-    reloaded=nav?.type==='reload';
-  }catch(_){}
-  if(!forced && !reloaded) return;
-  const reset=()=>window.scrollTo({top:0,left:0,behavior:'auto'});
-  reset();
-  requestAnimationFrame(reset);
-  setTimeout(reset,80);
-  setTimeout(reset,260);
-}
 window.addEventListener('pageshow',()=>{
-  vivaResetScrollAfterRefresh();
+  // A reload restores the same view/scroll instead of starting navigation/search.
+  if(VIVA_WAS_RELOAD){
+    vivaRestoreRefreshScroll();
+    return;
+  }
   refreshGpsWhenReturningToApp();
 });
 
@@ -11198,11 +11250,15 @@ updateNewPasswordSubmitState();
   await ensureVivaPhotoStorage();
 
   renderQuickCats();
-  if(shouldUsePrivateClientSearchFlow()){
+  if(VIVA_WAS_RELOAD){
+    // Restore the current UI without firing a fresh search merely because the page was refreshed.
+    render(companies);
+  }else if(shouldUsePrivateClientSearchFlow()){
     await search();
   }else{
     render(companies);
   }
+  if(VIVA_WAS_RELOAD) vivaRestoreRefreshScroll();
   setTimeout(()=>{revalidateStoredCompanyCoordinates();},250);
 })();
 
