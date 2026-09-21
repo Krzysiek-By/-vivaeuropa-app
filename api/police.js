@@ -44,14 +44,14 @@ function isOrdinaryPublicStation(tags={}){
 
 async function fetchOverpass(url,q){
   const ctrl=new AbortController();
-  const timer=setTimeout(()=>ctrl.abort(),10000);
+  const timer=setTimeout(()=>ctrl.abort(),5500);
   try{
     const r=await fetch(url,{
       method:'POST',
       headers:{
         'content-type':'application/x-www-form-urlencoded;charset=UTF-8',
         'accept':'application/json',
-        'user-agent':'VivaEuropa/0.90.54 (public police station search)'
+        'user-agent':'VivaEuropa/0.90.55 (public police station search)'
       },
       body:'data='+encodeURIComponent(q),
       signal:ctrl.signal
@@ -64,7 +64,7 @@ async function fetchOverpass(url,q){
 }
 
 export default async function handler(req,res){
-  res.setHeader('Cache-Control','s-maxage=300, stale-while-revalidate=900');
+  res.setHeader('Cache-Control','s-maxage=900, stale-while-revalidate=3600');
   const lat=Number(req.query?.lat), lng=Number(req.query?.lng);
   const radiusKm=Math.min(30,Math.max(1,Number(req.query?.radius||5)));
   if(!Number.isFinite(lat)||!Number.isFinite(lng)) return res.status(400).json({error:'invalid_coordinates'});
@@ -72,7 +72,7 @@ export default async function handler(req,res){
   const radius=Math.round(radiusKm*1000);
   // Keep this query deliberately simple and aligned with the WC endpoint.
   // Explicit node/way/relation clauses are more portable across Overpass instances than nwr shorthand.
-  const q=`[out:json][timeout:18];(node["amenity"="police"](around:${radius},${lat},${lng});way["amenity"="police"](around:${radius},${lat},${lng});relation["amenity"="police"](around:${radius},${lat},${lng}););out center tags 120;`;
+  const q=`[out:json][timeout:10];(node["amenity"="police"](around:${radius},${lat},${lng});way["amenity"="police"](around:${radius},${lat},${lng});relation["amenity"="police"](around:${radius},${lat},${lng}););out center tags 120;`;
 
   let lastError;
   for(const url of OVERPASS_ENDPOINTS){
