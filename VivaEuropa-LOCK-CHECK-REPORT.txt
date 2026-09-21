@@ -1,0 +1,40 @@
+VivaEuropa LOCK CHECK REPORT
+Date: 2026-09-21
+Release candidate: v0.90.91 R1 — LOCK GUARD + VE-002 RESTORE
+
+SOURCE BASE
+- VivaEuropa-v0.90.90-R2-VE002-AD-SPACING-FULL(1).zip
+- ZIP integrity of source: PASS (64 entries, testzip=None)
+- Latest user MASTER replaced into release before packaging.
+
+DETECTED REGRESSION IN SOURCE R2
+- VE-002 Thermomix markup existed.
+- assets/ads/thermomix-test.png existed.
+- badge spacing 12 px existed.
+- BUT visibility used: welcomeAd.classList.toggle('hidden', getClientAccessTier() !== 'guest')
+- This could hide the VE-002 ad when stale/local saved login state existed, despite VE-002 being the pre-auth access screen.
+- Negative guard test against source R2: FAIL as expected; regression detected.
+
+RESTORED GREEN LOCK
+- On VE-002, ve002SponsoredAd is no longer hidden based on saved account tier.
+- Thermomix ad remains present on VE-002.
+- Thermomix asset preserved.
+- Anzeige · Test margin-bottom remains 12 px.
+- Premium text preserved.
+- VE-002 logo/link lock checks preserved.
+
+AUTOMATED GUARD
+- VivaEuropa-LOCKS.json added.
+- scripts/check-locks.py added.
+- LOCK CHECK result on candidate: PASS (13 checks).
+- JavaScript syntax check of all inline scripts: PASS.
+
+HASHES
+index.html SHA-256: b83bf4339866362c93da74e9f3104fb15a0ec8cf8e9d16a80cf385bfd14ed7d9
+VivaEuropa-MASTER-SPEC.docx SHA-256: a9e98abf7c0507c0dd52ba7cbf71fe6bca81b28e85d37080221176479b469d50
+assets/ads/thermomix-test.png SHA-256: ad51cb2eafdeec6393ccd2ced6c528d584b93b003779d3edba9a5185d2ce5182
+
+LIMITATION
+- Container policy blocked launching the local app in Chromium (ERR_BLOCKED_BY_ADMINISTRATOR), so full runtime browser refresh behavior could not be executed here.
+- Static lock guard, negative regression test, asset checks, CSS check and JS syntax checks passed.
+- Final runtime check remains on the user's deployed iPhone/browser.

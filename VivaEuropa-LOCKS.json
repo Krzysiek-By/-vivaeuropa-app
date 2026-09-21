@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "project": "VivaEuropa",
+  "policy": {
+    "green_lock_change_requires_exact_user_word": "zezwalam",
+    "release_block_on_failure": true,
+    "master_filename": "VivaEuropa-MASTER-SPEC.docx"
+  },
+  "locks": [
+    {
+      "id": "VE-001",
+      "status": "GREEN_LOCK",
+      "checks": [
+        {"type": "contains", "file": "index.html", "value": "id=\"splashScreen\""},
+        {"type": "contains", "file": "index.html", "value": "vivaeuropa-logo-full.png"}
+      ]
+    },
+    {
+      "id": "VE-002",
+      "status": "GREEN_LOCK",
+      "checks": [
+        {"type": "contains", "file": "index.html", "value": "id=\"welcomeView\""},
+        {"type": "contains", "file": "index.html", "value": "id=\"ve002SponsoredAd\""},
+        {"type": "contains", "file": "index.html", "value": "assets/ads/thermomix-test.png"},
+        {"type": "file_exists", "file": "assets/ads/thermomix-test.png"},
+        {"type": "contains", "file": "index.html", "value": ".ve002-sponsored-label{display:inline-flex;align-items:center;margin:0 0 12px"},
+        {"type": "contains", "file": "index.html", "value": "Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen."},
+        {"type": "contains", "file": "index.html", "value": "if(welcomeAd) welcomeAd.classList.remove('hidden');"},
+        {"type": "not_contains", "file": "index.html", "value": "if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');"},
+        {"type": "contains", "file": "index.html", "value": "const disabledOnWelcome=name==='welcome';"},
+        {"type": "contains", "file": "index.html", "value": "document.querySelector('#welcomeGuestBtn').onclick"},
+        {"type": "contains", "file": "index.html", "value": "document.querySelector('#welcomeBenefitsBtn').onclick"}
+      ]
+    }
+  ]
+}

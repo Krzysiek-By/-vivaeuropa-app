@@ -8860,7 +8860,8 @@ function vivaUpdateGuestSponsoredAd(show=false){
   const ad=document.querySelector('#guestSponsoredAd');
   if(ad) ad.classList.toggle('hidden',!visible);
   const welcomeAd=document.querySelector('#ve002SponsoredAd');
-  if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');
+  // VE-002 LOCK: this is the pre-auth access screen, therefore its guest ad must be visible whenever VE-002 is shown.
+  if(welcomeAd) welcomeAd.classList.remove('hidden');
 }
 function vivaBindGuestSponsoredAd(){
   const openExternal=(url)=>window.open(url,'_blank','noopener,noreferrer');
