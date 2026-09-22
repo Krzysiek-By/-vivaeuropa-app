@@ -4080,6 +4080,119 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 @media(min-width:801px){.global-refresh-btn{bottom:24px;right:24px}}
 body.viva-keyboard-open .global-refresh-btn{display:none}
 
+
+
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW · PENDING =====
+   Scope: #welcomeView only. Main/production remains unchanged until explicit final approval. */
+body:not(.splash-active) #welcomeView .premium-welcome-grid{
+  gap:18px!important;
+}
+body:not(.splash-active) #welcomeView .premium-auth-card{
+  background:linear-gradient(180deg,rgba(10,36,68,.78),rgba(7,28,53,.88))!important;
+  border:1px solid rgba(92,169,255,.28)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+body:not(.splash-active) #welcomeView .premium-compare-stack{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:16px!important;
+}
+body:not(.splash-active) #welcomeView .premium-compare-card{
+  display:block!important;
+  text-align:left!important;
+  padding:20px!important;
+  border-radius:22px!important;
+  min-width:0!important;
+}
+body:not(.splash-active) #welcomeView .premium-guest-card{
+  background:linear-gradient(180deg,rgba(8,28,52,.86),rgba(7,24,45,.92))!important;
+  border:1px solid rgba(148,177,211,.20)!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card{
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(11,40,73,.94),rgba(6,27,51,.98))!important;
+  border:1px solid rgba(244,176,0,.76)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.22),0 0 30px rgba(244,176,0,.09)!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 90% 0%,rgba(255,203,74,.09),transparent 32%);
+}
+body:not(.splash-active) #welcomeView .premium-card-head{
+  position:relative;z-index:1;display:flex;align-items:flex-start;gap:12px;margin-bottom:16px!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-head h3{
+  margin:1px 0 5px!important;font-size:21px!important;line-height:1.16!important;color:#F7FAFF!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-head p{
+  margin:0!important;font-size:13.5px!important;line-height:1.42!important;color:#9FB3CC!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon{
+  width:42px;height:42px;min-width:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;font-weight:900;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon-muted{
+  background:rgba(145,172,205,.12);border:1px solid rgba(160,185,215,.18);color:#C0D0E3;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon-gold{
+  background:rgba(244,176,0,.12);border:1px solid rgba(244,176,0,.40);color:#FFCB4A;
+}
+body:not(.splash-active) #welcomeView .premium-feature-list{
+  position:relative;z-index:1;display:grid;gap:0;margin-top:4px;
+}
+body:not(.splash-active) #welcomeView .premium-feature-row{
+  display:grid;grid-template-columns:28px minmax(0,1fr) 28px;gap:10px;align-items:center;
+  padding:11px 0;border-top:1px solid rgba(255,255,255,.065);
+}
+body:not(.splash-active) #welcomeView .premium-feature-row:first-child{border-top:0}
+body:not(.splash-active) #welcomeView .premium-state{
+  width:22px;height:22px;border-radius:999px;display:grid;place-items:center;font-size:14px;font-weight:950;line-height:1;
+}
+body:not(.splash-active) #welcomeView .premium-state.negative{
+  background:rgba(166,181,201,.10);border:1px solid rgba(173,192,214,.17);color:#A9BAD0;
+}
+body:not(.splash-active) #welcomeView .premium-state.positive{
+  background:rgba(244,176,0,.12);border:1px solid rgba(244,176,0,.44);color:#FFCB4A;
+}
+body:not(.splash-active) #welcomeView .premium-feature-copy{min-width:0;display:block}
+body:not(.splash-active) #welcomeView .premium-feature-copy strong{
+  display:block;color:#F5F9FF!important;font-size:14px!important;line-height:1.25!important;font-weight:850!important;
+}
+body:not(.splash-active) #welcomeView .premium-feature-copy small{
+  display:block;margin-top:3px;color:#94AAC4;font-size:12.5px;line-height:1.35;
+}
+body:not(.splash-active) #welcomeView .premium-feature-glyph{
+  justify-self:end;color:#D3E1F2;font-size:20px;font-weight:800;opacity:.82;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .premium-feature-glyph{color:#FFCB4A;opacity:.96}
+body:not(.splash-active) #welcomeView .premium-account-summary{
+  position:relative;z-index:1;margin:14px 0 0!important;padding:14px 15px!important;
+  border-radius:15px;border:1px solid rgba(244,176,0,.20);background:rgba(244,176,0,.055)!important;
+  color:#B7CAE1!important;font-size:13px!important;line-height:1.48!important;text-align:center!important;
+}
+body:not(.splash-active) #welcomeView .premium-choice-actions{
+  position:relative;z-index:1;margin-top:16px!important;gap:10px!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .guest-benefits-cta{
+  min-height:56px!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .guest-cta{
+  min-height:50px!important;
+}
+body:not(.splash-active) #welcomeView .ve002-sponsored-ad{
+  margin-top:24px!important;
+}
+@media(max-width:520px){
+  body:not(.splash-active) #welcomeView .premium-compare-card{padding:17px!important;border-radius:19px!important}
+  body:not(.splash-active) #welcomeView .premium-card-head{gap:10px;margin-bottom:13px!important}
+  body:not(.splash-active) #welcomeView .premium-card-icon{width:39px;height:39px;min-width:39px;border-radius:12px;font-size:19px}
+  body:not(.splash-active) #welcomeView .premium-card-head h3{font-size:19px!important}
+  body:not(.splash-active) #welcomeView .premium-feature-row{grid-template-columns:25px minmax(0,1fr) 24px;gap:8px;padding:10px 0}
+  body:not(.splash-active) #welcomeView .premium-feature-copy strong{font-size:13.5px!important}
+  body:not(.splash-active) #welcomeView .premium-feature-copy small{font-size:12px}
+  body:not(.splash-active) #welcomeView .premium-feature-glyph{font-size:18px}
+  body:not(.splash-active) #welcomeView .premium-account-summary{font-size:12.5px!important;padding:13px!important}
+}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4173,43 +4286,60 @@ body.viva-keyboard-open .global-refresh-btn{display:none}
         <div class="welcome-card">
           <img src="vivaeuropa-logo-full.png" class="welcome-logo" alt="VivaEuropa">
           <p class="eyebrow">VE-002</p>
-          <h2>Witaj w VivaEuropa</h2>
-          <p>Wybierz, jak chcesz korzystać z VivaEuropa.</p>
-          <div class="welcome-grid">
-            <div class="welcome-main">
+          <h2>Willkommen bei VivaEuropa</h2>
+          <p>Wähle, wie du VivaEuropa nutzen möchtest.</p>
+          <div class="welcome-grid premium-welcome-grid">
+            <div class="welcome-main premium-auth-card">
               <div class="role-box">
-                <div class="role-title">Typ konta</div>
+                <div class="role-title">Kontotyp</div>
                 <div class="role-actions">
-                  <button class="role-chip active" data-role="user">Użytkownik</button>
-                  <button class="role-chip" data-role="company">Firma</button>
+                  <button class="role-chip active" data-role="user">Nutzer</button>
+                  <button class="role-chip" data-role="company">Unternehmen</button>
                 </div>
               </div>
               <div class="welcome-actions">
-                <button class="primary" id="welcomeLoginBtn">Zaloguj się</button>
-                <button class="ghost" id="welcomeRegisterBtn">Załóż konto</button>
+                <button class="primary" id="welcomeLoginBtn">Anmelden</button>
+                <button class="ghost" id="welcomeRegisterBtn">Konto erstellen</button>
               </div>
             </div>
-            <div class="guest-card guest-card-emotional">
-              <div class="guest-head">
-                <div class="guest-icon" aria-hidden="true">👤</div>
-                <div>
-                  <h3>Als Gast weitermachen</h3>
-                  <p class="guest-emotional-intro">Du kannst VivaEuropa auch ohne Konto nutzen. Aber dann verpasst du genau die Vorteile, die dir unterwegs <strong>Zeit, Geld und gute Gelegenheiten sparen können.</strong></p>
+
+            <div class="premium-compare-stack">
+              <section class="guest-card premium-compare-card premium-guest-card" aria-labelledby="ve002GuestTitle">
+                <div class="premium-card-head">
+                  <div class="premium-card-icon premium-card-icon-muted" aria-hidden="true">👤</div>
+                  <div>
+                    <h3 id="ve002GuestTitle">Als Gast</h3>
+                    <p>Nutze VivaEuropa ohne Konto, aber mit Einschränkungen.</p>
+                  </div>
                 </div>
-              </div>
-              <ul class="guest-list guest-list-emotional">
-                <li><strong>Exklusive Rabatte und Vorteile</strong> bleiben dir verborgen.</li>
-                <li><strong>Besondere Angebote und Aktionen</strong> siehst du als Gast nicht.</li>
-                <li>Deine <strong>Lieblingsorte und interessante Unternehmen</strong> kannst du nicht speichern.</li>
-                <li>VivaEuropa passt sich <strong>nicht an deine persönlichen Interessen</strong> an.</li>
-                <li><strong>Intelligente KI-Funktionen</strong> helfen dir, schneller passende Angebote, Orte und Informationen zu finden.</li>
-                <li>Einige hilfreiche Funktionen bleiben <strong>nur registrierten Nutzern vorbehalten.</strong></li>
-              </ul>
-              <p class="guest-emotional-close">Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen.</p>
-              <div class="guest-choice-actions">
-                <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
-                <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
-              </div>
+                <div class="premium-feature-list premium-feature-list-negative">
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine Favoriten</strong><small>Du kannst keine Orte oder Unternehmen speichern.</small></span><span class="premium-feature-glyph" aria-hidden="true">♡</span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine Rabatte &amp; Aktionen</strong><small>Exklusive Angebote bleiben dir verborgen.</small></span><span class="premium-feature-glyph" aria-hidden="true">%</span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Begrenzte KI</strong><small>Du nutzt nur eingeschränkte KI-Funktionen.</small></span><span class="premium-feature-glyph" aria-hidden="true">✦</span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine persönliche App-Anpassung</strong><small>VivaEuropa passt sich nicht an deine Interessen an.</small></span><span class="premium-feature-glyph" aria-hidden="true">☷</span></div>
+                </div>
+              </section>
+
+              <section class="guest-card premium-compare-card premium-account-card" aria-labelledby="ve002PremiumTitle">
+                <div class="premium-card-head">
+                  <div class="premium-card-icon premium-card-icon-gold" aria-hidden="true">♛</div>
+                  <div>
+                    <h3 id="ve002PremiumTitle">Mit Premium-Konto</h3>
+                    <p>Hol dir alle Vorteile und mach mehr aus deiner Zeit.</p>
+                  </div>
+                </div>
+                <div class="premium-feature-list premium-feature-list-positive">
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Favoriten speichern</strong><small>Deine Lieblingsorte und Unternehmen immer dabei.</small></span><span class="premium-feature-glyph" aria-hidden="true">♡</span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Exklusive Vorteile</strong><small>Zugriff auf besondere Angebote und Aktionen.</small></span><span class="premium-feature-glyph" aria-hidden="true">◇</span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Intelligente KI-Funktionen</strong><small>Findet schneller passende Angebote, Orte und Infos.</small></span><span class="premium-feature-glyph" aria-hidden="true">✦</span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Größere Suchradien</strong><small>Entdecke mehr Möglichkeiten in deiner Umgebung.</small></span><span class="premium-feature-glyph" aria-hidden="true">⌖</span></div>
+                </div>
+                <p class="premium-account-summary">Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen.</p>
+                <div class="guest-choice-actions premium-choice-actions">
+                  <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
+                  <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
+                </div>
+              </section>
             </div>
           </div>
           <div class="ve002-sponsored-ad hidden" id="ve002SponsoredAd" aria-label="Anzeige">
