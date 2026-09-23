@@ -4080,6 +4080,312 @@ body:not(.splash-active) #resetView .reset-card-bottom-space{
 @media(min-width:801px){.global-refresh-btn{bottom:24px;right:24px}}
 body.viva-keyboard-open .global-refresh-btn{display:none}
 
+
+
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW · PENDING =====
+   Scope: #welcomeView only. Main/production remains unchanged until explicit final approval. */
+body:not(.splash-active) #welcomeView .premium-welcome-grid{
+  gap:18px!important;
+}
+body:not(.splash-active) #welcomeView .premium-auth-card{
+  background:linear-gradient(180deg,rgba(10,36,68,.78),rgba(7,28,53,.88))!important;
+  border:1px solid rgba(92,169,255,.28)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+body:not(.splash-active) #welcomeView .premium-compare-stack{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:16px!important;
+}
+body:not(.splash-active) #welcomeView .premium-compare-card{
+  display:block!important;
+  text-align:left!important;
+  padding:20px!important;
+  border-radius:22px!important;
+  min-width:0!important;
+}
+body:not(.splash-active) #welcomeView .premium-guest-card{
+  background:linear-gradient(180deg,rgba(8,28,52,.86),rgba(7,24,45,.92))!important;
+  border:1px solid rgba(148,177,211,.20)!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card{
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(11,40,73,.94),rgba(6,27,51,.98))!important;
+  border:1px solid rgba(244,176,0,.76)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.22),0 0 30px rgba(244,176,0,.09)!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 90% 0%,rgba(255,203,74,.09),transparent 32%);
+}
+body:not(.splash-active) #welcomeView .premium-card-head{
+  position:relative;z-index:1;display:flex;align-items:flex-start;gap:12px;margin-bottom:16px!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-head h3{
+  margin:1px 0 5px!important;font-size:21px!important;line-height:1.16!important;color:#F7FAFF!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-head p{
+  margin:0!important;font-size:13.5px!important;line-height:1.42!important;color:#9FB3CC!important;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon{
+  width:42px;height:42px;min-width:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;font-weight:900;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon-muted{
+  background:rgba(145,172,205,.12);border:1px solid rgba(160,185,215,.18);color:#C0D0E3;
+}
+body:not(.splash-active) #welcomeView .premium-card-icon-gold{
+  background:rgba(244,176,0,.12);border:1px solid rgba(244,176,0,.40);color:#FFCB4A;
+}
+body:not(.splash-active) #welcomeView .premium-feature-list{
+  position:relative;z-index:1;display:grid;gap:0;margin-top:4px;
+}
+body:not(.splash-active) #welcomeView .premium-feature-row{
+  display:grid;grid-template-columns:28px minmax(0,1fr) 28px;gap:10px;align-items:center;
+  padding:11px 0;border-top:1px solid rgba(255,255,255,.065);
+}
+body:not(.splash-active) #welcomeView .premium-feature-row:first-child{border-top:0}
+body:not(.splash-active) #welcomeView .premium-state{
+  width:22px;height:22px;border-radius:999px;display:grid;place-items:center;font-size:14px;font-weight:950;line-height:1;
+}
+body:not(.splash-active) #welcomeView .premium-state.negative{
+  background:rgba(166,181,201,.10);border:1px solid rgba(173,192,214,.17);color:#A9BAD0;
+}
+body:not(.splash-active) #welcomeView .premium-state.positive{
+  background:rgba(244,176,0,.12);border:1px solid rgba(244,176,0,.44);color:#FFCB4A;
+}
+body:not(.splash-active) #welcomeView .premium-feature-copy{min-width:0;display:block}
+body:not(.splash-active) #welcomeView .premium-feature-copy strong{
+  display:block;color:#F5F9FF!important;font-size:14px!important;line-height:1.25!important;font-weight:850!important;
+}
+body:not(.splash-active) #welcomeView .premium-feature-copy small{
+  display:block;margin-top:3px;color:#94AAC4;font-size:12.5px;line-height:1.35;
+}
+body:not(.splash-active) #welcomeView .premium-feature-glyph{
+  justify-self:end;color:#D3E1F2;font-size:20px;font-weight:800;opacity:.82;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .premium-feature-glyph{color:#FFCB4A;opacity:.96}
+body:not(.splash-active) #welcomeView .premium-account-summary{
+  position:relative;z-index:1;margin:14px 0 0!important;padding:14px 15px!important;
+  border-radius:15px;border:1px solid rgba(244,176,0,.20);background:rgba(244,176,0,.055)!important;
+  color:#B7CAE1!important;font-size:13px!important;line-height:1.48!important;text-align:center!important;
+}
+body:not(.splash-active) #welcomeView .premium-choice-actions{
+  position:relative;z-index:1;margin-top:16px!important;gap:10px!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .guest-benefits-cta{
+  min-height:56px!important;
+}
+body:not(.splash-active) #welcomeView .premium-account-card .guest-cta{
+  min-height:50px!important;
+}
+body:not(.splash-active) #welcomeView .ve002-sponsored-ad{
+  margin-top:24px!important;
+}
+@media(max-width:520px){
+  body:not(.splash-active) #welcomeView .premium-compare-card{padding:17px!important;border-radius:19px!important}
+  body:not(.splash-active) #welcomeView .premium-card-head{gap:10px;margin-bottom:13px!important}
+  body:not(.splash-active) #welcomeView .premium-card-icon{width:39px;height:39px;min-width:39px;border-radius:12px;font-size:19px}
+  body:not(.splash-active) #welcomeView .premium-card-head h3{font-size:19px!important}
+  body:not(.splash-active) #welcomeView .premium-feature-row{grid-template-columns:25px minmax(0,1fr) 24px;gap:8px;padding:10px 0}
+  body:not(.splash-active) #welcomeView .premium-feature-copy strong{font-size:13.5px!important}
+  body:not(.splash-active) #welcomeView .premium-feature-copy small{font-size:12px}
+  body:not(.splash-active) #welcomeView .premium-feature-glyph{font-size:18px}
+  body:not(.splash-active) #welcomeView .premium-account-summary{font-size:12.5px!important;padding:13px!important}
+}
+
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW R2 · PENDING ===== */
+body:not(.splash-active) #welcomeView .ve002-premium-wrap{max-width:920px!important;padding:22px 16px 72px!important}
+body:not(.splash-active) #welcomeView .ve002-premium-shell{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;display:grid!important;gap:14px!important}
+body:not(.splash-active) #welcomeView .ve002-top-card,
+body:not(.splash-active) #welcomeView .ve002-choice-card,
+body:not(.splash-active) #welcomeView .ve002-sponsored-ad{border:1px solid rgba(49,150,255,.58)!important;background:linear-gradient(180deg,rgba(8,38,72,.94),rgba(5,28,53,.96))!important;box-shadow:0 16px 42px rgba(0,0,0,.24)!important}
+body:not(.splash-active) #welcomeView .ve002-top-card{border-radius:28px!important;padding:22px 24px 18px!important;text-align:center!important}
+body:not(.splash-active) #welcomeView .ve002-top-card .welcome-logo{width:86px!important;height:86px!important;margin:0 auto 2px!important}
+body:not(.splash-active) #welcomeView .ve002-top-card .eyebrow{margin:0 0 6px!important;color:#A9BED7!important;letter-spacing:.16em!important;font-size:14px!important;font-weight:900!important}
+body:not(.splash-active) #welcomeView .ve002-top-card h2{font-size:clamp(30px,5vw,44px)!important;line-height:1.05!important;margin:0 0 7px!important;letter-spacing:-.025em!important}
+body:not(.splash-active) #welcomeView .ve002-subtitle{margin:0 0 16px!important;color:#A9BED7!important;font-size:16px!important}
+body:not(.splash-active) #welcomeView .ve002-auth-card{padding:14px 16px!important;border-radius:19px!important;background:rgba(5,28,54,.76)!important}
+body:not(.splash-active) #welcomeView .ve002-role-box{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;gap:16px!important;align-items:center!important}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-title{margin:0!important;white-space:nowrap!important;text-align:left!important;font-size:16px!important}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-chip{min-height:48px!important;font-size:16px!important}
+body:not(.splash-active) #welcomeView .ve002-auth-actions{display:grid!important;gap:9px!important;margin-top:11px!important}
+body:not(.splash-active) #welcomeView .ve002-auth-actions #welcomeLoginBtn{min-height:48px!important;font-size:17px!important}
+body:not(.splash-active) #welcomeView .ve002-auth-actions #welcomeRegisterBtn{min-height:46px!important;font-size:16px!important}
+body:not(.splash-active) #welcomeView .ve002-choice-card{border-radius:26px!important;padding:20px!important;text-align:left!important}
+body:not(.splash-active) #welcomeView .ve002-choice-head{display:flex!important;align-items:flex-start!important;gap:13px!important;margin-bottom:15px!important}
+body:not(.splash-active) #welcomeView .ve002-choice-head h3{margin:1px 0 5px!important;color:#fff!important;font-size:22px!important;line-height:1.15!important}
+body:not(.splash-active) #welcomeView .ve002-choice-head p{margin:0!important;color:#AFC4DF!important;font-size:14px!important;line-height:1.46!important}
+body:not(.splash-active) #welcomeView .ve002-choice-head strong{color:#fff!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-compare-card{padding:15px!important;border-radius:18px!important;min-width:0!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head{gap:9px!important;margin-bottom:10px!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-icon{width:36px!important;height:36px!important;min-width:36px!important;font-size:17px!important;border-radius:11px!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head h3{font-size:16px!important;margin:0 0 3px!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head p{font-size:11.5px!important;line-height:1.35!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-feature-row{grid-template-columns:22px minmax(0,1fr)!important;gap:8px!important;padding:7px 0!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-state{width:18px!important;height:18px!important;font-size:12px!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-feature-copy strong{font-size:12.5px!important;line-height:1.25!important}
+body:not(.splash-active) #welcomeView .ve002-premium-summary{margin:12px 0 0!important;padding:12px 14px!important;border-radius:14px!important;font-size:12.5px!important;line-height:1.45!important;text-align:left!important;color:#B8CBE2!important}
+body:not(.splash-active) #welcomeView .ve002-premium-summary strong{color:#F6FAFF!important}
+body:not(.splash-active) #welcomeView .ve002-choice-actions{margin-top:12px!important;display:grid!important;gap:8px!important}
+body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-benefits-cta{min-height:50px!important;font-size:16px!important}
+body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{min-height:46px!important;font-size:15px!important}
+body:not(.splash-active) #welcomeView .ve002-sponsored-ad{border-radius:24px!important;padding:12px!important;margin-top:0!important}
+body:not(.splash-active) #welcomeView .ve002-sponsored-label{margin-bottom:12px!important}
+body:not(.splash-active) #welcomeView .ve-ad-creative{border-radius:16px!important;overflow:hidden!important}
+body:not(.splash-active) #welcomeView .ve-ad-creative img{display:block!important;width:100%!important;height:auto!important}
+@media(max-width:560px){
+ body:not(.splash-active) #welcomeView .ve002-premium-wrap{padding:18px 12px 64px!important}
+ body:not(.splash-active) #welcomeView .ve002-top-card{padding:18px 14px 14px!important;border-radius:24px!important}
+ body:not(.splash-active) #welcomeView .ve002-top-card .welcome-logo{width:76px!important;height:76px!important}
+ body:not(.splash-active) #welcomeView .ve002-top-card h2{font-size:31px!important}
+ body:not(.splash-active) #welcomeView .ve002-subtitle{font-size:14px!important;margin-bottom:13px!important}
+ body:not(.splash-active) #welcomeView .ve002-auth-card{padding:12px!important}
+ body:not(.splash-active) #welcomeView .ve002-role-box{grid-template-columns:1fr!important;gap:8px!important}
+ body:not(.splash-active) #welcomeView .ve002-role-box .role-title{text-align:left!important;font-size:14px!important}
+ body:not(.splash-active) #welcomeView .ve002-role-box .role-chip{min-height:45px!important;font-size:15px!important}
+ body:not(.splash-active) #welcomeView .ve002-choice-card{padding:15px!important;border-radius:22px!important}
+ body:not(.splash-active) #welcomeView .ve002-choice-head h3{font-size:20px!important}
+ body:not(.splash-active) #welcomeView .ve002-choice-head p{font-size:13px!important}
+ body:not(.splash-active) #welcomeView .ve002-compare-grid{grid-template-columns:1fr!important;gap:10px!important}
+ body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head h3{font-size:17px!important}
+ body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head p{font-size:12px!important}
+ body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-feature-copy strong{font-size:13px!important}
+ body:not(.splash-active) #welcomeView .ve002-premium-summary{font-size:12px!important}
+ body:not(.splash-active) #welcomeView .ve002-sponsored-ad{padding:10px!important;border-radius:20px!important}
+}
+
+/* ===== VE-002 PREMIUM NIGHT BACKDROP · PREVIEW ONLY ===== */
+body:not(.splash-active) #welcomeView.active{
+  position:relative!important;
+  isolation:isolate!important;
+  min-height:calc(100dvh - 72px)!important;
+  background:
+    linear-gradient(180deg,rgba(2,14,29,.40) 0%,rgba(2,14,29,.62) 42%,rgba(2,14,29,.90) 100%),
+    url('ve001-de-bg.jpg') center top/cover fixed no-repeat!important;
+}
+body:not(.splash-active) #welcomeView.active::before{
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle at 50% 12%,rgba(26,116,255,.12),transparent 32%);
+}
+body:not(.splash-active).onboarding .topbar{
+  background:rgba(3,18,36,.76)!important;
+}
+
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW R3 · PENDING =====
+   Visual correction: keep the premium comparison visible side-by-side on iPhone,
+   gold selected user/CTA, red guest limits, green premium benefits.
+   Scope is strictly #welcomeView / VE-002. */
+body:not(.splash-active) #welcomeView .ve002-role-box .role-chip.active{
+  color:#061b34!important;
+  background:linear-gradient(180deg,#ffd95a 0%,#ffb814 100%)!important;
+  border-color:#ffd75a!important;
+  box-shadow:0 6px 18px rgba(255,184,20,.22)!important;
+}
+body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-benefits-cta{
+  color:#071a31!important;
+  background:linear-gradient(180deg,#ffd95a 0%,#ffb814 100%)!important;
+  border-color:#ffd75a!important;
+  box-shadow:0 8px 22px rgba(255,184,20,.20)!important;
+  font-weight:900!important;
+}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-guest-card,
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-account-card{
+  border:1px solid rgba(49,150,255,.55)!important;
+  background:linear-gradient(180deg,rgba(5,36,68,.92),rgba(4,27,51,.96))!important;
+  box-shadow:none!important;
+}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-account-card::before{display:none!important}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-state.negative{
+  background:#ff747c!important;border-color:#ff747c!important;color:#07182c!important;
+}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-state.positive{
+  background:#67dc9a!important;border-color:#67dc9a!important;color:#06251a!important;
+}
+body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-icon-gold{
+  background:rgba(255,193,31,.12)!important;border-color:rgba(255,193,31,.58)!important;color:#ffd24c!important;
+}
+@media(max-width:560px){
+  body:not(.splash-active) #welcomeView .ve002-premium-wrap{padding:12px 8px 56px!important}
+  body:not(.splash-active) #welcomeView .ve002-premium-shell{gap:8px!important}
+  body:not(.splash-active) #welcomeView .ve002-top-card{padding:15px 11px 12px!important;border-radius:20px!important}
+  body:not(.splash-active) #welcomeView .ve002-top-card .welcome-logo{width:64px!important;height:64px!important}
+  body:not(.splash-active) #welcomeView .ve002-top-card .eyebrow{font-size:11px!important;margin-bottom:4px!important}
+  body:not(.splash-active) #welcomeView .ve002-top-card h2{font-size:25px!important;line-height:1.08!important;margin-bottom:5px!important}
+  body:not(.splash-active) #welcomeView .ve002-subtitle{font-size:12.5px!important;margin-bottom:10px!important}
+  body:not(.splash-active) #welcomeView .ve002-auth-card{padding:9px 10px!important;border-radius:15px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box{grid-template-columns:auto minmax(0,1fr)!important;gap:8px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box .role-title{font-size:12.5px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box .role-actions{gap:7px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box .role-chip{min-height:38px!important;font-size:13px!important;padding:7px 8px!important}
+  body:not(.splash-active) #welcomeView .ve002-auth-actions{gap:6px!important;margin-top:8px!important}
+  body:not(.splash-active) #welcomeView .ve002-auth-actions #welcomeLoginBtn{min-height:39px!important;font-size:14px!important}
+  body:not(.splash-active) #welcomeView .ve002-auth-actions #welcomeRegisterBtn{min-height:38px!important;font-size:13px!important}
+
+  body:not(.splash-active) #welcomeView .ve002-choice-card{padding:12px 10px!important;border-radius:20px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-head{gap:9px!important;margin-bottom:10px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-head>.premium-card-icon{width:36px!important;height:36px!important;min-width:36px!important;font-size:17px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-head h3{font-size:18px!important;margin-bottom:3px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-head p{font-size:11.5px!important;line-height:1.35!important}
+
+  /* Critical R3 fix: DO NOT stack these cards on iPhone. */
+  body:not(.splash-active) #welcomeView .ve002-compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-compare-card{padding:9px 8px!important;border-radius:14px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head{display:grid!important;grid-template-columns:28px minmax(0,1fr)!important;gap:6px!important;margin-bottom:6px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-icon{width:28px!important;height:28px!important;min-width:28px!important;font-size:14px!important;border-radius:8px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head h3{font-size:12.2px!important;line-height:1.15!important;margin:0 0 2px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-head p{font-size:9.3px!important;line-height:1.28!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-feature-row{grid-template-columns:16px minmax(0,1fr)!important;gap:5px!important;padding:5px 0!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-state{width:14px!important;height:14px!important;font-size:9px!important}
+  body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-feature-copy strong{font-size:9.7px!important;line-height:1.18!important;font-weight:800!important}
+  body:not(.splash-active) #welcomeView .ve002-premium-summary{margin-top:8px!important;padding:9px 10px!important;font-size:10px!important;line-height:1.35!important;border-radius:11px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-actions{margin-top:8px!important;gap:6px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-benefits-cta{min-height:42px!important;font-size:13.5px!important}
+  body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{min-height:39px!important;font-size:12.5px!important}
+  body:not(.splash-active) #welcomeView .ve002-sponsored-ad{padding:8px!important;border-radius:18px!important}
+  body:not(.splash-active) #welcomeView .ve002-sponsored-label{font-size:10px!important;margin-bottom:12px!important}
+}
+
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW R4 · PENDING =====
+   Two requested alignment corrections only:
+   1) centered Kontotyp above two equal role buttons;
+   2) vertically centered guest continuation label. */
+body:not(.splash-active) #welcomeView .ve002-role-box{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:9px!important;
+}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-title{
+  width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+  justify-self:center!important;
+}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-actions{
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  line-height:1.2!important;
+}
+@media(max-width:560px){
+  body:not(.splash-active) #welcomeView .ve002-role-box{gap:7px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box .role-title{
+    text-align:center!important;
+    font-size:12.5px!important;
+  }
+  body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
+    min-height:42px!important;
+    padding:0 12px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4169,49 +4475,80 @@ body.viva-keyboard-open .global-refresh-btn{display:none}
     
     <section class="view" id="welcomeView">
       <div class="test-page-no">VE-002</div>
-      <div class="welcome-wrap">
-        <div class="welcome-card">
-          <img src="vivaeuropa-logo-full.png" class="welcome-logo" alt="VivaEuropa">
-          <p class="eyebrow">VE-002</p>
-          <h2>Witaj w VivaEuropa</h2>
-          <p>Wybierz, jak chcesz korzystać z VivaEuropa.</p>
-          <div class="welcome-grid">
-            <div class="welcome-main">
-              <div class="role-box">
-                <div class="role-title">Typ konta</div>
+      <div class="welcome-wrap ve002-premium-wrap">
+        <div class="welcome-card ve002-premium-shell">
+
+          <section class="ve002-top-card" aria-labelledby="ve002Title">
+            <img src="vivaeuropa-logo-full.png" class="welcome-logo" alt="VivaEuropa">
+            <p class="eyebrow">VE-002</p>
+            <h2 id="ve002Title">Willkommen bei VivaEuropa</h2>
+            <p class="ve002-subtitle">Wähle, wie du VivaEuropa nutzen möchtest.</p>
+
+            <div class="welcome-main premium-auth-card ve002-auth-card">
+              <div class="role-box ve002-role-box">
+                <div class="role-title">Kontotyp</div>
                 <div class="role-actions">
-                  <button class="role-chip active" data-role="user">Użytkownik</button>
-                  <button class="role-chip" data-role="company">Firma</button>
+                  <button class="role-chip active" data-role="user">Nutzer</button>
+                  <button class="role-chip" data-role="company">Unternehmen</button>
                 </div>
               </div>
-              <div class="welcome-actions">
-                <button class="primary" id="welcomeLoginBtn">Zaloguj się</button>
-                <button class="ghost" id="welcomeRegisterBtn">Załóż konto</button>
+              <div class="welcome-actions ve002-auth-actions">
+                <button class="primary" id="welcomeLoginBtn">Anmelden</button>
+                <button class="ghost" id="welcomeRegisterBtn">Konto erstellen</button>
               </div>
             </div>
-            <div class="guest-card guest-card-emotional">
-              <div class="guest-head">
-                <div class="guest-icon" aria-hidden="true">👤</div>
-                <div>
-                  <h3>Als Gast weitermachen</h3>
-                  <p class="guest-emotional-intro">Du kannst VivaEuropa auch ohne Konto nutzen. Aber dann verpasst du genau die Vorteile, die dir unterwegs <strong>Zeit, Geld und gute Gelegenheiten sparen können.</strong></p>
+          </section>
+
+          <section class="guest-card ve002-choice-card" aria-labelledby="ve002GuestContinueTitle">
+            <div class="ve002-choice-head">
+              <div class="premium-card-icon premium-card-icon-muted" aria-hidden="true">👤</div>
+              <div>
+                <h3 id="ve002GuestContinueTitle">Als Gast weitermachen</h3>
+                <p>Du kannst VivaEuropa auch ohne Konto nutzen. Aber dann verpasst du genau die Vorteile, die dir unterwegs <strong>Zeit, Geld und gute Gelegenheiten sparen können.</strong></p>
+              </div>
+            </div>
+
+            <div class="premium-compare-stack ve002-compare-grid">
+              <section class="premium-compare-card premium-guest-card" aria-labelledby="ve002GuestTitle">
+                <div class="premium-card-head">
+                  <div class="premium-card-icon premium-card-icon-muted" aria-hidden="true">👤</div>
+                  <div>
+                    <h3 id="ve002GuestTitle">Als Gast eingeschränkt</h3>
+                    <p>Ohne Konto stehen dir einige Funktionen nicht zur Verfügung.</p>
+                  </div>
                 </div>
-              </div>
-              <ul class="guest-list guest-list-emotional">
-                <li><strong>Exklusive Rabatte und Vorteile</strong> bleiben dir verborgen.</li>
-                <li><strong>Besondere Angebote und Aktionen</strong> siehst du als Gast nicht.</li>
-                <li>Deine <strong>Lieblingsorte und interessante Unternehmen</strong> kannst du nicht speichern.</li>
-                <li>VivaEuropa passt sich <strong>nicht an deine persönlichen Interessen</strong> an.</li>
-                <li><strong>Intelligente KI-Funktionen</strong> helfen dir, schneller passende Angebote, Orte und Informationen zu finden.</li>
-                <li>Einige hilfreiche Funktionen bleiben <strong>nur registrierten Nutzern vorbehalten.</strong></li>
-              </ul>
-              <p class="guest-emotional-close">Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen.</p>
-              <div class="guest-choice-actions">
-                <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
-                <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
-              </div>
+                <div class="premium-feature-list premium-feature-list-negative">
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine Favoriten</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine Rabatte &amp; Aktionen</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Begrenzte KI</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state negative" aria-hidden="true">×</span><span class="premium-feature-copy"><strong>Keine persönliche App-Anpassung</strong></span></div>
+                </div>
+              </section>
+
+              <section class="premium-compare-card premium-account-card" aria-labelledby="ve002PremiumTitle">
+                <div class="premium-card-head">
+                  <div class="premium-card-icon premium-card-icon-gold" aria-hidden="true">♛</div>
+                  <div>
+                    <h3 id="ve002PremiumTitle">Mit Premium-Konto</h3>
+                    <p>Hol das Beste aus VivaEuropa heraus und nutze alle Möglichkeiten.</p>
+                  </div>
+                </div>
+                <div class="premium-feature-list premium-feature-list-positive">
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Favoriten speichern</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Exklusive Vorteile</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Intelligente KI-Funktionen</strong></span></div>
+                  <div class="premium-feature-row"><span class="premium-state positive" aria-hidden="true">✓</span><span class="premium-feature-copy"><strong>Größere Suchradien</strong></span></div>
+                </div>
+              </section>
             </div>
-          </div>
+
+            <p class="premium-account-summary ve002-premium-summary">✦ &nbsp; Mit einem <strong>kostenpflichtigen Konto</strong> holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt <strong>exklusive Vorteile, intelligente KI-Funktionen</strong> und größere Suchradien – für mehr Komfort, bessere Planung und eine <strong>persönlichere</strong> Nutzung im Alltag und auf Reisen.</p>
+            <div class="guest-choice-actions premium-choice-actions ve002-choice-actions">
+              <button class="primary guest-benefits-cta" id="welcomeBenefitsBtn">Kostenlos Vorteile sichern</button>
+              <button class="ghost guest-cta" id="welcomeGuestBtn">Trotzdem als Gast fortfahren</button>
+            </div>
+          </section>
+
           <div class="ve002-sponsored-ad hidden" id="ve002SponsoredAd" aria-label="Anzeige">
             <div class="ve002-sponsored-label">Anzeige · Test</div>
             <div class="ve-ad-creative" id="ve002SponsoredCreative" role="link" tabindex="0" aria-label="Thermomix Testanzeige öffnen">
