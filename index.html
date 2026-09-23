@@ -4348,6 +4348,44 @@ body:not(.splash-active) #welcomeView .ve002-compare-grid .premium-card-icon-gol
   body:not(.splash-active) #welcomeView .ve002-sponsored-label{font-size:10px!important;margin-bottom:12px!important}
 }
 
+/* ===== VE-002 PREMIUM WORKSHOP PREVIEW R4 · PENDING =====
+   Two requested alignment corrections only:
+   1) centered Kontotyp above two equal role buttons;
+   2) vertically centered guest continuation label. */
+body:not(.splash-active) #welcomeView .ve002-role-box{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:9px!important;
+}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-title{
+  width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+  justify-self:center!important;
+}
+body:not(.splash-active) #welcomeView .ve002-role-box .role-actions{
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  line-height:1.2!important;
+}
+@media(max-width:560px){
+  body:not(.splash-active) #welcomeView .ve002-role-box{gap:7px!important}
+  body:not(.splash-active) #welcomeView .ve002-role-box .role-title{
+    text-align:center!important;
+    font-size:12.5px!important;
+  }
+  body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
+    min-height:42px!important;
+    padding:0 12px!important;
+  }
+}
+
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
