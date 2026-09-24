@@ -9677,7 +9677,9 @@ async function search(options={}){
 
   refreshCompanyDistances();
 
-  const q=els.query.value.trim().toLowerCase();
+  // VE-003: szybkie wyszukiwanie kategorii nie może być blokowane przez stary tekst w polu wyszukiwania.
+  // Dotyczy np. przejścia z WC do Essen & Trinken przy aktywnym GPS.
+  const q=(options.guestGpsQuick && selectedCategoryFilter) ? '' : els.query.value.trim().toLowerCase();
   const radiusSelect=document.querySelector('#radiusSelect');
   const requestedRadius=Number(radiusSelect?.value||5);
   const sort=document.querySelector('#sortSelect')?.value||'distance';
