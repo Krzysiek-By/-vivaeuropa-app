@@ -9675,6 +9675,12 @@ async function search(options={}){
     return;
   }
 
+  // VE-003 R3: przed KAŻDYM wyszukiwaniem gościa odbuduj dane TEST dokładnie wokół
+  // aktualnego GPS. Dzięki temu wynik nie zależy od momentu załadowania strony ani
+  // od wcześniejszego stanu tablicy companies.
+  if(isGuest && vivaDemoDataEnabled()){
+    applyVe003DemoCompanies(getActiveSearchCoordinates());
+  }
   refreshCompanyDistances();
 
   // VE-003: szybkie wyszukiwanie kategorii nie może być blokowane przez stary tekst w polu wyszukiwania.
@@ -9686,7 +9692,26 @@ async function search(options={}){
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
 
-  const baseFilter=(radius)=>companies.filter(c=>
+  // R3: wyszukiwanie pracuje na świeżym snapshotcie. W trybie demo dokładamy
+  // dynamiczne firmy bezpośrednio do puli wyszukiwania jako zabezpieczenie przed
+  // wyzerowaniem listy przez wcześniejszy lifecycle/render. Duplikaty usuwamy po id.
+  let searchPool=companies;
+  if(isGuest && vivaDemoDataEnabled()){
+    const demoNow=buildVe003DemoCompanies(getActiveSearchCoordinates());
+    const byId=new Map(companies.map(c=>[String(c.id),c]));
+    demoNow.forEach(c=>byId.set(String(c.id),c));
+    searchPool=[...byId.values()];
+    const origin=getActiveSearchCoordinates();
+    if(origin){
+      searchPool.forEach(c=>{
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
+          c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
+        }
+      });
+    }
+  }
+
+  const baseFilter=(radius)=>searchPool.filter(c=>
     c.moderationStatus!=='blocked' &&
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
