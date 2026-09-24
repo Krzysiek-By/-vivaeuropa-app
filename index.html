@@ -6043,19 +6043,10 @@ function vivaCategoryLabel(type){
 }
 
 const VIVA_DEMO_DATA_KEY='vivaVe003DemoDataEnabled';
-const VIVA_DEMO_DATA_SOURCE='VE003_DEMO_469';
-const VIVA_DEMO_LOCATIONS=Object.freeze([
-  {city:'Bad Tölz Zentrum',postal:'83646',lat:47.7605,lng:11.5590},
-  {city:'Bad Tölz Süd',postal:'83646',lat:47.7510,lng:11.5680},
-  {city:'Gaißach',postal:'83674',lat:47.7537,lng:11.5799},
-  {city:'Wackersberg',postal:'83646',lat:47.7330,lng:11.5520},
-  {city:'Greiling',postal:'83677',lat:47.7670,lng:11.6110},
-  {city:'Reichersbeuern',postal:'83677',lat:47.7670,lng:11.6370},
-  {city:'Lenggries',postal:'83661',lat:47.6830,lng:11.5730},
-  {city:'Sachsenkam',postal:'83679',lat:47.8050,lng:11.6440},
-  {city:'Königsdorf',postal:'82549',lat:47.8160,lng:11.4800},
-  {city:'Bichl',postal:'83673',lat:47.7200,lng:11.4140}
-]);
+const VIVA_DEMO_DATA_SOURCE='VE003_DEMO_469_GPS';
+const VIVA_DEMO_EVENT_SOURCE='VE003_DEMO_EVENTS_GPS';
+const VIVA_DEMO_COMPANY_RADII_KM=Object.freeze([0.35,0.75,1.35,2.4,4.4,7.5,11.5,14.4]);
+const VIVA_DEMO_EVENT_RADII_KM=Object.freeze([2.5,5.5,8.5,11.5,14.5,19,24,31,38]);
 
 function vivaDemoDataEnabled(){
   const param=new URLSearchParams(window.location.search).get('demo');
@@ -6064,28 +6055,54 @@ function vivaDemoDataEnabled(){
   return param==='1' || (param!=='0' && localStorage.getItem(VIVA_DEMO_DATA_KEY)==='1');
 }
 
+function vivaDemoGpsOrigin(){
+  try{
+    const loc=JSON.parse(localStorage.getItem('vivaLocation')||'null');
+    const lat=Number(loc?.lat), lng=Number(loc?.lng);
+    const ts=Number(loc?.savedAt||loc?.timestamp||0);
+    if(Number.isFinite(lat) && Number.isFinite(lng) && ts && Date.now()-ts<=2*60*1000){
+      return {lat,lng,label:String(loc?.placeLabel||'Aktueller GPS-Standort')};
+    }
+  }catch(_){ }
+  return null;
+}
+
+function vivaDemoPoint(origin,distanceKm,bearingDeg){
+  const R=6371;
+  const d=Number(distanceKm)/R;
+  const b=Number(bearingDeg)*Math.PI/180;
+  const lat1=Number(origin.lat)*Math.PI/180;
+  const lng1=Number(origin.lng)*Math.PI/180;
+  const lat2=Math.asin(Math.sin(lat1)*Math.cos(d)+Math.cos(lat1)*Math.sin(d)*Math.cos(b));
+  const lng2=lng1+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(lat1),Math.cos(d)-Math.sin(lat1)*Math.sin(lat2));
+  return {lat:lat2*180/Math.PI,lng:lng2*180/Math.PI};
+}
+
 function buildVe003DemoCompanies(){
+  const origin=vivaDemoGpsOrigin();
+  if(!origin) return [];
   const types=Object.values(VIVA_CATEGORY_MASTER).flat();
   return types.map((type,index)=>{
-    const place=VIVA_DEMO_LOCATIONS[index%VIVA_DEMO_LOCATIONS.length];
-    const offset=((index%7)-3)*0.00018;
+    const radius=VIVA_DEMO_COMPANY_RADII_KM[index%VIVA_DEMO_COMPANY_RADII_KM.length];
+    const bearing=(index*137.50776405)%360;
+    const point=vivaDemoPoint(origin,radius,bearing);
     return {
       id:930000+index,
-      name:`TEST · ${vivaCategoryLabel(type)} · ${place.city}`,
+      name:`TEST · ${vivaCategoryLabel(type)} · GPS`,
       cat:type,
       emoji:'🧪',
-      city:place.city,
-      postal:place.postal,
-      address:`Teststraße ${1+(index%89)}`,
-      country:'Deutschland',
+      city:'GPS-Testgebiet',
+      postal:'',
+      address:`Testpunkt ${1+index}`,
+      country:'TEST',
       phonePrefix:'+49',
       phone:'000000000',
       email:'',www:'',instagram:'',facebook:'',tiktok:'',
       hours:'Mo–Fr 08:00–18:00',
       weeklyHours:defaultWeeklyHours(),
-      desc:'Künstlicher Testdatensatz für die VE-003-Vorschau. Keine reale Firma.',
-      lat:Number(place.lat+offset),
-      lng:Number(place.lng-offset),
+      desc:'Künstlicher GPS-Testdatensatz für die VE-003-Vorschau. Keine reale Firma.',
+      lat:Number(point.lat),
+      lng:Number(point.lng),
       rating:Number((3.8+((index*7)%13)/10).toFixed(1)),
       reviews:5+((index*11)%186),
       photos:[],messengers:[],
@@ -6095,12 +6112,44 @@ function buildVe003DemoCompanies(){
   });
 }
 
+function buildVe003DemoEvents(){
+  const origin=vivaDemoGpsOrigin();
+  if(!origin || !vivaDemoDataEnabled()) return [];
+  const titles=[
+    'TEST · Stadtfest','TEST · Wochenmarkt','TEST · Live-Musik','TEST · Familienfest','TEST · Kunstausstellung',
+    'TEST · Straßenfest','TEST · Sportveranstaltung','TEST · Kulturabend','TEST · Food-Festival','TEST · Handwerkermarkt',
+    'TEST · Open-Air-Kino','TEST · Kinderprogramm','TEST · Konzert','TEST · Flohmarkt','TEST · Theaterabend',
+    'TEST · Regionalmarkt','TEST · Vereinsfest','TEST · Naturführung','TEST · Sommerabend','TEST · Begegnungsfest'
+  ];
+  const now=new Date();
+  return titles.map((title,index)=>{
+    const radius=VIVA_DEMO_EVENT_RADII_KM[index%VIVA_DEMO_EVENT_RADII_KM.length];
+    const point=vivaDemoPoint(origin,radius,(index*97.31+23)%360);
+    const start=new Date(now);
+    start.setMinutes(0,0,0);
+    start.setHours(Math.max(now.getHours()+1,12)+(index%5));
+    start.setDate(now.getDate()+(index%7));
+    const end=new Date(start.getTime()+2*60*60*1000);
+    return {
+      id:`ve003-demo-event-${index+1}`,
+      title,
+      place:'GPS-Testgebiet',city:'GPS-Testgebiet',
+      lat:Number(point.lat),lng:Number(point.lng),
+      startAt:start.toISOString(),endAt:end.toISOString(),
+      verified:true,testData:true,demoSource:VIVA_DEMO_EVENT_SOURCE,sponsored:false
+    };
+  });
+}
+
 function applyVe003DemoCompanies(){
-  companies=companies.filter(c=>c?.demoSource!==VIVA_DEMO_DATA_SOURCE);
+  companies=companies.filter(c=>c?.demoSource!==VIVA_DEMO_DATA_SOURCE && c?.demoSource!=='VE003_DEMO_469');
   const active=vivaDemoDataEnabled();
   if(active) companies.push(...buildVe003DemoCompanies());
   const banner=document.querySelector('#veDemoDataBanner');
-  if(banner) banner.classList.toggle('hidden',!active);
+  if(banner){
+    banner.classList.toggle('hidden',!active);
+    if(active) banner.textContent='TESTDATEN AKTIV · 469 künstliche Testunternehmen + 20 Testveranstaltungen · dynamisch um deinen aktuellen GPS-Standort';
+  }
   return active;
 }
 
@@ -6696,16 +6745,19 @@ const VIVA_GUEST_EVENT_RADIUS_STEPS=Object.freeze([10,15,25,40]);
 let vivaGuestEventPeriod='today';
 
 function vivaGetVerifiedEvents(){
+  let rows=[];
   try{
-    const rows=JSON.parse(localStorage.getItem('vivaVerifiedEvents')||'[]');
-    return (Array.isArray(rows)?rows:[]).filter(event=>
-      event && event.verified===true &&
-      Number.isFinite(Number(event.lat)) && Number.isFinite(Number(event.lng)) &&
-      event.startAt && event.endAt
-    );
+    const stored=JSON.parse(localStorage.getItem('vivaVerifiedEvents')||'[]');
+    rows=Array.isArray(stored)?stored:[];
   }catch(_){
-    return [];
+    rows=[];
   }
+  if(vivaDemoDataEnabled()) rows=[...rows.filter(event=>event?.demoSource!==VIVA_DEMO_EVENT_SOURCE),...buildVe003DemoEvents()];
+  return rows.filter(event=>
+    event && event.verified===true &&
+    Number.isFinite(Number(event.lat)) && Number.isFinite(Number(event.lng)) &&
+    event.startAt && event.endAt
+  );
 }
 
 function vivaEventWindow(period){
@@ -7171,6 +7223,7 @@ function requestVivaLocation({silent=false}={}){
     navigator.geolocation.getCurrentPosition(
       position=>{
         saveLocation(position.coords);
+        applyVe003DemoCompanies();
         localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
         localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
         vivaManualCoords=null;
