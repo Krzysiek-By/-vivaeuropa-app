@@ -11956,11 +11956,18 @@ updateNewPasswordSubmitState();
   const recoveryRestored=recoveryHandled ? false : await restoreRecoveryAfterRefresh();
 
   if(!recoveryHandled && !recoveryRestored){
-    await restorePersistentPrivateSession();
+    // VE-003 boot guard: the visible app must never wait indefinitely for
+    // a remote Supabase/session request. A persisted session may be restored
+    // when available, but after 2500 ms startup continues with local state.
+    await Promise.race([
+      restorePersistentPrivateSession(),
+      new Promise(resolve=>setTimeout(resolve,2500))
+    ]);
     initSplash();
   }
 
-  await ensureVivaPhotoStorage();
+  // Photo storage is local, but it must not be allowed to block first paint.
+  Promise.resolve(ensureVivaPhotoStorage()).catch(err=>console.warn('Photo storage init failed',err));
 
   renderQuickCats();
   if(VIVA_WAS_RELOAD){
