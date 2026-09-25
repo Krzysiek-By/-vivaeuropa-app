@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" class="viva-lang-pending" data-ve-build="VE003-S2-GPS-ONLY-469">
+<html lang="de" class="viva-lang-pending" data-ve-build="VE003-S2C-GPS-ONLY-469-RUNTIME">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -9391,7 +9391,26 @@ async function search(options={}){
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
 
-  const baseFilter=(radius)=>companies.filter(c=>
+  // VE-003 S2C: dla gościa dane TEST są budowane na bieżąco bezpośrednio
+  // z aktualnego GPS przy KAŻDYM wyszukiwaniu. Nie zależymy od tego, czy
+  // inny fragment aplikacji wcześniej nadpisał tablicę `companies`.
+  let searchPool=companies;
+  if(isGuest){
+    const origin=getActiveSearchCoordinates();
+    const runtimeTests=ve003BuildTestCompanies(origin);
+    const persistent=companies.filter(c=>c.demoSource!==VE003_TEST_COMPANY_SOURCE);
+    searchPool=[...persistent,...runtimeTests];
+    if(origin && Number.isFinite(Number(origin.lat)) && Number.isFinite(Number(origin.lng))){
+      searchPool.forEach(c=>{
+        c.distance=null;
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
+          c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
+        }
+      });
+    }
+  }
+
+  const baseFilter=(radius)=>searchPool.filter(c=>
     c.moderationStatus!=='blocked' &&
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
