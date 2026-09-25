@@ -4386,61 +4386,6 @@ body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
   }
 }
 
-/* ===== VE-003 R1: guest GPS-only discovery ===== */
-body:not(.splash-active) .brand-logo{
-  width:52px!important;
-  height:52px!important;
-}
-.guest-gps-only-status{
-  grid-column:1/-1!important;
-  margin:0!important;
-  min-height:46px!important;
-  padding:9px 11px!important;
-  border:1px solid rgba(73,150,230,.42)!important;
-  border-radius:14px!important;
-  background:rgba(6,27,52,.72)!important;
-}
-.guest-events-discovery{
-  grid-column:1/-1!important;
-  margin-top:4px!important;
-  padding:16px!important;
-  border:1px solid rgba(255,196,54,.58)!important;
-  border-radius:18px!important;
-  background:linear-gradient(135deg,rgba(31,92,157,.34),rgba(89,54,12,.28))!important;
-  color:#f7fbff!important;
-  box-shadow:0 12px 30px rgba(0,0,0,.16)!important;
-}
-.guest-events-kicker{margin:0 0 5px!important;color:#ffc83d!important;font-size:12px!important;font-weight:900!important;letter-spacing:.13em!important;text-transform:uppercase!important}
-.guest-events-head{display:flex!important;align-items:center!important;gap:12px!important}
-.guest-events-icon{width:48px!important;height:48px!important;display:grid!important;place-items:center!important;flex:0 0 48px!important;border-radius:14px!important;background:rgba(255,197,45,.13)!important;font-size:29px!important}
-.guest-events-head h3{margin:0!important;font-size:22px!important;line-height:1.1!important}
-.guest-events-head p{margin:5px 0 0!important;color:#b9c9dc!important;font-size:13px!important;line-height:1.35!important}
-.guest-event-periods{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin-top:14px!important}
-.guest-event-period{min-height:40px!important;padding:7px 5px!important;border:1px solid rgba(89,158,226,.5)!important;border-radius:11px!important;background:#071e38!important;color:#eaf4ff!important;font-size:12px!important;font-weight:800!important}
-.guest-event-period.active{border-color:#ffc42d!important;background:rgba(255,190,36,.16)!important;color:#ffd55e!important}
-.guest-events-action{width:100%!important;min-height:47px!important;margin-top:10px!important;border:0!important;border-radius:13px!important;background:linear-gradient(135deg,#ffca38,#ffb915)!important;color:#07192e!important;font-weight:900!important;font-size:15px!important}
-.event-result-card .result-category{color:#ffc83d!important}
-.event-sponsored-label{display:inline-flex!important;margin:0 0 8px!important;padding:4px 8px!important;border:1px solid rgba(255,199,53,.55)!important;border-radius:999px!important;color:#ffd45f!important;font-size:11px!important;font-weight:900!important;letter-spacing:.06em!important;text-transform:uppercase!important}
-.ve-demo-data-banner{
-  margin:0 max(18px,calc((100vw - 1100px)/2)) 12px!important;
-  padding:10px 13px!important;
-  border:1px solid rgba(255,193,38,.68)!important;
-  border-radius:12px!important;
-  background:rgba(65,42,0,.88)!important;
-  color:#ffe397!important;
-  font-size:13px!important;
-  font-weight:800!important;
-  text-align:center!important;
-}
-.demo-company-mark{display:inline-flex!important;margin:0 0 7px!important;padding:3px 7px!important;border-radius:999px!important;background:#ffca38!important;color:#07192e!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}
-@media(max-width:560px){
-  body:not(.splash-active) .brand-logo{width:48px!important;height:48px!important}
-  .guest-events-discovery{padding:14px!important}
-  .guest-events-head h3{font-size:20px!important}
-  .guest-event-periods{grid-template-columns:1fr!important}
-  .guest-event-period{min-height:38px!important}
-}
-
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -4619,7 +4564,6 @@ body:not(.splash-active) .brand-logo{
     <section class="view active" id="homeView">
       <div class="test-page-no">VE-003</div>
       <div class="view-back-row"><button class="view-back-btn" data-back>← Wstecz</button></div>
-      <div class="ve-demo-data-banner hidden" id="veDemoDataBanner">TESTDATEN AKTIV · 469 künstliche Testunternehmen · keine echten Firmendaten</div>
       <div class="hero">
         <p class="eyebrow">LOKALNE FIRMY • USŁUGI • MIEJSCA</p>
         <h1>Znajdź to, czego potrzebujesz <span>blisko Ciebie.</span></h1>
@@ -4640,7 +4584,6 @@ body:not(.splash-active) .brand-logo{
               <input id="locationInput" placeholder="z. B. München, 80331 oder Adresse" autocomplete="off" />
             </div>
           </label>
-          <div id="guestLocationStatusAnchor"></div>
           <div class="search-advanced">
             <label>Promień
               <select id="radiusSelect">
@@ -4668,20 +4611,6 @@ body:not(.splash-active) .brand-logo{
             </label>
           </div>
           <div class="tree-toolbar guest-quick-categories" id="categoryFilters"></div>
-
-          <section class="guest-events-discovery" id="guestEventsDiscovery" aria-labelledby="guestEventsTitle">
-            <p class="guest-events-kicker">Veranstaltungen</p>
-            <div class="guest-events-head">
-              <span class="guest-events-icon" aria-hidden="true">✦</span>
-              <div><h3 id="guestEventsTitle">Was ist los?</h3><p>Veranstaltungen in deiner Nähe – lokal zuerst, bei Bedarf automatisch bis 40 km.</p></div>
-            </div>
-            <div class="guest-event-periods" role="group" aria-label="Zeitraum auswählen">
-              <button type="button" class="guest-event-period active" data-event-period="today">Heute</button>
-              <button type="button" class="guest-event-period" data-event-period="weekend">Dieses Wochenende</button>
-              <button type="button" class="guest-event-period" data-event-period="7days">Nächste 7 Tage</button>
-            </div>
-            <button type="button" class="guest-events-action" id="guestEventsAction">Veranstaltungen entdecken</button>
-          </section>
 
           <div id="guestCategoryPicker" class="guest-category-picker hidden" aria-hidden="true">
             <div class="guest-category-picker-backdrop" data-category-close></div>
@@ -4775,7 +4704,6 @@ body:not(.splash-active) .brand-logo{
           </div>
         </section>
 
-        <div id="locationStatusHomeAnchor"></div>
         <div id="locationStatus" class="location-status">
           <span class="location-status-dot"></span>
           <span id="locationStatusText">Lokalizacja nie została jeszcze pobrana.</span>
@@ -5248,7 +5176,7 @@ const VIVA_CLIENT_PLAN_KEY='vivaClientPlan';
 const VIVA_CLIENT_ACCESS_RULES=Object.freeze({
   guest:Object.freeze({
     resultLimit:20,
-    radiusValues:['1','3','5','10','15'],
+    radiusValues:['1','3','5','10'],
     photoLimit:3,
     favoritesLimit:0,
     phone:true, website:true, email:false, messengers:false, social:false,
@@ -5653,7 +5581,7 @@ let companies=loadCompanies().map(c=>({
 }));
 function saveCompanies(){
   const photosMigrated=localStorage.getItem(VIVA_PHOTO_MIGRATION_KEY)==='1';
-  const safe=companies.filter(c=>c?.testData!==true).map(c=>{
+  const safe=companies.map(c=>{
     const copy={...c,distance:null};
     if(photosMigrated) delete copy.photos;
     return copy;
@@ -6041,85 +5969,6 @@ function vivaCategoryLabel(type){
   const key=String(type||'').trim();
   return VIVA_CATEGORY_LABELS_DE[key] || key;
 }
-
-const VIVA_DEMO_DATA_KEY='vivaVe003DemoDataEnabled';
-const VIVA_DEMO_DATA_SOURCE='VE003_DEMO_469';
-const VIVA_DEMO_EVENT_SOURCE='VE003_DEMO_EVENTS_20';
-
-function vivaOffsetFromGps(origin,distanceKm,bearingDeg){
-  const lat=Number(origin?.lat), lng=Number(origin?.lng);
-  if(!Number.isFinite(lat)||!Number.isFinite(lng)) return null;
-  const br=bearingDeg*Math.PI/180;
-  const dLat=(distanceKm/111.32)*Math.cos(br);
-  const cosLat=Math.max(0.2,Math.cos(lat*Math.PI/180));
-  const dLng=(distanceKm/(111.32*cosLat))*Math.sin(br);
-  return {lat:lat+dLat,lng:lng+dLng};
-}
-
-function vivaDemoDataEnabled(){
-  const param=new URLSearchParams(window.location.search).get('demo');
-  if(param==='1') localStorage.setItem(VIVA_DEMO_DATA_KEY,'1');
-  if(param==='0') localStorage.removeItem(VIVA_DEMO_DATA_KEY);
-  return param==='1' || (param!=='0' && localStorage.getItem(VIVA_DEMO_DATA_KEY)==='1');
-}
-
-function buildVe003DemoCompanies(origin=getActiveSearchCoordinates()){
-  if(!origin) return [];
-  const types=Object.values(VIVA_CATEGORY_MASTER).flat();
-  const rings=[0.35,0.75,1.4,2.4,4.2,7.2,10.8,14.2];
-  const placeLabel=String(vivaLocation?.placeLabel||'GPS-Standort').trim()||'GPS-Standort';
-  return types.map((type,index)=>{
-    const distance=rings[index%rings.length]+((index%5)*0.035);
-    const point=vivaOffsetFromGps(origin,distance,(index*137.508)%360);
-    return {
-      id:930000+index,
-      name:`TEST · ${vivaCategoryLabel(type)} · GPS`,
-      cat:type, emoji:'🧪', city:placeLabel, postal:'',
-      address:`Teststraße ${1+(index%89)}`, country:'Deutschland',
-      phonePrefix:'+49', phone:'000000000', email:'',www:'',instagram:'',facebook:'',tiktok:'',
-      hours:'Mo–Fr 08:00–18:00', weeklyHours:defaultWeeklyHours(),
-      desc:'Künstlicher Testdatensatz für die VE-003-Vorschau. Keine reale Firma.',
-      lat:Number(point.lat), lng:Number(point.lng),
-      rating:Number((3.8+((index*7)%13)/10).toFixed(1)), reviews:5+((index*11)%186),
-      photos:[],messengers:[],seed:true,testData:true,demoSource:VIVA_DEMO_DATA_SOURCE,
-      moderationStatus:'approved',ownerEmail:ADMIN_EMAIL,distance:null
-    };
-  });
-}
-
-function applyVe003DemoCompanies(origin=getActiveSearchCoordinates()){
-  companies=companies.filter(c=>c?.demoSource!==VIVA_DEMO_DATA_SOURCE);
-  const active=vivaDemoDataEnabled();
-  if(active && origin) companies.push(...buildVe003DemoCompanies(origin));
-  const banner=document.querySelector('#veDemoDataBanner');
-  if(banner) banner.classList.toggle('hidden',!active);
-  return active;
-}
-
-function buildVe003DemoEvents(origin=getActiveSearchCoordinates()){
-  if(!origin) return [];
-  const rings=[1.2,3.5,6.5,9.5,13,18,24,32,38];
-  const now=Date.now();
-  return Array.from({length:20},(_,index)=>{
-    const point=vivaOffsetFromGps(origin,rings[index%rings.length],(index*111.7)%360);
-    const start=new Date(now+(index%6)*86400000+3600000);
-    const end=new Date(start.getTime()+2*3600000);
-    return {id:`ve003-test-event-${index+1}`,title:`TEST · Veranstaltung ${index+1}`,
-      place:'TEST · GPS-Umgebung',city:String(vivaLocation?.placeLabel||'GPS-Standort'),
-      lat:Number(point.lat),lng:Number(point.lng),startAt:start.toISOString(),endAt:end.toISOString(),
-      verified:true,testData:true,demoSource:VIVA_DEMO_EVENT_SOURCE,sponsored:false};
-  });
-}
-
-function applyVe003GpsDemoData(){
-  if(!vivaDemoDataEnabled()) return;
-  const origin=getActiveSearchCoordinates();
-  if(!origin) return;
-  applyVe003DemoCompanies(origin);
-  refreshCompanyDistances();
-}
-
-applyVe003DemoCompanies();
 
 function populateCompanyCategorySelect(selectedValue=''){
   const sel=document.querySelector('#fCat');
@@ -6630,26 +6479,19 @@ const VIVA_PUBLIC_SEARCHES={
 };
 
 const VIVA_GUEST_QUICK_CATEGORIES=[
-  {id:'__categories__',label:'Alle Kategorien',icon:'▦'},
-  {id:'__group_food__',label:'Essen & Trinken',image:'assets/category-icons/08-food-drink.png'},
-  {id:'__group_shopping__',label:'Einkaufen',image:'assets/category-icons/16-shopping.png'},
-  {id:'__group_services__',label:'Dienstleistungen',image:'assets/category-icons/15-services.png'},
-  {id:'__group_home__',label:'Haus & Handwerk',image:'assets/category-icons/11-housing.png'},
-  {id:'__group_health__',label:'Gesundheit & Wellness',image:'assets/category-icons/10-health-wellness.png'},
-  {id:'__group_leisure__',label:'Freizeit & Ausflüge',image:'assets/category-icons/05-leisure.png'},
-  {id:'__group_lodging__',label:'Unterkünfte',image:'assets/category-icons/12-lodging.png'},
-  {id:'__group_mobility__',label:'Mobilität',image:'assets/category-icons/18-transport.png'}
+  {id:'__categories__',label:'Kategorien',icon:'▦'},
+  {id:'__pannenhilfe__',label:'Pannenhilfe',image:VIVA_QUICK_ICON_MAP.roadside},
+  {id:'taxi_service',label:'Taxi',image:VIVA_QUICK_ICON_MAP.taxi},
+  {id:'pharmacy',label:'Apotheke',image:VIVA_QUICK_ICON_MAP.pharmacy},
+  {id:'gas_station',label:'Tankstelle',image:VIVA_QUICK_ICON_MAP.gas},
+  {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_QUICK_ICON_MAP.ev},
+  {id:'__hospital__',label:'Krankenhaus',image:VIVA_QUICK_ICON_MAP.hospital},
+  {id:'city_hall',label:'Rathaus',image:VIVA_QUICK_ICON_MAP.cityHall}
 ];
 
 const VIVA_GUEST_CATEGORY_ALIASES={
-  '__group_food__':VIVA_CATEGORY_MASTER['08 JEDZENIE I NAPOJE'],
-  '__group_shopping__':VIVA_CATEGORY_MASTER['16 HANDEL I SKLEPY'],
-  '__group_services__':VIVA_CATEGORY_MASTER['15 USŁUGI'],
-  '__group_home__':['building_materials_store','electrician','hardware_store','home_goods_store','home_improvement_store','locksmith','moving_company','painter','plumber','roofing_contractor'],
-  '__group_health__':VIVA_CATEGORY_MASTER['10 ZDROWIE I WELLNESS'],
-  '__group_leisure__':[...VIVA_CATEGORY_MASTER['05 ROZRYWKA I REKREACJA'],...VIVA_CATEGORY_MASTER['13 NATURA'],...VIVA_CATEGORY_MASTER['17 SPORT']],
-  '__group_lodging__':VIVA_CATEGORY_MASTER['12 NOCLEGI'],
-  '__group_mobility__':[...VIVA_CATEGORY_MASTER['01 MOTORYZACJA'],...VIVA_CATEGORY_MASTER['18 TRANSPORT']]
+  '__pannenhilfe__':['car_repair','tire_shop'],
+  '__hospital__':['hospital','general_hospital']
 };
 
 function guestCategoryMatchesCompany(c,filter){
@@ -6691,6 +6533,7 @@ function renderCategoryFilters(){
     btn.onclick=async()=>{
       const id=btn.dataset.quickCat||'';
       if(id==='__categories__'){
+        vivaSetGuestManualMode();
         openGuestCategoryPicker();
         return;
       }
@@ -6700,123 +6543,14 @@ function renderCategoryFilters(){
       const ok=await vivaSetGuestGpsMode();
       if(!ok) return;
       vivaScrollToResults();
-      await search({guestGpsQuick:true});
+      if(id==='__hospital__'){
+        await vivaRunQuickHospital();
+      }else{
+        await search({guestGpsQuick:true});
+      }
     };
   });
   applyGuestLocationControls();
-}
-
-/* ===== VE-003: verified local events (separate from companies) ===== */
-const VIVA_GUEST_EVENT_RADIUS_STEPS=Object.freeze([10,15,25,40]);
-let vivaGuestEventPeriod='today';
-
-function vivaGetVerifiedEvents(){
-  try{
-    const rows=JSON.parse(localStorage.getItem('vivaVerifiedEvents')||'[]');
-    const base=(Array.isArray(rows)?rows:[]).filter(event=>
-      event && event.verified===true &&
-      Number.isFinite(Number(event.lat)) && Number.isFinite(Number(event.lng)) &&
-      event.startAt && event.endAt
-    );
-    if(vivaDemoDataEnabled()) base.push(...buildVe003DemoEvents(getActiveSearchCoordinates()));
-    return base;
-  }catch(_){
-    return [];
-  }
-}
-
-function vivaEventWindow(period){
-  const now=new Date();
-  if(period==='7days') return {from:now,to:new Date(now.getTime()+7*86400000)};
-  if(period==='weekend'){
-    const day=now.getDay();
-    const daysToSaturday=day===0?-1:(6-day);
-    const from=new Date(now);
-    from.setDate(now.getDate()+daysToSaturday);
-    from.setHours(0,0,0,0);
-    const to=new Date(from);
-    to.setDate(from.getDate()+1);
-    to.setHours(23,59,59,999);
-    return {from:day===0?now:from,to};
-  }
-  const to=new Date(now);
-  to.setHours(23,59,59,999);
-  return {from:now,to};
-}
-
-function vivaEventDateLabel(event){
-  const start=new Date(event.startAt);
-  const end=new Date(event.endAt);
-  const dateFmt=new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
-  const timeFmt=new Intl.DateTimeFormat('de-DE',{hour:'2-digit',minute:'2-digit'});
-  if(!Number.isFinite(start.getTime())) return '';
-  const sameDay=Number.isFinite(end.getTime()) && start.toDateString()===end.toDateString();
-  return sameDay
-    ? `${dateFmt.format(start)} · ${timeFmt.format(start)}–${timeFmt.format(end)}`
-    : dateFmt.format(start);
-}
-
-function bindGuestEventDiscovery(){
-  document.querySelectorAll('[data-event-period]').forEach(button=>{
-    button.onclick=()=>{
-      vivaGuestEventPeriod=button.dataset.eventPeriod||'today';
-      document.querySelectorAll('[data-event-period]').forEach(item=>item.classList.toggle('active',item===button));
-    };
-  });
-  const action=document.querySelector('#guestEventsAction');
-  if(action) action.onclick=()=>searchGuestEvents();
-}
-
-async function searchGuestEvents(){
-  if(getClientAccessTier()!=='guest') return;
-  const gpsOk=await vivaSetGuestGpsMode();
-  if(!gpsOk) return;
-
-  const origin=getActiveSearchCoordinates();
-  if(!origin) return;
-  const windowRange=vivaEventWindow(vivaGuestEventPeriod);
-  const now=Date.now();
-  const candidates=vivaGetVerifiedEvents().filter(event=>{
-    const start=new Date(event.startAt).getTime();
-    const end=new Date(event.endAt).getTime();
-    return end>=now && start<=windowRange.to.getTime() && end>=windowRange.from.getTime();
-  }).map(event=>({
-    ...event,
-    distance:vivaDistanceKm(Number(origin.lat),Number(origin.lng),Number(event.lat),Number(event.lng))
-  })).filter(event=>Number.isFinite(event.distance));
-
-  let effectiveRadius=VIVA_GUEST_EVENT_RADIUS_STEPS[VIVA_GUEST_EVENT_RADIUS_STEPS.length-1];
-  for(const radius of VIVA_GUEST_EVENT_RADIUS_STEPS){
-    effectiveRadius=radius;
-    if(candidates.filter(event=>event.distance<=radius).length>=6) break;
-  }
-  const list=candidates.filter(event=>event.distance<=effectiveRadius)
-    .sort((a,b)=>new Date(a.startAt)-new Date(b.startAt) || a.distance-b.distance);
-
-  els.title.textContent='Veranstaltungen in deiner Nähe';
-  els.count.textContent=String(list.length);
-  vivaScrollToResults();
-  if(!list.length){
-    els.results.innerHTML=`<div class="status">Für den gewählten Zeitraum wurden im automatisch erweiterten Umkreis bis ${effectiveRadius} km keine bestätigten Veranstaltungen gefunden.</div>`;
-    renderMapPins([]);
-    return;
-  }
-
-  els.results.innerHTML=list.map(event=>{
-    const distance=event.distance<1?`${Math.max(1,Math.round(event.distance*1000))} m`:`${event.distance.toFixed(1)} km`;
-    const sponsored=event.sponsored===true?'<span class="event-sponsored-label">Gesponsert</span>':'';
-    return `<article class="result-card event-result-card">
-      <div class="result-cover">✦</div>
-      <div class="result-body">${sponsored}<div class="result-category">Veranstaltung</div>
-        <h3>${escapeHtml(event.title||'Veranstaltung')}</h3>
-        <div class="meta"><strong>${escapeHtml(vivaEventDateLabel(event))}</strong><br>${escapeHtml(event.place||event.city||'')} · ${escapeHtml(distance)}</div>
-        <div class="company-actions"><button type="button" class="primary" data-event-route-lat="${Number(event.lat)}" data-event-route-lng="${Number(event.lng)}">Route anzeigen</button></div>
-      </div>
-    </article>`;
-  }).join('');
-  els.results.querySelectorAll('[data-event-route-lat]').forEach(button=>{
-    button.onclick=()=>vivaOpenRouteChooser(Number(button.dataset.eventRouteLat),Number(button.dataset.eventRouteLng));
-  });
 }
 
 function buildGuestCategoryTree(query=''){
@@ -6857,17 +6591,14 @@ function buildGuestCategoryTree(query=''){
     : '<div class="guest-category-empty">Keine passende Kategorie gefunden.</div>';
 
   root.querySelectorAll('[data-master-cat]').forEach(btn=>{
-    btn.onclick=async()=>{
+    btn.onclick=()=>{
       selectedCategoryFilter=btn.dataset.masterCat||'';
+      vivaSetGuestManualMode();
       closeGuestCategoryPicker();
       renderCategoryFilters();
       saveTreePrefs();
       if(els?.query && !els.query.value.trim()) els.query.value=vivaCategoryLabel(selectedCategoryFilter);
-      const ok=await vivaSetGuestGpsMode();
-      if(ok){
-        vivaScrollToResults();
-        await search({guestGpsQuick:true});
-      }
+      setTimeout(()=>els?.loc?.focus(),80);
     };
   });
 }
@@ -7086,36 +6817,6 @@ function saveLocation(coords){
   localStorage.setItem(VIVA_LOCATION_KEY,JSON.stringify(vivaLocation));
 }
 
-async function vivaResolveGuestLocationLabel(){
-  if(getClientAccessTier()!=='guest' || !isVivaLocationFresh()) return;
-  const lat=Number(vivaLocation.lat);
-  const lng=Number(vivaLocation.lng);
-  const cacheKey=`vivaGpsPlace:${lat.toFixed(3)},${lng.toFixed(3)}`;
-  try{
-    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
-    if(cached && cached.savedAt && Date.now()-Number(cached.savedAt)<86400000){
-      vivaLocation.placeLabel=String(cached.placeLabel||'');
-      renderLocationStatus();
-      return;
-    }
-  }catch(_){ }
-
-  const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=14&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}`;
-  try{
-    const res=await fetch(url,{headers:{Accept:'application/json'}});
-    if(!res.ok) return;
-    const hit=await res.json();
-    const address=hit?.address||{};
-    const placeLabel=String(address.city||address.town||address.village||address.municipality||'').trim();
-    vivaLocation.placeLabel=placeLabel;
-    localStorage.setItem(VIVA_LOCATION_KEY,JSON.stringify(vivaLocation));
-    localStorage.setItem(cacheKey,JSON.stringify({placeLabel,savedAt:Date.now()}));
-    renderLocationStatus();
-  }catch(err){
-    console.warn('Guest GPS place label unavailable',err);
-  }
-}
-
 function renderLocationStatus(mode='idle'){
   const wrap=document.querySelector('#locationStatus');
   const text=document.querySelector('#locationStatusText');
@@ -7131,10 +6832,9 @@ function renderLocationStatus(mode='idle'){
 
   if(isVivaLocationFresh()){
     wrap.classList.add('ok');
-    if(getClientAccessTier()==='guest'){
-      text.textContent=vivaLocation.placeLabel
-        ? `Aktueller Standort: ${vivaLocation.placeLabel}`
-        : 'Standort über GPS ermittelt.';
+    if(guestMode){
+      const gpsText={pl:'GPS aktywny',de:'GPS aktiv',en:'GPS active',fr:'GPS actif',it:'GPS attivo',es:'GPS activo'};
+      text.textContent=gpsText[lang]||gpsText.en;
     }else{
       const meters=Math.round(vivaLocation.accuracy||0);
       if(meters){
@@ -7157,17 +6857,13 @@ function renderLocationStatus(mode='idle'){
 
   if(mode==='denied'){
     wrap.classList.add('warn');
-    text.textContent=getClientAccessTier()==='guest'
-      ? 'Standortzugriff erforderlich. Bitte GPS in den Geräteeinstellungen erlauben.'
-      : vivaTranslateString('Brak dostępu do lokalizacji. Możesz wpisać miejsce ręcznie albo użyć przycisku GPS.',lang);
+    text.textContent=vivaTranslateString('Brak dostępu do lokalizacji. Możesz wpisać miejsce ręcznie albo użyć przycisku GPS.',lang);
     return;
   }
 
   if(mode==='unavailable'){
     wrap.classList.add('warn');
-    text.textContent=getClientAccessTier()==='guest'
-      ? 'Der GPS-Standort konnte nicht ermittelt werden. Bitte erneut versuchen.'
-      : vivaTranslateString('Nie udało się pobrać lokalizacji. Możesz wpisać miejsce ręcznie.',lang);
+    text.textContent=vivaTranslateString('Nie udało się pobrać lokalizacji. Możesz wpisać miejsce ręcznie.',lang);
     return;
   }
 
@@ -7188,7 +6884,6 @@ function requestVivaLocation({silent=false}={}){
     navigator.geolocation.getCurrentPosition(
       position=>{
         saveLocation(position.coords);
-        applyVe003GpsDemoData();
         localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
         localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
         vivaManualCoords=null;
@@ -7198,7 +6893,6 @@ function requestVivaLocation({silent=false}={}){
         updateLocationModeButtons();
         updateDistanceOriginCopy();
         renderLocationStatus();
-        vivaResolveGuestLocationLabel();
         els.loc.disabled=true;
         els.loc.value='';
         els.loc.placeholder=vivaTranslateString('Moja lokalizacja (GPS)',getVivaAppLanguage());
@@ -7623,7 +7317,6 @@ function render(list=companies){
     return `<article class="result-card" data-id="${c.id}">
       <div class="result-cover">${photo?`<img src="${photo}" alt="${c.name}" loading="lazy">`:(c.emoji||'📍')}</div>
       <div class="result-body">
-        ${c.testData===true?'<span class="demo-company-mark">TESTDATEN</span>':''}
         <div class="result-category">${translateCategory(c.cat)}</div>
         <h3>${c.name}</h3>
         <div class="meta">${c.city}<br>
@@ -8920,9 +8613,9 @@ function applyGuestRadiusOptions(){
   const allowed=getClientAccessRules().radiusValues;
   const radiusLabel=sel.closest('label');
 
-  // VE-003: Gäste suchen automatisch per GPS in festen Stufen bis maximal 15 km.
-  // Die technische Auswahl bleibt für andere Kontotypen erhalten, ist für Gäste aber unsichtbar.
-  if(radiusLabel) radiusLabel.classList.toggle('hidden',tier==='guest');
+  // Gast: der Radius ist nur fuer die manuelle Planung sichtbar.
+  // GPS-Schnellfunktionen ignorieren diese Auswahl und suchen fest bis 10 km.
+  if(radiusLabel) radiusLabel.classList.remove('hidden');
 
   if(Array.isArray(allowed)){
     const labelByValue={1:'bis 1 km',2:'2 km',3:'3 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
@@ -8942,21 +8635,10 @@ function applyGuestLocationControls(){
   const locationLabel=document.querySelector('#searchLocationLabel');
   const manualRow=document.querySelector('#manualLocationRow');
   const loc=els?.loc || document.querySelector('#locationInput');
-  const status=document.querySelector('#locationStatus');
-  const guestAnchor=document.querySelector('#guestLocationStatusAnchor');
-  const homeAnchor=document.querySelector('#locationStatusHomeAnchor');
-  const eventCard=document.querySelector('#guestEventsDiscovery');
 
   if(!isGuest){
     if(modeSwitch) modeSwitch.classList.remove('hidden');
     if(locationLabel) locationLabel.classList.remove('hidden');
-    if(eventCard) eventCard.classList.add('hidden');
-    if(status){
-      status.classList.remove('guest-gps-only-status');
-      if(homeAnchor?.parentNode && status.previousElementSibling!==homeAnchor){
-        homeAnchor.parentNode.insertBefore(status,homeAnchor.nextSibling);
-      }
-    }
     updateLocationModeButtons();
     if(locationMode==='manual'){
       if(manualRow) manualRow.classList.remove('hidden');
@@ -8968,29 +8650,21 @@ function applyGuestLocationControls(){
     return;
   }
 
-  // VE-003 Gast: ausschließlich GPS. Keine manuelle Stadt-, PLZ- oder Adresseingabe.
-  locationMode='gps';
-  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+  // Gast: das normale Suchformular ist immer eine manuelle Planungssuche.
+  // GPS wird nur ueber Schnellkacheln, Schnellzugriff, oeffentliche Orte und Viva-KI gestartet.
   if(modeSwitch) modeSwitch.classList.add('hidden');
-  if(locationLabel) locationLabel.classList.add('hidden');
-  if(manualRow) manualRow.classList.add('hidden');
-  if(eventCard) eventCard.classList.remove('hidden');
+  if(locationLabel) locationLabel.classList.remove('hidden');
+  if(manualRow) manualRow.classList.remove('hidden');
   if(loc){
-    loc.disabled=true;
-    loc.value='';
-  }
-  if(status && guestAnchor?.parentNode){
-    status.classList.add('guest-gps-only-status');
-    guestAnchor.parentNode.insertBefore(status,guestAnchor.nextSibling);
-    renderLocationStatus();
+    loc.disabled=false;
+    loc.placeholder='Stadt, PLZ oder Adresse';
   }
 }
 
 function vivaSetGuestManualMode(){
   if(getClientAccessTier()!=='guest') return;
-  // Kompatibilitätsfunktion: Gäste bleiben auch bei älteren Aufrufen im GPS-Modus.
-  locationMode='gps';
-  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+  locationMode='manual';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'manual');
   applyGuestLocationControls();
 }
 
@@ -9001,7 +8675,6 @@ async function vivaSetGuestGpsMode(){
   if(!isVivaLocationFresh()){
     return await requestVivaLocation({silent:true});
   }
-  applyVe003GpsDemoData();
   return true;
 }
 
@@ -9631,11 +9304,11 @@ async function searchNearbyPolice(){
 
 async function search(options={}){
   const isGuest=getClientAccessTier()==='guest';
+  const guestGpsQuick=!!options.guestGpsQuick && isGuest;
   const userInitiated=!!options.userInitiated;
 
-  if(isGuest){
-    const gpsOk=await vivaSetGuestGpsMode();
-    if(!gpsOk) return;
+  if(isGuest && !guestGpsQuick){
+    vivaSetGuestManualMode();
   }
 
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
@@ -9675,43 +9348,16 @@ async function search(options={}){
     return;
   }
 
-  // VE-003 R3: przed KAŻDYM wyszukiwaniem gościa odbuduj dane TEST dokładnie wokół
-  // aktualnego GPS. Dzięki temu wynik nie zależy od momentu załadowania strony ani
-  // od wcześniejszego stanu tablicy companies.
-  if(isGuest && vivaDemoDataEnabled()){
-    applyVe003DemoCompanies(getActiveSearchCoordinates());
-  }
   refreshCompanyDistances();
 
-  // VE-003: szybkie wyszukiwanie kategorii nie może być blokowane przez stary tekst w polu wyszukiwania.
-  // Dotyczy np. przejścia z WC do Essen & Trinken przy aktywnym GPS.
-  const q=(options.guestGpsQuick && selectedCategoryFilter) ? '' : els.query.value.trim().toLowerCase();
+  const q=els.query.value.trim().toLowerCase();
   const radiusSelect=document.querySelector('#radiusSelect');
   const requestedRadius=Number(radiusSelect?.value||5);
   const sort=document.querySelector('#sortSelect')?.value||'distance';
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
 
-  // R3: wyszukiwanie pracuje na świeżym snapshotcie. W trybie demo dokładamy
-  // dynamiczne firmy bezpośrednio do puli wyszukiwania jako zabezpieczenie przed
-  // wyzerowaniem listy przez wcześniejszy lifecycle/render. Duplikaty usuwamy po id.
-  let searchPool=companies;
-  if(isGuest && vivaDemoDataEnabled()){
-    const demoNow=buildVe003DemoCompanies(getActiveSearchCoordinates());
-    const byId=new Map(companies.map(c=>[String(c.id),c]));
-    demoNow.forEach(c=>byId.set(String(c.id),c));
-    searchPool=[...byId.values()];
-    const origin=getActiveSearchCoordinates();
-    if(origin){
-      searchPool.forEach(c=>{
-        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
-          c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
-        }
-      });
-    }
-  }
-
-  const baseFilter=(radius)=>searchPool.filter(c=>
+  const baseFilter=(radius)=>companies.filter(c=>
     c.moderationStatus!=='blocked' &&
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
@@ -9724,13 +9370,10 @@ async function search(options={}){
   let list=[];
 
   if(isGuest){
-    // VE-003: GPS-only. Den Suchradius stufenweise erweitern: 1 -> 3 -> 5 -> 10 -> max. 15 km.
-    const guestRadiusSteps=[1,3,5,10,15];
-    for(const candidateRadius of guestRadiusSteps){
-      effectiveRadius=candidateRadius;
-      list=baseFilter(effectiveRadius);
-      if(list.length) break;
-    }
+    // Gast: GPS-Schnellfunktionen durchsuchen immer den gesamten kostenlosen Bereich bis 10 km.
+    // Die normale Suche ist manuell und respektiert den vom Gast gewaehlten Radius (max. 10 km).
+    effectiveRadius=guestGpsQuick?10:Math.min(10,Math.max(1,requestedRadius));
+    list=baseFilter(effectiveRadius);
   }else{
     list=baseFilter(effectiveRadius);
     if(getClientAccessTier()==='plus' && !list.length){
@@ -9749,7 +9392,13 @@ async function search(options={}){
   const note=document.querySelector('#radiusExpandNote');
   if(note){
     if(isGuest && !list.length){
-      note.innerHTML='Kostenlose Gastversion: Wir haben deinen GPS-Standort automatisch in den Stufen 1, 3, 5, 10 und bis 15 km durchsucht.<br><strong>Für einen größeren Suchradius ist ein Konto vorgesehen.</strong>';
+      if(guestGpsQuick){
+        note.innerHTML='Kostenlose Gastversion: Wir haben deinen aktuellen Standort bis 10 km durchsucht und keinen passenden Treffer gefunden.<br><strong>Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.</strong>';
+      }else if(effectiveRadius<10){
+        note.innerHTML=`Im gewählten Umkreis von ${effectiveRadius} km wurden keine Ergebnisse gefunden.<br><strong>In der kostenlosen Version kannst du den manuellen Suchradius bis 10 km erhoehen.</strong>`;
+      }else{
+        note.innerHTML='In der kostenlosen Version wurden im gewaehlten Umkreis bis 10 km keine passenden Ergebnisse gefunden.<br><strong>Für einen größeren Suchradius ist der erweiterte Zugang vorgesehen.</strong>';
+      }
       note.classList.add('show');
     }else if(!isGuest && isNonPayingPrivateClient() && !list.length){
       note.textContent=vivaTemplate(
@@ -10409,19 +10058,20 @@ async function editCompany(id){
 
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',goBack));
 document.querySelector('#searchBtn').onclick=()=>{
+  if(getClientAccessTier()==='guest') vivaSetGuestManualMode();
   search({userInitiated:true});
 };
 document.querySelector('#radiusSelect').onchange=()=>{
   saveTreePrefs();
-  search();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
 };
 document.querySelector('#sortSelect').onchange=()=>{
   saveTreePrefs();
-  search();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
 };
 document.querySelector('#openFilterSelect').onchange=()=>{
   saveTreePrefs();
-  search();
+  if(getClientAccessTier()!=='guest' || els.loc.value.trim()) search();
 };
 els.query.addEventListener('input',()=>{
   if(!selectedCategoryFilter) return;
@@ -10433,12 +10083,12 @@ els.query.addEventListener('input',()=>{
     saveTreePrefs();
   }
 });
-els.query.addEventListener('keydown',e=>{if(e.key==='Enter') search({userInitiated:true});});
+els.query.addEventListener('focus',()=>{if(getClientAccessTier()==='guest') vivaSetGuestManualMode();});
+els.query.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();search({userInitiated:true});}});
 els.loc.addEventListener('input',()=>{
   const value=els.loc.value.trim();
   if(getClientAccessTier()==='guest'){
-    els.loc.value='';
-    return;
+    vivaSetGuestManualMode();
   }else if(locationMode!=='manual') return;
   vivaManualCoords=null;
   localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
@@ -10451,7 +10101,7 @@ els.loc.addEventListener('input',()=>{
       : (getClientAccessTier()==='guest' ? 'Bitte Stadt, PLZ oder Adresse für die manuelle Suche eingeben.' : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.');
   }
 });
-els.loc.addEventListener('keydown',e=>{if(e.key==='Enter' && getClientAccessTier()!=='guest'){vivaScrollToResults();search();}});
+els.loc.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();vivaScrollToResults();search();}});
 
 document.querySelector('#locationModeGps').onclick=()=>{
   localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
@@ -11812,7 +11462,7 @@ document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setView('home');
   await requestVivaLocation({silent:true});
   refreshCompanyDistances();
-  applyGuestLocationControls();
+  vivaSetGuestManualMode();
 };
 
 
@@ -11926,7 +11576,6 @@ if(getClientAccessTier()==='guest' && localStorage.getItem('vivaGuestRadiusDefau
 }
 applyGuestRadiusOptions();
 renderCategoryFilters();
-bindGuestEventDiscovery();
 setResultsMode(resultsMode);
 
 loadSavedLocation();
@@ -11935,7 +11584,6 @@ if(loadManualLocation() && !localStorage.getItem(VIVA_LOCATION_MODE_KEY)){
   locationMode='manual';
 }
 setLocationMode(locationMode);
-applyGuestLocationControls();
 updateDistanceOriginCopy();
 
 ensureAccountLanguage();
@@ -11956,18 +11604,11 @@ updateNewPasswordSubmitState();
   const recoveryRestored=recoveryHandled ? false : await restoreRecoveryAfterRefresh();
 
   if(!recoveryHandled && !recoveryRestored){
-    // VE-003 boot guard: the visible app must never wait indefinitely for
-    // a remote Supabase/session request. A persisted session may be restored
-    // when available, but after 2500 ms startup continues with local state.
-    await Promise.race([
-      restorePersistentPrivateSession(),
-      new Promise(resolve=>setTimeout(resolve,2500))
-    ]);
+    await restorePersistentPrivateSession();
     initSplash();
   }
 
-  // Photo storage is local, but it must not be allowed to block first paint.
-  Promise.resolve(ensureVivaPhotoStorage()).catch(err=>console.warn('Photo storage init failed',err));
+  await ensureVivaPhotoStorage();
 
   renderQuickCats();
   if(VIVA_WAS_RELOAD){
