@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" class="viva-lang-pending">
+<html lang="de" class="viva-lang-pending" data-ve-build="VE003-S2C-GPS-ONLY-469-RUNTIME">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -5581,7 +5581,7 @@ let companies=loadCompanies().map(c=>({
 }));
 function saveCompanies(){
   const photosMigrated=localStorage.getItem(VIVA_PHOTO_MIGRATION_KEY)==='1';
-  const safe=companies.map(c=>{
+  const safe=companies.filter(c=>!c.testData).map(c=>{
     const copy={...c,distance:null};
     if(photosMigrated) delete copy.photos;
     return copy;
@@ -5964,6 +5964,42 @@ const VIVA_CATEGORY_MASTER={"01 MOTORYZACJA":["car_dealer","car_rental","car_rep
 const VIVA_CATEGORY_GROUP_DE={"01 MOTORYZACJA":"Auto & Mobilität","02 BIZNES":"Unternehmen & Gewerbe","03 KULTURA":"Kultur","04 EDUKACJA":"Bildung","05 ROZRYWKA I REKREACJA":"Freizeit & Unterhaltung","06 OBIEKTY PUBLICZNE":"Öffentliche Einrichtungen","07 FINANSE":"Finanzen","08 JEDZENIE I NAPOJE":"Essen & Trinken","09 ADMINISTRACJA I URZĘDY":"Verwaltung & Behörden","10 ZDROWIE I WELLNESS":"Gesundheit & Wellness","11 MIESZKANIE":"Wohnen","12 NOCLEGI":"Unterkünfte","13 NATURA":"Natur","14 MIEJSCA KULTU RELIGIJNEGO":"Religion & Gebetsstätten","15 USŁUGI":"Dienstleistungen","16 HANDEL I SKLEPY":"Handel & Geschäfte","17 SPORT":"Sport","18 TRANSPORT":"Transport"};
 const VIVA_CATEGORY_LABELS_DE={"car_dealer":"Autohaus","car_rental":"Autovermietung","car_repair":"Autowerkstatt","car_wash":"Autowaschanlage","ebike_charging_station":"E-Bike-Ladestation","electric_vehicle_charging_station":"E-Auto-Ladestation","gas_station":"Tankstelle","parking":"Parkplatz","parking_garage":"Parkhaus","parking_lot":"Parkplatz","rest_stop":"Rastplatz","tire_shop":"Reifenservice","truck_dealer":"Lkw-Händler","business_center":"Businesscenter","corporate_office":"Unternehmenszentrale","coworking_space":"Coworking-Space","farm":"Bauernhof","manufacturer":"Hersteller","ranch":"Ranch","supplier":"Lieferant","television_studio":"Fernsehstudio","art_gallery":"Kunstgalerie","art_museum":"Kunstmuseum","art_studio":"Kunstatelier","auditorium":"Auditorium","castle":"Schloss","cultural_landmark":"Kulturdenkmal","fountain":"Brunnen","historical_place":"Historischer Ort","history_museum":"Geschichtsmuseum","monument":"Denkmal","museum":"Museum","performing_arts_theater":"Theater für darstellende Kunst","sculpture":"Skulptur","academic_department":"Hochschulfachbereich","educational_institution":"Bildungseinrichtung","library":"Bibliothek","preschool":"Vorschule","primary_school":"Grundschule","research_institute":"Forschungsinstitut","school":"Schule","secondary_school":"Weiterführende Schule","university":"Universität","adventure_sports_center":"Abenteuersportzentrum","amphitheatre":"Amphitheater","amusement_center":"Freizeitzentrum","amusement_park":"Freizeitpark","aquarium":"Aquarium","banquet_hall":"Festsaal","barbecue_area":"Grillplatz","botanical_garden":"Botanischer Garten","bowling_alley":"Bowlingbahn","casino":"Casino","childrens_camp":"Kinderferienlager","city_park":"Stadtpark","comedy_club":"Comedy-Club","community_center":"Gemeindezentrum","concert_hall":"Konzerthalle","convention_center":"Kongresszentrum","cultural_center":"Kulturzentrum","cycling_park":"Bikepark","dance_hall":"Tanzsaal","dog_park":"Hundepark","event_venue":"Veranstaltungsort","ferris_wheel":"Riesenrad","garden":"Garten","go_karting_venue":"Kartbahn","hiking_area":"Wandergebiet","historical_landmark":"Historische Sehenswürdigkeit","indoor_playground":"Indoor-Spielplatz","internet_cafe":"Internetcafé","karaoke":"Karaoke","live_music_venue":"Live-Musik-Location","marina":"Marina","miniature_golf_course":"Minigolfplatz","movie_rental":"Filmverleih","movie_theater":"Kino","national_park":"Nationalpark","night_club":"Nachtclub","observation_deck":"Aussichtsplattform","off_roading_area":"Offroad-Gelände","opera_house":"Opernhaus","paintball_center":"Paintball-Center","park":"Park","philharmonic_hall":"Philharmonie","picnic_ground":"Picknickplatz","planetarium":"Planetarium","plaza":"Platz","roller_coaster":"Achterbahn","skateboard_park":"Skatepark","state_park":"Regionalpark","tourist_attraction":"Touristenattraktion","video_arcade":"Spielhalle","vineyard":"Weingut","visitor_center":"Besucherzentrum","water_park":"Wasserpark","wedding_venue":"Hochzeitslocation","wildlife_park":"Wildpark","wildlife_refuge":"Wildtierschutzgebiet","zoo":"Zoo","public_bath":"Öffentliches Bad","public_bathroom":"Öffentliche Toilette","stable":"Stall","accounting":"Buchhaltung","atm":"Geldautomat","bank":"Bank","city_hall":"Rathaus","courthouse":"Gericht","embassy":"Botschaft","fire_station":"Feuerwache","government_office":"Behörde","local_government_office":"Kommunalbehörde","police":"Polizei","post_office":"Postfiliale","chiropractor":"Chiropraktiker","dental_clinic":"Zahnklinik","dentist":"Zahnarzt","doctor":"Arzt","drugstore":"Drogerie","general_hospital":"Allgemeinkrankenhaus","hospital":"Krankenhaus","massage":"Massage","massage_spa":"Massage-Spa","medical_center":"Medizinisches Zentrum","medical_clinic":"Medizinische Klinik","medical_lab":"Medizinisches Labor","pharmacy":"Apotheke","physiotherapist":"Physiotherapie","sauna":"Sauna","skin_care_clinic":"Hautpflegeklinik","spa":"Spa","tanning_studio":"Sonnenstudio","wellness_center":"Wellnesszentrum","yoga_studio":"Yogastudio","apartment_building":"Mehrfamilienhaus","apartment_complex":"Wohnanlage","condominium_complex":"Eigentumswohnanlage","housing_complex":"Wohnkomplex","bed_and_breakfast":"Bed & Breakfast","campground":"Campingplatz","camping_cabin":"Campinghütte","cottage":"Ferienhaus","extended_stay_hotel":"Langzeit-Hotel","farmstay":"Urlaub auf dem Bauernhof","guest_house":"Pension","hostel":"Hostel","hotel":"Hotel","inn":"Gasthof","lodging":"Unterkunft","mobile_home_park":"Mobilheimpark","motel":"Motel","private_guest_room":"Privatzimmer","resort_hotel":"Resort-Hotel","rv_park":"Wohnmobilstellplatz","beach":"Strand","island":"Insel","lake":"See","mountain_peak":"Berggipfel","nature_preserve":"Naturschutzgebiet","river":"Fluss","scenic_spot":"Aussichtspunkt","woods":"Wald","buddhist_temple":"Buddhistischer Tempel","church":"Kirche","hindu_temple":"Hindu-Tempel","mosque":"Moschee","shinto_shrine":"Shintō-Schrein","synagogue":"Synagoge","aircraft_rental_service":"Flugzeugvermietung","association_or_organization":"Verband / Organisation","astrologer":"Astrologe","barber_shop":"Barbershop","beautician":"Kosmetiker","beauty_salon":"Kosmetikstudio","body_art_service":"Body-Art-Studio","catering_service":"Cateringservice","cemetery":"Friedhof","chauffeur_service":"Chauffeurservice","child_care_agency":"Kinderbetreuung","consultant":"Berater","courier_service":"Kurierdienst","electrician":"Elektriker","employment_agency":"Arbeitsvermittlung","florist":"Blumenladen","food_delivery":"Essenslieferdienst","foot_care":"Fußpflege","funeral_home":"Bestattungsinstitut","hair_care":"Haarpflege","hair_salon":"Friseursalon","insurance_agency":"Versicherungsagentur","laundry":"Wäscherei","lawyer":"Rechtsanwalt","locksmith":"Schlüsseldienst","makeup_artist":"Make-up-Artist","marketing_consultant":"Marketingberater","moving_company":"Umzugsunternehmen","nail_salon":"Nagelstudio","non_profit_organization":"Gemeinnützige Organisation","painter":"Maler","pet_boarding_service":"Tierpension","pet_care":"Tierbetreuung","plumber":"Installateur","psychic":"Wahrsager","real_estate_agency":"Immobilienagentur","roofing_contractor":"Dachdecker","service":"Dienstleistung","shipping_service":"Versanddienst","storage":"Lagerung","summer_camp_organizer":"Feriencamp-Veranstalter","tailor":"Schneider","telecommunications_service_provider":"Telekommunikationsanbieter","tour_agency":"Tourenanbieter","tourist_information_center":"Touristeninformation","travel_agency":"Reisebüro","veterinary_care":"Tierarzt","asian_grocery_store":"Asiatischer Lebensmittelladen","auto_parts_store":"Autoteilegeschäft","bicycle_store":"Fahrradgeschäft","book_store":"Buchhandlung","building_materials_store":"Baustoffhandel","butcher_shop":"Metzgerei","cell_phone_store":"Handygeschäft","clothing_store":"Bekleidungsgeschäft","convenience_store":"Convenience-Shop","cosmetics_store":"Kosmetikgeschäft","department_store":"Kaufhaus","discount_store":"Discounter","discount_supermarket":"Discount-Supermarkt","electronics_store":"Elektronikgeschäft","farmers_market":"Bauernmarkt","flea_market":"Flohmarkt","food_store":"Lebensmittelgeschäft","furniture_store":"Möbelgeschäft","garden_center":"Gartencenter","general_store":"Gemischtwarenladen","gift_shop":"Geschenkeladen","grocery_store":"Lebensmittelgeschäft","hardware_store":"Eisenwarenhandlung","health_food_store":"Naturkostladen","home_goods_store":"Haushaltswarengeschäft","home_improvement_store":"Baumarkt","hypermarket":"Hypermarkt","jewelry_store":"Schmuckgeschäft","liquor_store":"Spirituosengeschäft","market":"Markt","pet_store":"Tierbedarfsgeschäft","shoe_store":"Schuhgeschäft","shopping_mall":"Einkaufszentrum","sporting_goods_store":"Sportgeschäft","sportswear_store":"Sportbekleidungsgeschäft","store":"Geschäft","supermarket":"Supermarkt","tea_store":"Teegeschäft","thrift_store":"Secondhandladen","toy_store":"Spielwarengeschäft","warehouse_store":"Lagerverkauf","wholesaler":"Großhandel","womens_clothing_store":"Damenbekleidungsgeschäft","arena":"Arena","athletic_field":"Sportplatz","fishing_charter":"Angelcharter","fishing_pier":"Angelpier","fishing_pond":"Angelteich","fitness_center":"Fitnesscenter","golf_course":"Golfplatz","gym":"Fitnessstudio","ice_skating_rink":"Eislaufbahn","indoor_golf_course":"Indoor-Golfanlage","playground":"Spielplatz","race_course":"Rennstrecke","ski_resort":"Skigebiet","sports_activity_location":"Sportstätte","sports_club":"Sportverein","sports_coaching":"Sporttraining","sports_complex":"Sportkomplex","sports_school":"Sportschule","stadium":"Stadion","swimming_pool":"Schwimmbad","tennis_court":"Tennisplatz","airport":"Flughafen","airstrip":"Landebahn","bike_sharing_station":"Bike-Sharing-Station","bridge":"Brücke","bus_station":"Busbahnhof","bus_stop":"Bushaltestelle","ferry_service":"Fährdienst","ferry_terminal":"Fährterminal","heliport":"Hubschrauberlandeplatz","international_airport":"Internationaler Flughafen","light_rail_station":"Stadtbahnstation","park_and_ride":"Park-and-Ride","subway_station":"U-Bahn-Station","taxi_service":"Taxidienst","taxi_stand":"Taxistand","toll_station":"Mautstation","train_station":"Bahnhof","train_ticket_office":"Bahnfahrkartenschalter","tram_stop":"Straßenbahnhaltestelle","transit_depot":"Verkehrsbetriebshof","transit_station":"Verkehrsstation","transit_stop":"ÖPNV-Haltestelle","transportation_service":"Transportdienst","truck_stop":"Lkw-Rastplatz","acai_shop":"Açaí-Shop","bagel_shop":"Bagelladen","bakery":"Bäckerei","bar":"Bar","bar_and_grill":"Bar & Grill","beer_garden":"Biergarten","bistro":"Bistro","brewery":"Brauerei","brewpub":"Brauhaus","cafe":"Café","cafeteria":"Cafeteria","cake_shop":"Konditorei","candy_store":"Süßwarengeschäft","cat_cafe":"Katzencafé","chocolate_factory":"Schokoladenfabrik","chocolate_shop":"Schokoladengeschäft","cocktail_bar":"Cocktailbar","coffee_roastery":"Kaffeerösterei","coffee_shop":"Café","coffee_stand":"Kaffeestand","confectionery":"Konditorei","deli":"Feinkostladen","dessert_shop":"Dessertladen","diner":"Diner","dog_cafe":"Hundecafé","donut_shop":"Donutladen","food_court":"Food-Court","gastropub":"Gastropub","hookah_bar":"Shisha-Bar","hot_dog_stand":"Hotdog-Stand","ice_cream_shop":"Eisdiele","irish_pub":"Irish Pub","juice_shop":"Saftbar","kebab_shop":"Kebabladen","lounge_bar":"Lounge-Bar","meal_delivery":"Essenslieferdienst","meal_takeaway":"Take-away","noodle_shop":"Nudelrestaurant","pastry_shop":"Patisserie","pizza_delivery":"Pizzalieferdienst","pub":"Pub","salad_shop":"Salatbar","sandwich_shop":"Sandwichladen","snack_bar":"Snackbar","sports_bar":"Sportsbar","steak_house":"Steakhaus","tea_house":"Teehaus","wine_bar":"Weinbar","winery":"Weingut","afghani_restaurant":"Afghanisches Restaurant","african_restaurant":"Afrikanisches Restaurant","american_restaurant":"Amerikanisches Restaurant","argentinian_restaurant":"Argentinisches Restaurant","asian_fusion_restaurant":"Asiatisches Fusion-Restaurant","asian_restaurant":"Asiatisches Restaurant","australian_restaurant":"Australisches Restaurant","austrian_restaurant":"Österreichisches Restaurant","bangladeshi_restaurant":"Bangladeschisches Restaurant","barbecue_restaurant":"Grillrestaurant","basque_restaurant":"Baskisches Restaurant","bavarian_restaurant":"Bayerisches Restaurant","belgian_restaurant":"Belgisches Restaurant","brazilian_restaurant":"Brasilianisches Restaurant","breakfast_restaurant":"Frühstücksrestaurant","british_restaurant":"Britisches Restaurant","brunch_restaurant":"Brunch-Restaurant","buffet_restaurant":"Buffet-Restaurant","burmese_restaurant":"Burmesisches Restaurant","burrito_restaurant":"Burrito-Restaurant","cajun_restaurant":"Cajun Restaurant","californian_restaurant":"Kalifornisches Restaurant","cambodian_restaurant":"Kambodschanisches Restaurant","cantonese_restaurant":"Kantonesisches Restaurant","caribbean_restaurant":"Karibisches Restaurant","chicken_restaurant":"Hähnchenrestaurant","chicken_wings_restaurant":"Chicken-Wings-Restaurant","chilean_restaurant":"Chilenisches Restaurant","chinese_noodle_restaurant":"Chinesisches Nudelrestaurant","chinese_restaurant":"Chinesisches Restaurant","colombian_restaurant":"Kolumbianisches Restaurant","croatian_restaurant":"Kroatisches Restaurant","cuban_restaurant":"Kubanisches Restaurant","czech_restaurant":"Tschechisches Restaurant","danish_restaurant":"Dänisches Restaurant","dessert_restaurant":"Dessertrestaurant","dim_sum_restaurant":"Dim-Sum-Restaurant","dumpling_restaurant":"Teigtaschen-Restaurant","dutch_restaurant":"Niederländisches Restaurant","eastern_european_restaurant":"Osteuropäisches Restaurant","ethiopian_restaurant":"Äthiopisches Restaurant","european_restaurant":"Europäisches Restaurant","falafel_restaurant":"Falafel Restaurant","family_restaurant":"Familienrestaurant","fast_food_restaurant":"Fast-Food-Restaurant","filipino_restaurant":"Philippinisches Restaurant","fine_dining_restaurant":"Fine-Dining-Restaurant","fish_and_chips_restaurant":"Fish-and-Chips-Restaurant","fondue_restaurant":"Fondue-Restaurant","french_restaurant":"Französisches Restaurant","fusion_restaurant":"Fusion-Restaurant","german_restaurant":"Deutsches Restaurant","greek_restaurant":"Griechisches Restaurant","gyro_restaurant":"Gyros-Restaurant","halal_restaurant":"Halal-Restaurant","hamburger_restaurant":"Burgerrestaurant","hawaiian_restaurant":"Hawaiianisches Restaurant","hot_dog_restaurant":"Hotdog-Restaurant","hot_pot_restaurant":"Hot-Pot-Restaurant","hungarian_restaurant":"Ungarisches Restaurant","indian_restaurant":"Indisches Restaurant","indonesian_restaurant":"Indonesisches Restaurant","irish_restaurant":"Irisches Restaurant","israeli_restaurant":"Israelisches Restaurant","italian_restaurant":"Italienisches Restaurant","japanese_curry_restaurant":"Japanisches Curryrestaurant","japanese_izakaya_restaurant":"Izakaya","japanese_restaurant":"Japanisches Restaurant","korean_barbecue_restaurant":"Koreanisches Grillrestaurant","korean_restaurant":"Koreanisches Restaurant","latin_american_restaurant":"Lateinamerikanisches Restaurant","lebanese_restaurant":"Libanesisches Restaurant","malaysian_restaurant":"Malaysisches Restaurant","mediterranean_restaurant":"Mediterranes Restaurant","mexican_restaurant":"Mexikanisches Restaurant","middle_eastern_restaurant":"Nahöstliches Restaurant","mongolian_barbecue_restaurant":"Mongolisches Grillrestaurant","moroccan_restaurant":"Marokkanisches Restaurant","north_indian_restaurant":"Nordindisches Restaurant","oyster_bar_restaurant":"Austernbar","pakistani_restaurant":"Pakistanisches Restaurant","persian_restaurant":"Persisches Restaurant","peruvian_restaurant":"Peruanisches Restaurant","pizza_restaurant":"Pizzeria","polish_restaurant":"Polnisches Restaurant","portuguese_restaurant":"Portugiesisches Restaurant","ramen_restaurant":"Ramen-Restaurant","restaurant":"Restaurant","romanian_restaurant":"Rumänisches Restaurant","russian_restaurant":"Russisches Restaurant","scandinavian_restaurant":"Skandinavisches Restaurant","seafood_restaurant":"Fischrestaurant","shawarma_restaurant":"Shawarma-Restaurant","soul_food_restaurant":"Soul-Food-Restaurant","soup_restaurant":"Suppenrestaurant","south_american_restaurant":"Südamerikanisches Restaurant","south_indian_restaurant":"Südindisches Restaurant","southwestern_us_restaurant":"Südwestamerikanisches Restaurant","spanish_restaurant":"Spanisches Restaurant","sri_lankan_restaurant":"Sri-lankisches Restaurant","sushi_restaurant":"Sushi-Restaurant","swiss_restaurant":"Schweizerisches Restaurant","taco_restaurant":"Taco-Restaurant","taiwanese_restaurant":"Taiwanesisches Restaurant","tapas_restaurant":"Tapas-Restaurant","tex_mex_restaurant":"Tex-Mex-Restaurant","thai_restaurant":"Thailändisches Restaurant","tibetan_restaurant":"Tibetisches Restaurant","tonkatsu_restaurant":"Tonkatsu-Restaurant","turkish_restaurant":"Türkisches Restaurant","ukrainian_restaurant":"Ukrainisches Restaurant","vegan_restaurant":"Veganes Restaurant","vegetarian_restaurant":"Vegetarisches Restaurant","vietnamese_restaurant":"Vietnamesisches Restaurant","western_restaurant":"Westliches Restaurant","yakiniku_restaurant":"Yakiniku-Restaurant","yakitori_restaurant":"Yakitori-Restaurant"};
 const VIVA_CATEGORY_TYPES=new Set(Object.values(VIVA_CATEGORY_MASTER).flat());
+
+// VE-003 STAGE 1: isolated TEST-company generator. Not activated yet.
+// It creates one artificial company per category around a supplied GPS point.
+const VE003_TEST_COMPANY_SOURCE='VE003_TEST_COMPANIES_469';
+function ve003OffsetFromGps(origin,distanceKm,bearingDeg){
+  const lat=Number(origin?.lat), lng=Number(origin?.lng);
+  if(!Number.isFinite(lat)||!Number.isFinite(lng)) return null;
+  const br=bearingDeg*Math.PI/180;
+  const dLat=(distanceKm/111.32)*Math.cos(br);
+  const cosLat=Math.max(0.2,Math.cos(lat*Math.PI/180));
+  const dLng=(distanceKm/(111.32*cosLat))*Math.sin(br);
+  return {lat:lat+dLat,lng:lng+dLng};
+}
+function ve003BuildTestCompanies(origin){
+  if(!origin) return [];
+  const types=Object.values(VIVA_CATEGORY_MASTER).flat();
+  const rings=[0.35,0.75,1.4,2.4,4.2,7.2,10.8,14.2];
+  return types.map((type,index)=>{
+    const point=ve003OffsetFromGps(origin,rings[index%rings.length]+((index%5)*0.035),(index*137.508)%360);
+    return {
+      id:930000+index,
+      name:`TEST · ${vivaCategoryLabel(type)} · GPS`,
+      cat:type,emoji:'🧪',city:'GPS-Standort',postal:'',address:`Teststraße ${1+(index%89)}`,country:'Deutschland',
+      phonePrefix:'+49',phone:'000000000',email:'',www:'',instagram:'',facebook:'',tiktok:'',
+      hours:'Mo–Fr 08:00–18:00',desc:'Künstlicher Testdatensatz für die VE-003-Vorschau. Keine reale Firma.',
+      lat:Number(point.lat),lng:Number(point.lng),rating:Number((3.8+((index*7)%13)/10).toFixed(1)),reviews:5+((index*11)%186),
+      photos:[],messengers:[],seed:true,testData:true,demoSource:VE003_TEST_COMPANY_SOURCE,moderationStatus:'approved',ownerEmail:ADMIN_EMAIL,distance:null
+    };
+  });
+}
+function ve003SyncTestCompanies(origin){
+  companies=companies.filter(c=>c.demoSource!==VE003_TEST_COMPANY_SOURCE);
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))) return;
+  companies.push(...ve003BuildTestCompanies(origin));
+}
+
 
 function vivaCategoryLabel(type){
   const key=String(type||'').trim();
@@ -6533,7 +6569,6 @@ function renderCategoryFilters(){
     btn.onclick=async()=>{
       const id=btn.dataset.quickCat||'';
       if(id==='__categories__'){
-        vivaSetGuestManualMode();
         openGuestCategoryPicker();
         return;
       }
@@ -6591,14 +6626,16 @@ function buildGuestCategoryTree(query=''){
     : '<div class="guest-category-empty">Keine passende Kategorie gefunden.</div>';
 
   root.querySelectorAll('[data-master-cat]').forEach(btn=>{
-    btn.onclick=()=>{
+    btn.onclick=async()=>{
       selectedCategoryFilter=btn.dataset.masterCat||'';
-      vivaSetGuestManualMode();
       closeGuestCategoryPicker();
       renderCategoryFilters();
       saveTreePrefs();
       if(els?.query && !els.query.value.trim()) els.query.value=vivaCategoryLabel(selectedCategoryFilter);
-      setTimeout(()=>els?.loc?.focus(),80);
+      const ok=await vivaSetGuestGpsMode();
+      if(!ok) return;
+      vivaScrollToResults();
+      await search({guestGpsQuick:true,userInitiated:true});
     };
   });
 }
@@ -8613,9 +8650,8 @@ function applyGuestRadiusOptions(){
   const allowed=getClientAccessRules().radiusValues;
   const radiusLabel=sel.closest('label');
 
-  // Gast: der Radius ist nur fuer die manuelle Planung sichtbar.
-  // GPS-Schnellfunktionen ignorieren diese Auswahl und suchen fest bis 10 km.
-  if(radiusLabel) radiusLabel.classList.remove('hidden');
+  // VE-003: Gast sucht ausschließlich per GPS; der Radius erweitert sich automatisch.
+  if(radiusLabel) radiusLabel.classList.toggle('hidden',tier==='guest');
 
   if(Array.isArray(allowed)){
     const labelByValue={1:'bis 1 km',2:'2 km',3:'3 km',5:'5 km',10:'10 km',15:'15 km',20:'20 km',50:'50 km',100:'100 km'};
@@ -8650,21 +8686,20 @@ function applyGuestLocationControls(){
     return;
   }
 
-  // Gast: das normale Suchformular ist immer eine manuelle Planungssuche.
-  // GPS wird nur ueber Schnellkacheln, Schnellzugriff, oeffentliche Orte und Viva-KI gestartet.
+  // VE-003: Gast = ausschließlich aktueller GPS-Standort, ohne manuelle Ortsangabe.
+  locationMode='gps';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   if(modeSwitch) modeSwitch.classList.add('hidden');
-  if(locationLabel) locationLabel.classList.remove('hidden');
-  if(manualRow) manualRow.classList.remove('hidden');
-  if(loc){
-    loc.disabled=false;
-    loc.placeholder='Stadt, PLZ oder Adresse';
-  }
+  if(locationLabel) locationLabel.classList.add('hidden');
+  if(manualRow) manualRow.classList.add('hidden');
+  if(loc){ loc.disabled=true; loc.value=''; }
+  updateDistanceOriginCopy();
 }
 
 function vivaSetGuestManualMode(){
   if(getClientAccessTier()!=='guest') return;
-  locationMode='manual';
-  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'manual');
+  locationMode='gps';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   applyGuestLocationControls();
 }
 
@@ -8673,8 +8708,12 @@ async function vivaSetGuestGpsMode(){
   locationMode='gps';
   localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
   if(!isVivaLocationFresh()){
-    return await requestVivaLocation({silent:true});
+    const ok=await requestVivaLocation({silent:true});
+    if(!ok) return false;
   }
+  ve003SyncTestCompanies(vivaLocation);
+  refreshCompanyDistances();
+  applyGuestLocationControls();
   return true;
 }
 
@@ -9307,8 +9346,9 @@ async function search(options={}){
   const guestGpsQuick=!!options.guestGpsQuick && isGuest;
   const userInitiated=!!options.userInitiated;
 
-  if(isGuest && !guestGpsQuick){
-    vivaSetGuestManualMode();
+  if(isGuest){
+    const ok=await vivaSetGuestGpsMode();
+    if(!ok) return;
   }
 
   const rawLocation=locationMode==='manual' ? els.loc.value.trim() : '';
@@ -9318,19 +9358,13 @@ async function search(options={}){
       const ok=await requestVivaLocation({silent:true});
       if(!ok) return;
     }
-  }else{
-    if(isGuest && !rawLocation){
-      els.title.textContent='Suchergebnisse';
-      els.count.textContent='0';
-      els.results.innerHTML='<div class="status">Bitte gib für die manuelle Suche eine Stadt, PLZ oder Adresse ein.</div>';
-      // Nur nach einer bewussten Suchaktion des Nutzers zu den Ergebnissen springen.
-      if(userInitiated) vivaScrollToResults();
-      return;
+    if(isGuest){
+      ve003SyncTestCompanies(vivaLocation);
+      refreshCompanyDistances();
     }
-    if(rawLocation){
-      const ok=await activateManualLocation();
-      if(!ok) return;
-    }
+  }else if(!isGuest && rawLocation){
+    const ok=await activateManualLocation();
+    if(!ok) return;
   }
 
   vivaBindGuestSponsoredAd();
@@ -9357,7 +9391,26 @@ async function search(options={}){
   const openFilter=document.querySelector('#openFilterSelect')?.value||'all';
   const radiusSteps=[1,5,10,15,20,50,100];
 
-  const baseFilter=(radius)=>companies.filter(c=>
+  // VE-003 S2C: dla gościa dane TEST są budowane na bieżąco bezpośrednio
+  // z aktualnego GPS przy KAŻDYM wyszukiwaniu. Nie zależymy od tego, czy
+  // inny fragment aplikacji wcześniej nadpisał tablicę `companies`.
+  let searchPool=companies;
+  if(isGuest){
+    const origin=getActiveSearchCoordinates();
+    const runtimeTests=ve003BuildTestCompanies(origin);
+    const persistent=companies.filter(c=>c.demoSource!==VE003_TEST_COMPANY_SOURCE);
+    searchPool=[...persistent,...runtimeTests];
+    if(origin && Number.isFinite(Number(origin.lat)) && Number.isFinite(Number(origin.lng))){
+      searchPool.forEach(c=>{
+        c.distance=null;
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng))){
+          c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
+        }
+      });
+    }
+  }
+
+  const baseFilter=(radius)=>searchPool.filter(c=>
     c.moderationStatus!=='blocked' &&
     c.moderationStatus!=='pending' &&
     (!q||`${c.name} ${c.cat} ${translateCategory(c.cat)} ${c.desc}`.toLowerCase().includes(q)) &&
@@ -9370,10 +9423,15 @@ async function search(options={}){
   let list=[];
 
   if(isGuest){
-    // Gast: GPS-Schnellfunktionen durchsuchen immer den gesamten kostenlosen Bereich bis 10 km.
-    // Die normale Suche ist manuell und respektiert den vom Gast gewaehlten Radius (max. 10 km).
-    effectiveRadius=guestGpsQuick?10:Math.min(10,Math.max(1,requestedRadius));
-    list=baseFilter(effectiveRadius);
+    // VE-003: automatische GPS-Erweiterung 1 → 3 → 5 → 10 → 15 km.
+    const guestRadiusSteps=[1,3,5,10,15];
+    effectiveRadius=guestRadiusSteps[guestRadiusSteps.length-1];
+    list=[];
+    for(const step of guestRadiusSteps){
+      effectiveRadius=step;
+      list=baseFilter(step);
+      if(list.length) break;
+    }
   }else{
     list=baseFilter(effectiveRadius);
     if(getClientAccessTier()==='plus' && !list.length){
@@ -10058,7 +10116,6 @@ async function editCompany(id){
 
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',goBack));
 document.querySelector('#searchBtn').onclick=()=>{
-  if(getClientAccessTier()==='guest') vivaSetGuestManualMode();
   search({userInitiated:true});
 };
 document.querySelector('#radiusSelect').onchange=()=>{
@@ -10083,13 +10140,12 @@ els.query.addEventListener('input',()=>{
     saveTreePrefs();
   }
 });
-els.query.addEventListener('focus',()=>{if(getClientAccessTier()==='guest') vivaSetGuestManualMode();});
-els.query.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();search({userInitiated:true});}});
+els.query.addEventListener('focus',()=>{});
+els.query.addEventListener('keydown',e=>{if(e.key==='Enter') search({userInitiated:true});});
 els.loc.addEventListener('input',()=>{
   const value=els.loc.value.trim();
-  if(getClientAccessTier()==='guest'){
-    vivaSetGuestManualMode();
-  }else if(locationMode!=='manual') return;
+  if(getClientAccessTier()==='guest') return;
+  if(locationMode!=='manual') return;
   vivaManualCoords=null;
   localStorage.removeItem(VIVA_MANUAL_COORDS_KEY);
   const wrap=document.querySelector('#locationStatus');
@@ -10101,7 +10157,7 @@ els.loc.addEventListener('input',()=>{
       : (getClientAccessTier()==='guest' ? 'Bitte Stadt, PLZ oder Adresse für die manuelle Suche eingeben.' : 'Tryb ręczny — wpisz miejscowość, kod pocztowy albo adres.');
   }
 });
-els.loc.addEventListener('keydown',e=>{if(e.key==='Enter'){if(getClientAccessTier()==='guest') vivaSetGuestManualMode();vivaScrollToResults();search();}});
+els.loc.addEventListener('keydown',e=>{if(e.key==='Enter' && getClientAccessTier()!=='guest'){vivaScrollToResults();search();}});
 
 document.querySelector('#locationModeGps').onclick=()=>{
   localStorage.removeItem(VIVA_MANUAL_LOCATION_KEY);
@@ -11419,6 +11475,10 @@ function initSplash(){
     vivaBindGuestSponsoredAd();
     vivaUpdateGuestSponsoredAd(false);
 
+    if(getClientAccessTier()==='guest'){
+      locationMode='gps';
+      localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+    }
     if(locationMode==='gps'){
       if(!loadSavedLocation()){
         await requestVivaLocation({silent:true});
@@ -11460,9 +11520,11 @@ document.querySelector('#welcomeBenefitsBtn').onclick=()=>{
 document.querySelector('#welcomeGuestBtn').onclick=async()=>{
   setGuestMode(true);
   setView('home');
-  await requestVivaLocation({silent:true});
-  refreshCompanyDistances();
-  vivaSetGuestManualMode();
+  const ok=await vivaSetGuestGpsMode();
+  if(ok){
+    ve003SyncTestCompanies(vivaLocation);
+    refreshCompanyDistances();
+  }
 };
 
 

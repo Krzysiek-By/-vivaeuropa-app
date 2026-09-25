@@ -1,22 +1,27 @@
 VivaEuropa — RELEASE CONTROL REPORT
-Date: 2026-09-21
-Release basis: RECOVERED BASELINE from the user's live GitHub repository
+Date: 2026-09-25
+Approved baseline: VE-003 S2C GPS-ONLY 469 RUNTIME
+Basis: VE-002 PREMIUM R4 GREEN + user-tested VE-003 S2C changes only
 
 CONTROL RESULT
-- GREEN LOCK guard: PASS
-- Baseline inventory: PASS
-- VE-002 Thermomix structural regression checks: PASS
-- Thermomix asset exists: PASS
-- VE-002 badge spacing 12 px: PASS
-- Old account-tier hide rule on VE-002: ABSENT (PASS)
-- JavaScript syntax: PASS
-- MASTER fixed filename present: PASS
-- No recovered GitHub asset deleted: PASS
+- Status: GREEN LOCK — APPROVED
+- User approval: exact word "zezwalam" received 2026-09-25
+- Previous VE-001 / VE-002 GREEN LOCKs preserved
+- VE-003 approval scope: partial, limited to guest GPS/search + 469 synthetic TEST companies
+- Accepted index.html SHA-256: 1a8f08fa42cfcd2772e97ceebcb550d20ce8189d791717abbd2fbae5a4ebad47
+- Accepted index.html size: 934706 bytes
 
-BROWSER NOTE
-- Local Chromium navigation is blocked by the execution environment with ERR_BLOCKED_BY_ADMINISTRATOR.
-- Therefore the final iPhone/Vercel behavior test remains a user-side validation after deployment.
+APPROVED VE-003 S2C SCOPE
+- Guest search uses GPS-only behavior in the accepted guest flow.
+- No manual-location choice for guest flow.
+- 469 synthetic TEST companies are generated around current GPS, one per category subtype.
+- Runtime guest search includes these TEST companies.
+- Automatic guest radius expansion: 1 -> 3 -> 5 -> 10 -> 15 km.
 
-RELEASE POLICY
-- Any failed GREEN LOCK or baseline-inventory test blocks ZIP delivery.
-- Future releases must include the full project ZIP plus fixed-name MASTER and MANIFEST.
+EXCLUDED FROM THIS APPROVAL
+- Unrelated VE-003 UI/functions, events, and any other pending/red work.
+
+TESTS
+- User-side iPhone/Safari/Vercel validation: PASS (reported working).
+- Machine GREEN LOCK guard: PASS (108 checks incl. GREEN LOCK + baseline inventory).
+- JavaScript syntax: PASS (all inline scripts checked with node --check).

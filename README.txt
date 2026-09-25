@@ -1,3 +1,24 @@
+VivaEuropa VE-003 S2C — GREEN LOCK
+Datum: 2026-09-25
+
+- Approved by the user with the exact word "zezwalam" after iPhone/Safari validation.
+- Guest search: GPS-only in the accepted guest flow; no manual-location choice for guests.
+- 469 synthetic TEST companies (one per VIVA_CATEGORY_MASTER subtype) are generated around the current GPS and used in guest search.
+- Guest automatic search radius: 1 -> 3 -> 5 -> 10 -> 15 km; stop at first radius with results.
+- VE-001 and VE-002 earlier GREEN LOCK protections remain in force.
+- Unapproved/red working changes are not promoted by this release.
+- Accepted index.html SHA-256: 1a8f08fa42cfcd2772e97ceebcb550d20ce8189d791717abbd2fbae5a4ebad47
+- Accepted index.html size: 934706 bytes
+
+VivaEuropa VE-002 PREMIUM R4 — GREEN LOCK
+Datum: 2026-09-23
+
+- Kontotyp is centered above two equal role buttons: Nutzer and Unternehmen.
+- The label in "Trotzdem als Gast fortfahren" is centered vertically and horizontally.
+- The user tested the page and its links on Vercel Preview and approved it with the exact word "zezwalam".
+- VE-002 R4 is now the protected second-page baseline for further work.
+- The content of linked destination pages remains a separate future task.
+
 VivaEuropa v0.90.88-R1-RESULT-SCROLL-GLOBAL-REFRESH
 Datum: 2026-09-20
 

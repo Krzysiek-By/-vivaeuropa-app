@@ -11,25 +11,174 @@
       "id": "VE-001",
       "status": "GREEN_LOCK",
       "checks": [
-        {"type": "contains", "file": "index.html", "value": "id=\"splashScreen\""},
-        {"type": "contains", "file": "index.html", "value": "vivaeuropa-logo-full.png"}
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "id=\"splashScreen\""
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "vivaeuropa-logo-full.png"
+        }
       ]
     },
     {
       "id": "VE-002",
       "status": "GREEN_LOCK",
+      "approved_version": "VE-002-PREMIUM-R4",
+      "approved_date": "2026-09-23",
+      "approved_with_exact_word": "zezwalam",
       "checks": [
-        {"type": "contains", "file": "index.html", "value": "id=\"welcomeView\""},
-        {"type": "contains", "file": "index.html", "value": "id=\"ve002SponsoredAd\""},
-        {"type": "contains", "file": "index.html", "value": "assets/ads/thermomix-test.png"},
-        {"type": "file_exists", "file": "assets/ads/thermomix-test.png"},
-        {"type": "contains", "file": "index.html", "value": ".ve002-sponsored-label{display:inline-flex;align-items:center;margin:0 0 12px"},
-        {"type": "contains", "file": "index.html", "value": "Mit einem kostenpflichtigen Konto holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt exklusive Vorteile, intelligente KI-Funktionen und größere Suchradien – für mehr Komfort, bessere Planung und eine persönlichere Nutzung im Alltag und auf Reisen."},
-        {"type": "contains", "file": "index.html", "value": "if(welcomeAd) welcomeAd.classList.remove('hidden');"},
-        {"type": "not_contains", "file": "index.html", "value": "if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');"},
-        {"type": "contains", "file": "index.html", "value": "const disabledOnWelcome=name==='welcome';"},
-        {"type": "contains", "file": "index.html", "value": "document.querySelector('#welcomeGuestBtn').onclick"},
-        {"type": "contains", "file": "index.html", "value": "document.querySelector('#welcomeBenefitsBtn').onclick"}
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "id=\"welcomeView\""
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "id=\"ve002SponsoredAd\""
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "assets/ads/thermomix-test.png"
+        },
+        {
+          "type": "file_exists",
+          "file": "assets/ads/thermomix-test.png"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": ".ve002-sponsored-label{display:inline-flex;align-items:center;margin:0 0 12px"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "Mit einem <strong>kostenpflichtigen Konto</strong> holst du noch mehr aus VivaEuropa heraus: Du speicherst deine Favoriten, nutzt <strong>exklusive Vorteile, intelligente KI-Funktionen</strong> und größere Suchradien"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "<div class=\"role-title\">Kontotyp</div>"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "<button class=\"role-chip active\" data-role=\"user\">Nutzer</button>"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "<button class=\"role-chip\" data-role=\"company\">Unternehmen</button>"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "grid-template-columns:minmax(0,1fr)!important;"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "grid-template-columns:repeat(2,minmax(0,1fr))!important;"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "<button class=\"ghost guest-cta\" id=\"welcomeGuestBtn\">Trotzdem als Gast fortfahren</button>"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{\n  display:flex!important;\n  align-items:center!important;\n  justify-content:center!important;"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "if(welcomeAd) welcomeAd.classList.remove('hidden');"
+        },
+        {
+          "type": "not_contains",
+          "file": "index.html",
+          "value": "if(welcomeAd) welcomeAd.classList.toggle('hidden',getClientAccessTier()!=='guest');"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "const disabledOnWelcome=name==='welcome';"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "document.querySelector('#welcomeGuestBtn').onclick"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "document.querySelector('#welcomeBenefitsBtn').onclick"
+        }
+      ]
+    },
+    {
+      "id": "VE-003-S2C",
+      "status": "GREEN_LOCK",
+      "approved_version": "VE-003-S2C-GPS-ONLY-469-RUNTIME",
+      "approved_date": "2026-09-25",
+      "approved_with_exact_word": "zezwalam",
+      "scope": "partial VE-003 guest search + synthetic TEST-company runtime only",
+      "checks": [
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "data-ve-build=\"VE003-S2C-GPS-ONLY-469-RUNTIME\""
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "const VE003_TEST_COMPANY_SOURCE='VE003_TEST_COMPANIES_469';"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "function ve003BuildTestCompanies(origin)"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "id:930000+index"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "name:`TEST · ${vivaCategoryLabel(type)} · GPS`"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "const runtimeTests=ve003BuildTestCompanies(origin);"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "searchPool=[...persistent,...runtimeTests];"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "const guestRadiusSteps=[1,3,5,10,15];"
+        },
+        {
+          "type": "contains",
+          "file": "index.html",
+          "value": "const ok=await vivaSetGuestGpsMode();"
+        },
+        {
+          "type": "sha256",
+          "file": "index.html",
+          "value": "1a8f08fa42cfcd2772e97ceebcb550d20ce8189d791717abbd2fbae5a4ebad47"
+        }
       ]
     }
   ]
