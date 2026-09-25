@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260911-1" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=20260911-1" />
   <link rel="manifest" href="manifest.webmanifest?v=20260911-1" />
+  <!-- VE003-EVENTS-R1 | 20 VERIFIED TEST EVENTS | GPS 10-15-25-40 -->
   <title>VivaEuropa v0.88.0 COMPANY DOCUMENT PROOF</title>
   <style>
 :root{--blue:#0b5cff;--blue2:#0750df;--ink:#102447;--muted:#68758a;--line:#dfe6f1;--bg:#f6f9fe;--card:#fff;--shadow:0 12px 32px rgba(28,59,111,.10)}
@@ -4386,6 +4387,21 @@ body:not(.splash-active) #welcomeView .ve002-choice-actions .guest-cta{
   }
 }
 
+
+
+/* ===== VE-003 Veranstaltungen TEST — isolated preview module ===== */
+.ve-event-summary{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.ve-event-summary .pill{margin:0}
+.ve-event-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ve-event-card{border:1px solid rgba(72,164,255,.34);border-radius:18px;padding:15px;background:linear-gradient(180deg,rgba(12,42,74,.92),rgba(6,25,47,.94));box-shadow:0 10px 26px rgba(0,0,0,.18)}
+.ve-event-card h3{margin:4px 0 7px;font-size:18px}
+.ve-event-meta{display:grid;gap:5px;color:#B8CAE0;font-size:13px;line-height:1.4}
+.ve-event-badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+.ve-event-badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:900;background:rgba(40,216,144,.10);border:1px solid rgba(40,216,144,.32);color:#6CE5AC}
+.ve-event-badge.test{background:rgba(244,176,0,.10);border-color:rgba(244,176,0,.36);color:#FFD66E}
+.ve-event-route{margin-top:11px;width:100%}
+.ve-event-empty{padding:18px;border:1px dashed rgba(72,164,255,.35);border-radius:16px;color:#B8CAE0;text-align:center}
+@media(max-width:700px){.ve-event-grid{grid-template-columns:1fr}}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIINfQ3ynVfr8Roe2lJ3MMOdpb7Kp1uNuB4=" crossorigin="">
@@ -6522,6 +6538,7 @@ const VIVA_GUEST_QUICK_CATEGORIES=[
   {id:'gas_station',label:'Tankstelle',image:VIVA_QUICK_ICON_MAP.gas},
   {id:'electric_vehicle_charging_station',label:'Ladestation',image:VIVA_QUICK_ICON_MAP.ev},
   {id:'__hospital__',label:'Krankenhaus',image:VIVA_QUICK_ICON_MAP.hospital},
+  {id:'__events__',label:'Veranstaltungen',icon:'🎟️'},
   {id:'city_hall',label:'Rathaus',image:VIVA_QUICK_ICON_MAP.cityHall}
 ];
 
@@ -6570,6 +6587,10 @@ function renderCategoryFilters(){
       const id=btn.dataset.quickCat||'';
       if(id==='__categories__'){
         openGuestCategoryPicker();
+        return;
+      }
+      if(id==='__events__'){
+        await vivaOpenEventsModule();
         return;
       }
       selectedCategoryFilter=id;
@@ -7625,6 +7646,100 @@ function userContactHubHtml(){
 function userPreferencesHtml(){const comm=localStorage.getItem(VIVA_USER_COMM_LANG_KEY)||'de';const map=localStorage.getItem(VIVA_USER_MAP_KEY)||'google';return `<div class="user-settings-form"><label>App-Sprache<select id="userAppLang"><option value="de">Deutsch</option><option value="pl">Polski</option><option value="en">English</option><option value="es">Español</option></select></label><label>Bevorzugte Sprache für Kommunikation<select id="userCommLang"><option value="de" ${comm==='de'?'selected':''}>Deutsch</option><option value="pl" ${comm==='pl'?'selected':''}>Polski</option><option value="en" ${comm==='en'?'selected':''}>English</option><option value="es" ${comm==='es'?'selected':''}>Español</option><option value="it" ${comm==='it'?'selected':''}>Italiano</option><option value="fr" ${comm==='fr'?'selected':''}>Français</option></select></label><label>Bevorzugte Karten-App<select id="userMapPref"><option value="google" ${map==='google'?'selected':''}>Google Maps</option><option value="apple" ${map==='apple'?'selected':''}>Apple Maps</option></select></label><button class="primary" type="button" onclick="saveUserPreferences()">Einstellungen speichern</button><div class="user-safety-note">Kontakt mit Unternehmen: Gib niemals Kreditkarten-, PIN-, Passwort- oder Zugangsdaten in Nachrichten weiter. Öffne keine verdächtigen Links.</div><button class="ghost" type="button" onclick="document.querySelector('#logoutBtn').click()">Abmelden</button></div>`}
 function bindUserPreferences(){const a=document.querySelector('#userAppLang');if(a)a.value=getVivaAppLanguage()}
 function saveUserPreferences(){const app=document.querySelector('#userAppLang')?.value||'de';const comm=document.querySelector('#userCommLang')?.value||'de';const map=document.querySelector('#userMapPref')?.value||'google';setVivaAppLanguage(app);localStorage.setItem(VIVA_USER_COMM_LANG_KEY,comm);localStorage.setItem(VIVA_USER_MAP_KEY,map);showToast('Einstellungen gespeichert.');openModule('userPreferences')}
+
+
+// ===== VE-003 Veranstaltungen TEST — separate, verified-only GPS module =====
+const VIVA_EVENT_RADIUS_STEPS=[10,15,25,40];
+const VIVA_EVENT_TEST_TITLES=[
+  'Stadtfest TEST','Live-Musik TEST','Wochenmarkt Spezial TEST','Familientag TEST','Kunst & Kultur TEST',
+  'Open-Air-Kino TEST','Food-Festival TEST','Sporttag TEST','Oldtimer-Treffen TEST','Sommerbühne TEST',
+  'Handwerkermarkt TEST','Straßenfest TEST','Theaterabend TEST','Kinderprogramm TEST','Lichterfest TEST',
+  'Regionalmarkt TEST','Tanzabend TEST','Konzert im Park TEST','Genussabend TEST','Kulturwochenende TEST'
+];
+
+function vivaEventOffset(origin,distanceKm,bearingDeg){
+  const R=6371;
+  const d=Number(distanceKm)/R;
+  const br=Number(bearingDeg)*Math.PI/180;
+  const lat1=Number(origin.lat)*Math.PI/180;
+  const lon1=Number(origin.lng)*Math.PI/180;
+  const lat2=Math.asin(Math.sin(lat1)*Math.cos(d)+Math.cos(lat1)*Math.sin(d)*Math.cos(br));
+  const lon2=lon1+Math.atan2(Math.sin(br)*Math.sin(d)*Math.cos(lat1),Math.cos(d)-Math.sin(lat1)*Math.sin(lat2));
+  return {lat:lat2*180/Math.PI,lng:lon2*180/Math.PI};
+}
+
+function vivaBuildTestEvents(origin){
+  if(!origin || !Number.isFinite(Number(origin.lat)) || !Number.isFinite(Number(origin.lng))) return [];
+  // 20 synthetic events spread across the full 40-km test area.
+  const distances=[2.4,4.8,7.2,9.4,10.8,12.6,14.4,16.8,19.5,22.4,24.2,27.0,29.8,32.1,34.0,35.8,37.1,38.2,39.1,39.8];
+  return VIVA_EVENT_TEST_TITLES.map((title,i)=>{
+    const pos=vivaEventOffset(origin,distances[i],(i*137.508)%360);
+    const dayOffset=(i%10)+1;
+    const start=new Date(Date.now()+dayOffset*86400000);
+    const date=start.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
+    const hour=10+(i%9);
+    return {
+      id:`ve-test-event-${i+1}`,
+      title,
+      lat:Number(pos.lat.toFixed(6)),lng:Number(pos.lng.toFixed(6)),
+      distance:Number(distances[i].toFixed(1)),
+      date,time:`${String(hour).padStart(2,'0')}:00`,
+      verified:true,testData:true,
+      place:`TEST-Ort ${i+1}`,
+      category:['Kultur','Familie','Musik','Markt','Freizeit'][i%5]
+    };
+  });
+}
+
+function vivaVerifiedEventsForRadius(events,radius){
+  return events.filter(e=>e.verified===true && Number(e.distance)<=Number(radius));
+}
+
+function vivaEventAutoRadius(events){
+  for(const radius of VIVA_EVENT_RADIUS_STEPS){
+    if(vivaVerifiedEventsForRadius(events,radius).length) return radius;
+  }
+  return 40;
+}
+
+function vivaEventRouteUrl(e){
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${e.lat},${e.lng}`)}`;
+}
+
+function vivaEventsHtml(events,radius){
+  const visible=vivaVerifiedEventsForRadius(events,radius);
+  return `<div class="ve-event-summary">
+    <span class="pill">GPS · automatisch bis ${radius} km</span>
+    <span class="pill">${visible.length} von 20 TEST</span>
+    <span class="pill">nur verifiziert</span>
+  </div>
+  <div class="placeholder-note" style="margin-bottom:14px">Die Veranstaltungssuche ist getrennt von der Firmensuche. Suchradius: 10 → 15 → 25 → 40 km. Es werden nur verifizierte Veranstaltungen angezeigt.</div>
+  ${visible.length?`<div class="ve-event-grid">${visible.map(e=>`<article class="ve-event-card">
+    <div class="ve-event-badges"><span class="ve-event-badge">✓ Verifiziert</span><span class="ve-event-badge test">TEST</span></div>
+    <h3>${escapeHtml(e.title)}</h3>
+    <div class="ve-event-meta"><span>📅 ${escapeHtml(e.date)} · ${escapeHtml(e.time)}</span><span>📍 ${escapeHtml(e.place)} · ${e.distance.toFixed(1)} km</span><span>🎟 ${escapeHtml(e.category)}</span></div>
+    <button type="button" class="ghost ve-event-route" onclick="openExternal('${vivaEventRouteUrl(e)}')">Route anzeigen</button>
+  </article>`).join('')}</div>`:'<div class="ve-event-empty">Im Umkreis von 40 km wurden keine verifizierten Veranstaltungen gefunden.</div>'}`;
+}
+
+async function vivaOpenEventsModule(){
+  locationMode='gps';
+  localStorage.setItem(VIVA_LOCATION_MODE_KEY,'gps');
+  if(!isVivaLocationFresh()){
+    const ok=await requestVivaLocation({silent:true});
+    if(!ok){ showToast('Für Veranstaltungen wird dein aktueller GPS-Standort benötigt.'); return; }
+  }
+  const origin=vivaLocation;
+  const events=vivaBuildTestEvents(origin);
+  const radius=vivaEventAutoRadius(events);
+  document.querySelector('#moduleEyebrow').textContent='VERANSTALTUNGEN';
+  document.querySelector('#moduleTitle').textContent='Veranstaltungen in deiner Nähe';
+  document.querySelector('#moduleIntro').textContent='Geprüfte Veranstaltungen rund um deinen aktuellen Standort.';
+  document.querySelector('#moduleContent').innerHTML=vivaEventsHtml(events,radius);
+  localStorage.setItem('vivaLastModule','eventsTest');
+  setView('module');
+  window.scrollTo({top:0,behavior:'auto'});
+}
 
 const moduleData={
   user:{
