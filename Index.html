@@ -6119,7 +6119,8 @@ function applyVe003GpsDemoData(){
   refreshCompanyDistances();
 }
 
-applyVe003DemoCompanies();
+// VE-003: demo data is applied only after location state has been initialized.
+// Calling it here caused a startup ReferenceError because vivaLocation is declared later.
 
 function populateCompanyCategorySelect(selectedValue=''){
   const sel=document.querySelector('#fCat');
@@ -9724,26 +9725,12 @@ async function search(options={}){
   let list=[];
 
   if(isGuest){
-    // VE-003 R5: GPS-only, max. 15 km.
-    effectiveRadius=15;
-    list=baseFilter(effectiveRadius);
-
-    // W trybie DEMO wynik kategorii budujemy bezpośrednio ze świeżych danych GPS.
-    // To omija wcześniejszy lifecycle tablicy `companies`, ale nie zmienia wyszukiwania WC/policji.
-    if(vivaDemoDataEnabled() && selectedCategoryFilter){
-      const origin=getActiveSearchCoordinates();
-      if(origin){
-        const demoCategoryList=buildVe003DemoCompanies(origin)
-          .filter(c=>guestCategoryMatchesCompany(c,selectedCategoryFilter))
-          .map(c=>{
-            c.distance=Number(haversineKm(origin.lat,origin.lng,c.lat,c.lng).toFixed(2));
-            return c;
-          })
-          .filter(c=>Number.isFinite(Number(c.distance)) && Number(c.distance)<=15);
-        if(demoCategoryList.length){
-          list=demoCategoryList;
-        }
-      }
+    // VE-003: GPS-only. Den Suchradius stufenweise erweitern: 1 -> 3 -> 5 -> 10 -> max. 15 km.
+    const guestRadiusSteps=[1,3,5,10,15];
+    for(const candidateRadius of guestRadiusSteps){
+      effectiveRadius=candidateRadius;
+      list=baseFilter(effectiveRadius);
+      if(list.length) break;
     }
   }else{
     list=baseFilter(effectiveRadius);
